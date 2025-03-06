@@ -1,5 +1,5 @@
 CXX = c++ -I${HOME}/.brew/opt/freetype/include/freetype2
-NAME = humangl
+NAME = vox
 SRCS = srcs/BSphere.cpp srcs/Button.cpp srcs/Font.cpp srcs/Animation.cpp srcs/MatrixStack.cpp srcs/main.cpp srcs/Shader.cpp srcs/Vector2.cpp srcs/Vector3.cpp srcs/stb.cpp srcs/Vector4.cpp srcs/Matrix4.cpp srcs/Mesh.cpp srcs/ScopMaths.cpp srcs/Camera.cpp srcs/Object.cpp
 CPPFLAGS = -Werror -Wall -Wextra
 LIBS = -lGL -lGLU -lglfw -lX11 -lXxf86vm -lXrandr -lpthread -lXi -lGLEW -lGLU -lGL -lfreetype
