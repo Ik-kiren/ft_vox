@@ -12,6 +12,14 @@ void Matrix4::MatrixArrayInit() {
     }
 }
 
+void Matrix4::DataInit() {
+    for (size_t i = 0; i < 4; i++) {
+        for (size_t j = 0; j < 4; j++) {
+            matrix_data[i][j] = matrix[i][j];
+        }
+    }
+}
+
 Matrix4::Matrix4() {}
 
 Matrix4::Matrix4(const Matrix4 &mat) {
