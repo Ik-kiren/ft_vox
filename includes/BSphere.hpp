@@ -1,6 +1,6 @@
 #pragma once
 #include "./ScopMaths.hpp"
-#include "Scop.hpp"
+#include "./Scop.hpp"
 #include "./Camera.hpp"
 
 
@@ -81,6 +81,17 @@ struct BSphere : public BoundingVolume {
             globalSphere.isOnOrForwardPlane(camFrustum.topFace) &&
             globalSphere.isOnOrForwardPlane(camFrustum.bottomFace));
     };
+};
+
+struct Instance {
+    Matrix4 matrix;
+    BSphere bbox;
+};
+
+struct ssboObject {
+    Instance instances[512];
+    Frustum frustum;
+    GLuint  atomicData;
 };
 
 Frustum createFrustumFromCamera(Camera &cam, float aspect, float fovY, float zNear, float zFar);

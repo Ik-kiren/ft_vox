@@ -10,6 +10,7 @@
 #include "../includes/Animation.hpp"
 #include "../includes/Button.hpp"
 
+
 void viewport_size_callback(GLFWwindow* window, int width, int height) {
     (void)window;
     glViewport(0, 0, width, height);
@@ -66,6 +67,7 @@ int main(void) {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     Shader cubeShader = Shader("./shaders/VertexShader.shader", "./shaders/FragmentShader.shader");
     Shader fontShader = Shader("./shaders/fontVS.shader", "./shaders/fontFS.shader");
+    ComputeShader compute = ComputeShader("./shaders/compute.shader");
 
     Mesh cubeMesh = Mesh("./objects/DirtCube.obj");  
 
@@ -88,15 +90,22 @@ int main(void) {
     std::string lastFps = "0";
 
     std::vector<Object> map;
+    ssboObject objects;
+    int indexes = 0;
 
-    for (int i = 0; i < 35; i++) {
-        for (int j = 0; j < 35; j++) {
-            for (int k = 0; k < 35; k++) {
+    for (int i = 0; i < 16; i++) {
+        for (int j = 0; j < 16; j++) {
+            for (int k = 0; k < 16; k++) {
                 map.push_back(Object(cubeShader, &cubeMesh));
                 map.back().translate(Vector3(-3 * k, -3 * i, -3 * j));
+                objects.instances[indexes].bbox = map.back().getSphere();
+                objects.instances[indexes].matrix = *map.back().getModel();
             }
         }
     }
+    objects.atomicData = 0;
+    
+
 
     while ((glfwGetKey(window, GLFW_KEY_ESCAPE ) != GLFW_PRESS &&
         glfwWindowShouldClose(window) == 0)) {
@@ -117,7 +126,7 @@ int main(void) {
             font.RenderText(fontShader, lastFps, 0.5, 1100, 2, Vector3(1, 0.2, 0.2));
             Vector3 camPos = camera.GetPosition();
             
-            cubeObj.drawMeshInstance(window, camera, map);
+            cubeObj.drawMeshInstance(window, camera, map, objects, compute);
 
             camera.RegisterKeyboardInput(window);
             camera.RegisterMouseInput(window);

@@ -37,6 +37,10 @@ ComputeShader::ComputeShader(const char *computePath) {
     checkProgramCompile(ID);
 }
 
+ComputeShader::~ComputeShader() {
+
+}
+
 void ComputeShader::checkShaderCompile(GLuint shader, const std::string name) {
     int success;
     char logs[1024];
@@ -59,4 +63,8 @@ void ComputeShader::checkProgramCompile(GLuint programID) {
         glfwTerminate();
         exit(0);
     }
+}
+
+void ComputeShader::use() {
+    glUseProgram(ID);
 }

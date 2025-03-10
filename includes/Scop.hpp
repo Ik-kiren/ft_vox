@@ -11,6 +11,8 @@
 #include "./Vector2.hpp"
 #include "./Font.hpp"
 #include "./BSphere.hpp"
+#include "./ComputeShader.hpp"
+#include "./ScopMaths.hpp"
 
 struct Character {
     unsigned int TextureID; // ID handle of the glyph texture

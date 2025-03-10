@@ -11,4 +11,5 @@ public:
 
     void checkShaderCompile(GLuint shader, const std::string name);
     void checkProgramCompile(GLuint programID);
+    void use();
 };

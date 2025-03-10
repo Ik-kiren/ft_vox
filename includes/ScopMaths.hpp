@@ -3,3 +3,4 @@
 
 Vector3 normalized(Vector3 vec);
 float Dot(Vector3 vec1, Vector3 vec2);
+float magnitude(const Vector3 &vec);
