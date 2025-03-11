@@ -4,6 +4,10 @@
 #include "../includes/Object.hpp"
 #include "../includes/Scop.hpp"
 
+struct TestStruct {
+    unsigned int test;
+};
+
 
 Object::Object() : sphere(generateSphereBV(vecVertices)) {}
 
@@ -159,18 +163,14 @@ void    Object::bindVao() {
     glBindVertexArray(this->mesh->getVAO());
 }
 
-void Object::drawMeshInstance(GLFWwindow *window, Camera &camera, std::vector<Object> &instance, ssboObject objects, ComputeShader &compute) {
+void Object::drawMeshInstance(GLFWwindow *window, Camera &camera, ssboObject objects, ComputeShader &compute) {
     std::vector<float> instanceBuffer;
     Frustum frustum = createFrustumFromCamera(camera, (1920.0f / 1200.0f), 60.0f, 0.1f, 100.0f);
-    for (size_t i = 0; i < instance.size(); i++) {
-        Matrix4 tmp = *instance[i].getModel();
-        if (instance[i].getSphere().isOnFrustum(frustum, Vector3(magnitude(tmp[0]), magnitude(tmp[1]), magnitude(tmp[2])), tmp)) {
-            instanceBuffer.push_back(instance[i].GetPosition().x);
-            instanceBuffer.push_back(instance[i].GetPosition().y);
-            instanceBuffer.push_back(instance[i].GetPosition().z);
-        }
-    }
     objects.frustum = frustum;
+
+    /*TestStruct testing;
+    testing.test = 0;
+    TestStruct testing2;*/
     
     if (timer < 3)
         timer += 0.01;
@@ -193,20 +193,32 @@ void Object::drawMeshInstance(GLFWwindow *window, Camera &camera, std::vector<Ob
     compute.use();
 
     GLuint ssbo;
-    glGenBuffers(5, &ssbo);
+    glGenBuffers(1, &ssbo);
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssbo);
     glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(ssboObject), &objects, GL_STATIC_DRAW);
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, ssbo);
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0); // unbind
 
-    std::cout << " 10000001 :: " << objects.atomicData << std::endl;
+    GLuint indexID;
+    std::vector<unsigned int> indexesArray;
+    glGenBuffers(1, &indexID);
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, indexID);
+    glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(indexesArray), indexesArray.data(), GL_STATIC_DRAW);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, indexID);
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
-    glDispatchCompute(512, 1, 1);
+    std::cout << " 10000001 :: " << objects.atomicData[0] << std::endl;
+
+    glDispatchCompute(1, 1, 1);
     glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
-    ssboObject test;
-    glBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, sizeof(ssboObject), &test);
+    std::vector<unsigned int> test;
+    glGetNamedBufferSubData(indexID, 1, sizeof(test), test.data());
 
-    std::cout << " 255555552 :: " << test.atomicData << std::endl;
+    for (size_t i = 0; i < test.size(); i++)
+    {
+        std::cout << i << " 255555552 :: " << test[i] << std::endl;
+    }
+    
 
     meshShader.use();
 
@@ -236,16 +248,12 @@ void Object::drawMeshInstance(GLFWwindow *window, Camera &camera, std::vector<Ob
     glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glVertexAttribDivisor(4, 1);
-    glDrawArraysInstanced(GL_TRIANGLES, 0, vertices.size(), 35*35*35);
+    glDrawArraysInstanced(GL_TRIANGLES, 0, vertices.size(), 5*5*5);
     glBindVertexArray(0);
 }
 
 void    Object::drawMesh(GLFWwindow *window, Camera &camera) {
-    Frustum frustum = createFrustumFromCamera(camera, (1920.0f / 1200.0f), 60.0f, 0.1f, 100.0f);
-    if (!sphere.isOnFrustum(frustum, Vector3(magnitude(model[0]), magnitude(model[1]), magnitude(model[2])), model)) {
-        //std::cout << "out" << std::endl;
-        return;
-    }
+    //Frustum frustum = createFrustumFromCamera(camera, (1920.0f / 1200.0f), 60.0f, 0.1f, 100.0f);
     //std::cout << "in" << std::endl;
     if (timer < 3)
         timer += 0.01;

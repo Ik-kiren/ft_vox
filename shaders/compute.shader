@@ -24,6 +24,7 @@ struct Instance {
     BSphere bbox;
 } Instance_t;
 
+
 float getSignedDistanceToPlane(vec3 normal, vec3 point, float distance)
 {
 	return dot(normal, point) - distance;
@@ -59,20 +60,31 @@ bool isOnFrustum(Frustum camFrustum, vec3 globalScale, mat4 model, BSphere bbox)
         isOnOrForwardPlane(camFrustum.bottomFace, globalSphere));
 };
 
-layout (local_size_x = 512, local_size_y = 1, local_size_z = 1) in;
+layout (local_size_x = 8) in;
 
-layout (std430, binding = 5) buffer bufferData {
-    Instance instance[512];
+layout (std430, binding = 0) buffer bufferData {
     Frustum frustum;
-    uint atomicData;
+    uint atomicData[8];
+    Instance instance[];
+};
+
+layout (std430, binding = 1) buffer bufferIndexes {
+    uint indexesArray[];
 };
 
 layout (binding = 1, offset = 0) uniform atomic_uint indexes;
 
 void main (void) {
-    for (uint i = 0; i < 512; i++) {
+    /*for (uint i = 0; i < 512; i++) {
         if (isOnFrustum(frustum, vec3(length(instance[gl_GlobalInvocationID.x].matrix[0]), length(instance[gl_GlobalInvocationID.x].matrix[1]), length(instance[gl_GlobalInvocationID.x].matrix[2])), instance[gl_GlobalInvocationID.x].matrix, instance[gl_GlobalInvocationID.x].bbox)) {
             atomicData = 15;
         }
+    }*/
+    uint index = 0;
+    if (isOnFrustum(frustum, vec3(length(instance[gl_GlobalInvocationID.x].matrix[0]), length(instance[gl_GlobalInvocationID.x].matrix[1]), length(instance[gl_GlobalInvocationID.x].matrix[2])), instance[gl_GlobalInvocationID.x].matrix, instance[gl_GlobalInvocationID.x].bbox)) {
+        index = atomicCounterIncrement(indexes);
+        atomicAdd(atomicData[index], gl_GlobalInvocationID.x);
+        atomicAdd(indexesArray[index], gl_GlobalInvocationID.x);
     }
+    return;
 }

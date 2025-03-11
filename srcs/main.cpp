@@ -93,17 +93,28 @@ int main(void) {
     ssboObject objects;
     int indexes = 0;
 
-    for (int i = 0; i < 16; i++) {
-        for (int j = 0; j < 16; j++) {
-            for (int k = 0; k < 16; k++) {
+    /*for (int i = 0; i < 8; i++) {
+        for (int j = 0; j < 8; j++) {
+            for (int k = 0; k < 8; k++) {
                 map.push_back(Object(cubeShader, &cubeMesh));
-                map.back().translate(Vector3(-3 * k, -3 * i, -3 * j));
-                objects.instances[indexes].bbox = map.back().getSphere();
+                map.back().translate(Vector3(-3 * k, -3 * i, -3 * j));*/
+                /*Instance tmpInst;
+                tmpInst.bbox = map.back().getSphere();
+                tmpInst.matrix = *map.back().getModel();
+                objects.instances.push_back(tmpInst);*/
+                /*objects.instances[indexes].bbox = map.back().getSphere();
                 objects.instances[indexes].matrix = *map.back().getModel();
             }
         }
+    }*/
+    for (int i = 0; i < 8; i++) {
+        map.push_back(Object(cubeShader, &cubeMesh));
+        map.back().translate(Vector3(-3 * i, 0, 0));
+        objects.instances[indexes].bbox = map.back().getSphere();
+        objects.instances[indexes].matrix = *map.back().getModel();
     }
-    objects.atomicData = 0;
+    
+    objects.atomicData[0] = 0;
     
 
 
@@ -126,7 +137,7 @@ int main(void) {
             font.RenderText(fontShader, lastFps, 0.5, 1100, 2, Vector3(1, 0.2, 0.2));
             Vector3 camPos = camera.GetPosition();
             
-            cubeObj.drawMeshInstance(window, camera, map, objects, compute);
+            cubeObj.drawMeshInstance(window, camera, objects, compute);
 
             camera.RegisterKeyboardInput(window);
             camera.RegisterMouseInput(window);

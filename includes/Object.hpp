@@ -55,7 +55,7 @@ class Object {
     void                    rotate(Vector3 vec);
     void                    rotate(Vector3 vec, float speed);
     void                    scale(float scale);
-    void                    drawMeshInstance(GLFWwindow *window, Camera &camera, std::vector<Object> &instance, ssboObject objects, ComputeShader &compute);
+    void                    drawMeshInstance(GLFWwindow *window, Camera &camera, ssboObject objects, ComputeShader &compute);
     void                    drawMesh(GLFWwindow *window, Camera &camera);
     void                    drawMesh(GLFWwindow *window, Camera camera, Vector3 lightPos);
     void                    drawMesh(GLFWwindow *window, Camera &camera, Matrix4 newModel);
