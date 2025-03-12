@@ -1,4 +1,4 @@
-#version 430 core
+#version 460 core
 
 struct Plane {
     vec3 normal; 
@@ -23,6 +23,14 @@ struct Instance {
     mat4 matrix;
     BSphere bbox;
 } Instance_t;
+
+struct Indirect {
+    uint  count;
+    uint  instanceCount;
+    uint  firstIndex;
+    uint  baseVertex;
+    uint  baseInstance;
+};
 
 
 float getSignedDistanceToPlane(vec3 normal, vec3 point, float distance)
@@ -62,17 +70,19 @@ bool isOnFrustum(Frustum camFrustum, vec3 globalScale, mat4 model, BSphere bbox)
 
 layout (local_size_x = 8) in;
 
-layout (std430, binding = 0) buffer bufferData {
+layout (std430, binding = 5) buffer bufferData {
     Frustum frustum;
     uint atomicData[8];
     Instance instance[];
 };
 
-layout (std430, binding = 1) buffer bufferIndexes {
-    uint indexesArray[];
+layout (std430, binding = 1) buffer bufferIndirect {
+    Indirect indirectArray[8];
 };
 
-layout (binding = 1, offset = 0) uniform atomic_uint indexes;
+layout (std430, binding = 2) buffer bufferAtomic {
+    uint atomicBuffer;
+};
 
 void main (void) {
     /*for (uint i = 0; i < 512; i++) {
@@ -80,11 +90,17 @@ void main (void) {
             atomicData = 15;
         }
     }*/
-    uint index = 0;
     if (isOnFrustum(frustum, vec3(length(instance[gl_GlobalInvocationID.x].matrix[0]), length(instance[gl_GlobalInvocationID.x].matrix[1]), length(instance[gl_GlobalInvocationID.x].matrix[2])), instance[gl_GlobalInvocationID.x].matrix, instance[gl_GlobalInvocationID.x].bbox)) {
-        index = atomicCounterIncrement(indexes);
-        atomicAdd(atomicData[index], gl_GlobalInvocationID.x);
-        atomicAdd(indexesArray[index], gl_GlobalInvocationID.x);
+        indirectArray[gl_GlobalInvocationID.x].count = atomicAdd(atomicBuffer, 2) + 1;
+        indirectArray[gl_GlobalInvocationID.x].instanceCount = 1;
+        indirectArray[gl_GlobalInvocationID.x].firstIndex = gl_LocalInvocationIndex;
+        indirectArray[gl_GlobalInvocationID.x].baseVertex = 0;
+        indirectArray[gl_GlobalInvocationID.x].baseInstance = 0;
+    } else {
+        indirectArray[gl_GlobalInvocationID.x].count = atomicAdd(atomicBuffer, 1) + 1;
+        indirectArray[gl_GlobalInvocationID.x].instanceCount = 0;
+        indirectArray[gl_GlobalInvocationID.x].firstIndex = gl_LocalInvocationIndex;
+        indirectArray[gl_GlobalInvocationID.x].baseVertex = 0;
+        indirectArray[gl_GlobalInvocationID.x].baseInstance = 0;
     }
-    return;
 }

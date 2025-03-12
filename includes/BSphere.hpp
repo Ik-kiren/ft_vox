@@ -33,7 +33,15 @@ struct Instance {
 struct ssboObject {
     Frustum frustum;
     GLuint  atomicData[8];
-    Instance instances[512];
+    Instance instances[8];
+};
+
+struct Indirect {
+    GLuint  count;
+    GLuint  instanceCount;
+    GLuint  firstIndex;
+    GLuint  baseVertex;
+    GLuint  baseInstance;
 };
 
 Frustum createFrustumFromCamera(Camera &cam, float aspect, float fovY, float zNear, float zFar);

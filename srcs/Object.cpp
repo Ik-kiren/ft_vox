@@ -195,29 +195,36 @@ void Object::drawMeshInstance(GLFWwindow *window, Camera &camera, ssboObject obj
     GLuint ssbo;
     glGenBuffers(1, &ssbo);
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssbo);
-    glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(ssboObject), &objects, GL_STATIC_DRAW);
+    glBufferStorage(GL_SHADER_STORAGE_BUFFER, sizeof(ssboObject), &objects, GL_DYNAMIC_STORAGE_BIT);
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, ssbo);
-    glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0); // unbind
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, 5); // unbind
 
-    GLuint indexID;
-    std::vector<unsigned int> indexesArray;
-    glGenBuffers(1, &indexID);
-    glBindBuffer(GL_SHADER_STORAGE_BUFFER, indexID);
-    glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(indexesArray), indexesArray.data(), GL_STATIC_DRAW);
-    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, indexID);
+    GLuint indirectID;
+    Indirect indirectArray[8];
+    
+    glGenBuffers(1, &indirectID);
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, indirectID);
+    glBindBuffer(GL_DRAW_INDIRECT_BUFFER, indirectID);
+    glBufferStorage(GL_SHADER_STORAGE_BUFFER, sizeof(Indirect) * 8, indirectArray, GL_DYNAMIC_STORAGE_BIT);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, indirectID);
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
-    std::cout << " 10000001 :: " << objects.atomicData[0] << std::endl;
+    GLuint atomicID;
+    GLuint atomicBuffer = 0;
+    glGenBuffers(1, &atomicID);
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, atomicID);
+    glBufferStorage(GL_SHADER_STORAGE_BUFFER, sizeof(GLuint), &atomicBuffer, GL_DYNAMIC_STORAGE_BIT);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, atomicID);
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
     glDispatchCompute(1, 1, 1);
     glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
-    std::vector<unsigned int> test;
-    glGetNamedBufferSubData(indexID, 1, sizeof(test), test.data());
+    GLuint instanceCount = 0;
+    //Indirect indirectTest[8];
+    glGetNamedBufferSubData(atomicID, 0, sizeof(GLuint), &instanceCount);
 
-    for (size_t i = 0; i < test.size(); i++)
-    {
-        std::cout << i << " 255555552 :: " << test[i] << std::endl;
-    }
+    //std::cout << " 255555552 :: " << instanceCount << std::endl;
+    //std::cout << " 255555552 :: " << indirectTest[1].instanceCount << std::endl;
     
 
     meshShader.use();
@@ -234,8 +241,9 @@ void Object::drawMeshInstance(GLFWwindow *window, Camera &camera, ssboObject obj
 
     glBindTexture(GL_TEXTURE_2D, mesh->getTexture());
     
+    
 
-    unsigned int instanceVBO;
+    /*unsigned int instanceVBO;
     glGenBuffers(1, &instanceVBO);
     glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(*instanceBuffer.data()) * instanceBuffer.size(), instanceBuffer.data(), GL_STATIC_DRAW);
@@ -247,9 +255,10 @@ void Object::drawMeshInstance(GLFWwindow *window, Camera &camera, ssboObject obj
     glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
     glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glVertexAttribDivisor(4, 1);
-    glDrawArraysInstanced(GL_TRIANGLES, 0, vertices.size(), 5*5*5);
-    glBindVertexArray(0);
+    glVertexAttribDivisor(4, 1);*/
+    //glDrawArraysInstanced(GL_TRIANGLES, 0, vertices.size(), 5*5*5);
+    glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, (void*)0, instanceCount, 0);
+    /*glBindVertexArray(0);*/
 }
 
 void    Object::drawMesh(GLFWwindow *window, Camera &camera) {
