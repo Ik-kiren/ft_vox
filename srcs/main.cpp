@@ -91,32 +91,20 @@ int main(void) {
 
     std::vector<Object> map;
     ssboObject objects;
-    int indexes = 0;
 
-    /*for (int i = 0; i < 8; i++) {
-        for (int j = 0; j < 8; j++) {
-            for (int k = 0; k < 8; k++) {
+    for (int i = 0; i < 30; i++) {
+        for (int j = 0; j < 30; j++) {
+            for (int k = 0; k < 30; k++) {
                 map.push_back(Object(cubeShader, &cubeMesh));
-                map.back().translate(Vector3(-3 * k, -3 * i, -3 * j));*/
-                /*Instance tmpInst;
-                tmpInst.bbox = map.back().getSphere();
-                tmpInst.matrix = *map.back().getModel();
-                objects.instances.push_back(tmpInst);*/
-                /*objects.instances[indexes].bbox = map.back().getSphere();
-                objects.instances[indexes].matrix = *map.back().getModel();
+                map.back().translate(Vector3(-24 * k, -24 * i, -24 * j));
             }
         }
-    }*/
-    for (int i = 0; i < 8; i++) {
-        map.push_back(Object(cubeShader, &cubeMesh));
-        map.back().translate(Vector3(-3 * i, 0, 0));
-        objects.instances[indexes].bbox = map.back().getSphere();
-        objects.instances[indexes].matrix = *map.back().getModel();
     }
-    
-    objects.atomicData[0] = 0;
-    
 
+    for (size_t i = 0; i < map.size(); i++) {
+        objects.instances[i].bbox = map[i].getSphere();
+        map[i].getModel()->getData(objects.instances[i].matrix);
+    }
 
     while ((glfwGetKey(window, GLFW_KEY_ESCAPE ) != GLFW_PRESS &&
         glfwWindowShouldClose(window) == 0)) {

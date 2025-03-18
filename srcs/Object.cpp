@@ -14,7 +14,7 @@ Object::Object() : sphere(generateSphereBV(vecVertices)) {}
 Object::Object(Shader &meshShader, Mesh *mesh)
     : vertices(mesh->GetMeshVertexArray()), meshShader(meshShader), mesh(mesh) {
     model = Matrix4(1.0f);
-    projection = Perspective(60.0f, 1920 / 1200, 0.1f, 100.0f);
+    projection = Perspective(60.0f, 1920 / 1200, 0.1f, 2000.0f);
     // projection = Orthographique(-19, 19, -19, 19, 0, 40);
     this->color = Vector4(1.0, 1.0, 1.0, 0.5);
     timer = 0;
@@ -33,7 +33,7 @@ Object::Object(Shader &meshShader, Mesh *mesh)
 Object::Object(Shader &meshShader, Mesh *mesh, Vector3 color)
     : vertices(mesh->GetMeshVertexArray()), meshShader(meshShader), mesh(mesh)  {
     model = Matrix4(1.0f);
-    projection = Perspective(60.0f, 1920 / 1200, 0.1f, 100.0f);
+    projection = Perspective(60.0f, 1920 / 1200, 0.1f, 2000.0f);
     // projection = Orthographique(-19, 19, -19, 19, 0, 40);
     this->color = Vector4(color.x, color.y, color.z, 1.0);
     timer = 0;
@@ -52,7 +52,7 @@ Object::Object(Shader &meshShader, Mesh *mesh, Vector3 color)
 Object::Object(Shader &meshShader, Mesh *mesh, Vector4 color)
     : vertices(mesh->GetMeshVertexArray()), meshShader(meshShader), mesh(mesh), color(color) {
     model = Matrix4(1.0f);
-    projection = Perspective(60.0f, 1920 / 1200, 0.1f, 100.0f);
+    projection = Perspective(60.0f, 1920 / 1200, 0.1f, 2000.0f);
     // projection = Orthographique(-19, 19, -19, 19, 0, 40);
     timer = 0;
     position = Vector3(0, 0, 0);
@@ -163,15 +163,11 @@ void    Object::bindVao() {
     glBindVertexArray(this->mesh->getVAO());
 }
 
-void Object::drawMeshInstance(GLFWwindow *window, Camera &camera, ssboObject objects, ComputeShader &compute) {
-    std::vector<float> instanceBuffer;
-    Frustum frustum = createFrustumFromCamera(camera, (1920.0f / 1200.0f), 60.0f, 0.1f, 100.0f);
+void Object::drawMeshInstance(GLFWwindow *window, Camera &camera, ssboObject &objects, ComputeShader &compute) {
+    Frustum frustum = createFrustumFromCamera(camera, (1920.0f / 1200.0f), 90.0f, 0.1f, 300.0f);
     objects.frustum = frustum;
 
-    /*TestStruct testing;
-    testing.test = 0;
-    TestStruct testing2;*/
-    
+
     if (timer < 3)
         timer += 0.01;
     if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS && timer > 1) {
@@ -197,15 +193,15 @@ void Object::drawMeshInstance(GLFWwindow *window, Camera &camera, ssboObject obj
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssbo);
     glBufferStorage(GL_SHADER_STORAGE_BUFFER, sizeof(ssboObject), &objects, GL_DYNAMIC_STORAGE_BIT);
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, ssbo);
-    glBindBuffer(GL_SHADER_STORAGE_BUFFER, 5); // unbind
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0); // unbind
 
     GLuint indirectID;
-    Indirect indirectArray[8];
+    Indirect indirectArray[27000];
     
     glGenBuffers(1, &indirectID);
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, indirectID);
     glBindBuffer(GL_DRAW_INDIRECT_BUFFER, indirectID);
-    glBufferStorage(GL_SHADER_STORAGE_BUFFER, sizeof(Indirect) * 8, indirectArray, GL_DYNAMIC_STORAGE_BIT);
+    glBufferStorage(GL_SHADER_STORAGE_BUFFER, sizeof(Indirect) * 27000, indirectArray, GL_DYNAMIC_STORAGE_BIT);
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, indirectID);
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
@@ -217,14 +213,21 @@ void Object::drawMeshInstance(GLFWwindow *window, Camera &camera, ssboObject obj
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, atomicID);
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
-    glDispatchCompute(1, 1, 1);
+    glDispatchCompute(27, 1, 1);
     glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
-    GLuint instanceCount = 0;
-    //Indirect indirectTest[8];
-    glGetNamedBufferSubData(atomicID, 0, sizeof(GLuint), &instanceCount);
+    /*GLuint instanceCount = 0;
+    Indirect indirectTest[8];
+    glGetNamedBufferSubData(indirectID, 0, sizeof(Indirect) * 8, indirectTest);
+    glGetNamedBufferSubData(atomicID, 0, sizeof(GLuint), &instanceCount);*/
 
     //std::cout << " 255555552 :: " << instanceCount << std::endl;
     //std::cout << " 255555552 :: " << indirectTest[1].instanceCount << std::endl;
+
+    /*for (int i = 0; i < 8; i++) {
+        std::cout << "count 255555552 :: " << indirectTest[i].count << std::endl;
+        std::cout << "inst 255555552 :: " << indirectTest[i].instanceCount << std::endl;
+    }*/
+    
     
 
     meshShader.use();
@@ -240,25 +243,16 @@ void Object::drawMeshInstance(GLFWwindow *window, Camera &camera, ssboObject obj
     meshShader.setFloat("timerTextureTransition", timerTextureTransition);
 
     glBindTexture(GL_TEXTURE_2D, mesh->getTexture());
-    
-    
-
-    /*unsigned int instanceVBO;
-    glGenBuffers(1, &instanceVBO);
-    glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(*instanceBuffer.data()) * instanceBuffer.size(), instanceBuffer.data(), GL_STATIC_DRAW);
-    glBindBuffer(GL_ARRAY_BUFFER, 0); 
 
     glBindVertexArray(mesh->getVAO());
 
-    glEnableVertexAttribArray(4);
-    glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
-    glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glVertexAttribDivisor(4, 1);*/
-    //glDrawArraysInstanced(GL_TRIANGLES, 0, vertices.size(), 5*5*5);
-    glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, (void*)0, instanceCount, 0);
-    /*glBindVertexArray(0);*/
+    //glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, (void*)0, instanceCount, 0);
+    //396
+
+    //glDrawArraysInstancedBaseInstance(GL_TRIANGLES, 0, vertices.size(), 8, 0);
+
+    glMultiDrawArraysIndirect(GL_TRIANGLES, (void*)0, 27000, 0);
+    glBindVertexArray(0);
 }
 
 void    Object::drawMesh(GLFWwindow *window, Camera &camera) {
@@ -297,9 +291,9 @@ void    Object::drawMesh(GLFWwindow *window, Camera &camera) {
     glBindTexture(GL_TEXTURE_2D, mesh->getTexture());
 
     std::vector<float> translations;
-    for (int i = 0; i < 20; i++) {
-        for (int j = 0; j < 20; j++) {
-            for (int k = 0; k < 20; k++) {
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            for (int k = 0; k < 3; k++) {
                 translations.push_back(-2 * k);
                 translations.push_back(-2 * i);
                 translations.push_back(-2 * j);
@@ -380,6 +374,9 @@ void    Object::drawMesh(GLFWwindow *window, Camera camera, Vector3 lightPos) {
 
 void        Object::translate(Vector3 vec) {
     position = position + vec;
+    for (int i = 0; i < 3; i++) {
+        sphere.center[i] = sphere.center[i] + vec[i];
+    }
     this->model = Translate(this->model, vec);
 }
 

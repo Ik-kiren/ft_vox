@@ -26,22 +26,21 @@ struct BSphere {
 };
 
 struct Instance {
-    Matrix4 matrix;
+    float matrix[4][4];
     BSphere bbox;
 };
 
 struct ssboObject {
     Frustum frustum;
     GLuint  atomicData[8];
-    Instance instances[8];
+    Instance instances[27000];
 };
 
 struct Indirect {
-    GLuint  count;
-    GLuint  instanceCount;
-    GLuint  firstIndex;
-    GLuint  baseVertex;
-    GLuint  baseInstance;
+    GLuint  count = 396;
+    GLuint  instanceCount = 0;
+    GLuint  first = 0;
+    GLuint  baseInstance = 0;
 };
 
 Frustum createFrustumFromCamera(Camera &cam, float aspect, float fovY, float zNear, float zFar);

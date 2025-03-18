@@ -27,7 +27,6 @@ Frustum createFrustumFromCamera(Camera &cam, float aspect, float fovY, float zNe
     const float halfHSide = halfVSide * aspect;
     Vector3 frontMultFar = cam.GetFront() * zFar;
     
-    
     frustum.nearFace = CreatePlane(cam.GetPosition() + (cam.GetFront() * zNear), cam.GetFront());
     frustum.farFace = CreatePlane(cam.GetPosition() + frontMultFar, cam.GetFront() * -1);
     frustum.rightFace = CreatePlane(cam.GetPosition(), cross(frontMultFar - (cam.GetRight() * halfHSide), cam.GetUp()));

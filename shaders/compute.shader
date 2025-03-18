@@ -20,15 +20,14 @@ struct BSphere {
 } BSphere_t;
 
 struct Instance {
-    mat4 matrix;
+    mat4 model;
     BSphere bbox;
 } Instance_t;
 
 struct Indirect {
     uint  count;
     uint  instanceCount;
-    uint  firstIndex;
-    uint  baseVertex;
+    uint  first;
     uint  baseInstance;
 };
 
@@ -56,28 +55,28 @@ bool isOnFrustum(Frustum camFrustum, vec3 globalScale, mat4 model, BSphere bbox)
     //Max scale is assuming for the diameter. So, we need the half to apply it to our radius
     BSphere globalSphere;
     globalSphere.center = globalCenter;
-    globalSphere.radius = bbox.radius * (maxScale * 0.5f);
+    globalSphere.radius = (bbox.radius* (maxScale * 0.5f));
 
     //Check Firstly the result that have the most chance
     //to faillure to avoid to call all functions.
-    return (isOnOrForwardPlane(camFrustum.leftFace, globalSphere) &&
-        isOnOrForwardPlane(camFrustum.rightFace, globalSphere) &&
-        isOnOrForwardPlane(camFrustum.farFace, globalSphere) &&
-        isOnOrForwardPlane(camFrustum.nearFace, globalSphere) &&
-        isOnOrForwardPlane(camFrustum.topFace, globalSphere) &&
-        isOnOrForwardPlane(camFrustum.bottomFace, globalSphere));
+    return (isOnOrForwardPlane(camFrustum.leftFace, bbox) &&
+        isOnOrForwardPlane(camFrustum.rightFace, bbox) &&
+        isOnOrForwardPlane(camFrustum.farFace, bbox) &&
+        isOnOrForwardPlane(camFrustum.nearFace, bbox) &&
+        isOnOrForwardPlane(camFrustum.topFace, bbox) &&
+        isOnOrForwardPlane(camFrustum.bottomFace, bbox));
 };
 
-layout (local_size_x = 8) in;
+layout (local_size_x = 1000) in;
 
-layout (std430, binding = 5) buffer bufferData {
+layout (std430, binding = 0) buffer bufferData {
     Frustum frustum;
-    uint atomicData[8];
-    Instance instance[];
+    uint instanceNbr[8];
+    Instance instance[27000];
 };
 
 layout (std430, binding = 1) buffer bufferIndirect {
-    Indirect indirectArray[8];
+    Indirect indirectArray[27000];
 };
 
 layout (std430, binding = 2) buffer bufferAtomic {
@@ -90,17 +89,14 @@ void main (void) {
             atomicData = 15;
         }
     }*/
-    if (isOnFrustum(frustum, vec3(length(instance[gl_GlobalInvocationID.x].matrix[0]), length(instance[gl_GlobalInvocationID.x].matrix[1]), length(instance[gl_GlobalInvocationID.x].matrix[2])), instance[gl_GlobalInvocationID.x].matrix, instance[gl_GlobalInvocationID.x].bbox)) {
-        indirectArray[gl_GlobalInvocationID.x].count = atomicAdd(atomicBuffer, 2) + 1;
+    atomicAdd(atomicBuffer, 1) + 1;
+    if (isOnFrustum(frustum, vec3(length(instance[gl_GlobalInvocationID.x].model[0]), length(instance[gl_GlobalInvocationID.x].model[1]), length(instance[gl_GlobalInvocationID.x].model[2])), instance[gl_GlobalInvocationID.x].model, instance[gl_GlobalInvocationID.x].bbox)) {
         indirectArray[gl_GlobalInvocationID.x].instanceCount = 1;
-        indirectArray[gl_GlobalInvocationID.x].firstIndex = gl_LocalInvocationIndex;
-        indirectArray[gl_GlobalInvocationID.x].baseVertex = 0;
+        indirectArray[gl_GlobalInvocationID.x].first = 0;
         indirectArray[gl_GlobalInvocationID.x].baseInstance = 0;
     } else {
-        indirectArray[gl_GlobalInvocationID.x].count = atomicAdd(atomicBuffer, 1) + 1;
         indirectArray[gl_GlobalInvocationID.x].instanceCount = 0;
-        indirectArray[gl_GlobalInvocationID.x].firstIndex = gl_LocalInvocationIndex;
-        indirectArray[gl_GlobalInvocationID.x].baseVertex = 0;
+        indirectArray[gl_GlobalInvocationID.x].first = 0;
         indirectArray[gl_GlobalInvocationID.x].baseInstance = 0;
     }
 }

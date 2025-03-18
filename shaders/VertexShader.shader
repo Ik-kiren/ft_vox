@@ -20,7 +20,7 @@ struct BSphere {
 } BSphere_t;
 
 struct Instance {
-    mat4 matrix;
+    mat4 instMatrix;
     BSphere bbox;
 } Instance_t;
 
@@ -44,16 +44,16 @@ uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
 
-layout (std430, binding = 5) buffer bufferData {
+layout (std430, binding = 0) buffer bufferData {
     Frustum frustum;
     uint atomicData[8];
-    Instance instance[8];
+    Instance instance[27000];
 };
 
 void main(){
     vec3 newVertex = vertexPosition_modelspace;
-    newVertex = newVertex;
-    gl_Position = projection * view * model * vec4(newVertex, 1.0);
+    newVertex = newVertex * 8;
+    gl_Position = projection * view * model * vec4((newVertex + instance[gl_DrawID].instMatrix[3].xyz), 1.0);
     vertexPos = newVertex.xyz;
     fragpos = vec3(model * vec4(newVertex, 1.0));
     normal = mat3(transpose(inverse(model))) * normalVertex;

@@ -61,6 +61,14 @@ float *Matrix4::get_array() {
     return matrix_array;
 }
 
+void    Matrix4::getData(float data[4][4]) {
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            data[i][j] = matrix[i][j];
+        }
+    }
+}
+
 Vector4& Matrix4::operator[](int index) {
     if (index < 0 || index > 3) {
         std::string str = "matrix4 ";
