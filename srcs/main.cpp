@@ -9,6 +9,7 @@
 #include "../includes/MatrixStack.hpp"
 #include "../includes/Animation.hpp"
 #include "../includes/Button.hpp"
+#include "../includes/Chunk.hpp"
 
 
 void viewport_size_callback(GLFWwindow* window, int width, int height) {
@@ -89,6 +90,9 @@ int main(void) {
     int fps = 0;
     std::string lastFps = "0";
 
+    Chunk newChunk;
+    newChunk.CreateMesh();
+
     std::vector<Object> map;
     ssboObject objects;
 
@@ -125,7 +129,11 @@ int main(void) {
             font.RenderText(fontShader, lastFps, 0.5, 1100, 2, Vector3(1, 0.2, 0.2));
             Vector3 camPos = camera.GetPosition();
             
-            cubeObj.drawMeshInstance(window, camera, objects, compute);
+            //cubeObj.drawMeshInstance(window, camera, objects, compute);
+            cubeShader.use();
+            glBindVertexArray(newChunk.meshID);
+            glDrawElements(GL_TRIANGLES, newChunk.renderer.meshes[0].GetIndicesArray().size(), GL_UNSIGNED_INT, 0);
+
 
             camera.RegisterKeyboardInput(window);
             camera.RegisterMouseInput(window);

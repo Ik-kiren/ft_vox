@@ -1,0 +1,26 @@
+#include "../includes/NewMesh.hpp"
+
+NewMesh::NewMesh() {}
+
+NewMesh::~NewMesh() {}
+
+std::vector<float> NewMesh::GetVertexArray() {
+    return this->vertexArray;
+}
+
+std::vector<unsigned int> NewMesh::GetIndicesArray() {
+    return this->indicesArray;
+}
+
+
+void NewMesh::AddVertex(Vector3 vec) {
+    for (int i = 0; i < 3; i++) {
+        this->vertexArray.push_back(vec[i]);   
+    }
+}
+
+void NewMesh::AddIndices(unsigned int v1, unsigned int v2, unsigned int v3) {
+    this->indicesArray.push_back(v1);
+    this->indicesArray.push_back(v2);
+    this->indicesArray.push_back(v3);
+}
