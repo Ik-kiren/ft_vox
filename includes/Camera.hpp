@@ -4,6 +4,7 @@
 #include "./Matrix4.hpp"
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include "./BSphere.hpp"
 
 class Camera {
  private:
@@ -13,6 +14,9 @@ class Camera {
     Vector3 right;
     Vector3 worldUp;
 
+    Frustum frustum;
+    Matrix4 projectionMat;
+
     float lastPosX;
     float lastPosY;
 
@@ -21,7 +25,13 @@ class Camera {
     float speed;
     float sensitivity;
 
+    float aspect;
+    float fovY;
+    float zNear;
+    float zFar;
+
     void setCameraVectors();
+    void CreateFrustum(float aspect, float fovY, float zNear, float zFar);
 
  public:
     Camera();
@@ -35,9 +45,11 @@ class Camera {
     Vector3 GetRight() ;
     Matrix4 GetViewMatrix();
     Matrix4 GetViewMatrix(Vector3 lookatpos);
+    Matrix4 GetProjectionMat();
 
     void RegisterMouseInput(GLFWwindow *window);
     void RegisterKeyboardInput(GLFWwindow *window);
+    void UpdateFrustum();
 
     Camera &operator=(const Camera &rhs);
 };

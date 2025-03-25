@@ -22,6 +22,7 @@ GLFWwindow *InitGLFW() {
         std::cerr << "Failed to initialize GLFW" << std::endl;
         exit(0);
     }
+
     glfwWindowHint(GLFW_SAMPLES, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -46,7 +47,8 @@ GLFWwindow *InitGLFW() {
     glfwSetFramebufferSizeCallback(window, viewport_size_callback);
 
     glEnable(GL_DEPTH_TEST);
-    glEnable(GL_CULL_FACE);
+    //glEnable(GL_CULL_FACE);
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED); 
     return window;
@@ -66,15 +68,15 @@ int main(void) {
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    Shader cubeShader = Shader("./shaders/VertexShader.shader", "./shaders/FragmentShader.shader");
+    Shader cubeShader = Shader("./shaders/VertexShader.shader", "./shaders/FragmentShader2.shader");
     Shader fontShader = Shader("./shaders/fontVS.shader", "./shaders/fontFS.shader");
     ComputeShader compute = ComputeShader("./shaders/compute.shader");
 
-    Mesh cubeMesh = Mesh("./objects/DirtCube.obj");  
+    //Mesh cubeMesh = Mesh("./objects/DirtCube.obj");  
 
     Camera camera = Camera(Vector3(15, 0, 0), Vector3(0, 1, 0));
 
-    Object cubeObj = Object(cubeShader, &cubeMesh, Vector4(1, 1, 1, 1));
+    //Object cubeObj = Object(cubeShader, &cubeMesh, Vector4(1, 1, 1, 1));
 
     Font font = Font();
 
@@ -90,25 +92,14 @@ int main(void) {
     int fps = 0;
     std::string lastFps = "0";
 
-    Chunk newChunk;
+    Renderer renderer(cubeShader, camera);
+
+    Chunk newChunk(renderer);
     newChunk.CreateMesh();
 
-    std::vector<Object> map;
-    ssboObject objects;
-
-    for (int i = 0; i < 30; i++) {
-        for (int j = 0; j < 30; j++) {
-            for (int k = 0; k < 30; k++) {
-                map.push_back(Object(cubeShader, &cubeMesh));
-                map.back().translate(Vector3(-24 * k, -24 * i, -24 * j));
-            }
-        }
-    }
-
-    for (size_t i = 0; i < map.size(); i++) {
-        objects.instances[i].bbox = map[i].getSphere();
-        map[i].getModel()->getData(objects.instances[i].matrix);
-    }
+    /*Chunk newChunk2(renderer);
+    newChunk2.Translation(Vector3(16, 0, 0));
+    newChunk.CreateMesh();*/
 
     while ((glfwGetKey(window, GLFW_KEY_ESCAPE ) != GLFW_PRESS &&
         glfwWindowShouldClose(window) == 0)) {
@@ -130,14 +121,10 @@ int main(void) {
             Vector3 camPos = camera.GetPosition();
             
             //cubeObj.drawMeshInstance(window, camera, objects, compute);
-            cubeShader.use();
-            glBindVertexArray(newChunk.meshID);
-            glDrawElements(GL_TRIANGLES, newChunk.renderer.meshes[0].GetIndicesArray().size(), GL_UNSIGNED_INT, 0);
-
-
+            renderer.Render();
             camera.RegisterKeyboardInput(window);
             camera.RegisterMouseInput(window);
-
+            
             glfwSwapBuffers(window);
             glfwPollEvents();
     }

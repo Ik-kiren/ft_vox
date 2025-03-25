@@ -1,5 +1,7 @@
 #include "../includes/Camera.hpp"
 #include "../includes/Scop.hpp"
+#include "../includes/BSphere.hpp"
+#include "../includes/ScopMaths.hpp"
 
 Camera::Camera() {}
 
@@ -11,6 +13,8 @@ Camera::Camera(Vector3 cameraPos, Vector3 up) : position(cameraPos), worldUp(up)
     setCameraVectors();
     lastPosX = cameraPos.x;
     lastPosY = cameraPos.y;
+    CreateFrustum((1920.0f / 1200.0f), 90.0f, 0.1f, 300.0f);
+    projectionMat = Perspective(9.0f, (1920.0f / 1200.0f), 0.1f, 300.0f);
 }
 
 Camera::~Camera() {}
@@ -42,6 +46,42 @@ Matrix4 Camera::GetViewMatrix() {
 
 Matrix4 Camera::GetViewMatrix(Vector3 lookatpos) {
     return lookAt(position, lookatpos, up);
+}
+
+Matrix4 Camera::GetProjectionMat() {
+    return projectionMat;
+}
+
+void Camera::CreateFrustum(float aspect, float fovY, float zNear, float zFar) {
+    this->aspect = aspect;
+    this->fovY = fovY;
+    this->zNear = zNear;
+    this->zFar = zFar;
+    const float DEG2RAD = acos(-1.0f) / 180;
+    const float halfVSide = zFar * tanf(fovY * DEG2RAD * 0.5f);
+    const float halfHSide = halfVSide * aspect;
+    Vector3 frontMultFar = this->GetFront() * zFar;
+    
+    this->frustum.nearFace = CreatePlane(this->GetPosition() + (this->GetFront() * zNear), this->GetFront());
+    this->frustum.farFace = CreatePlane(this->GetPosition() + frontMultFar, this->GetFront() * -1);
+    this->frustum.rightFace = CreatePlane(this->GetPosition(), cross(frontMultFar - (this->GetRight() * halfHSide), this->GetUp()));
+    this->frustum.leftFace = CreatePlane(this->GetPosition(), cross(this->GetUp(), frontMultFar + this->GetRight()  * halfHSide));
+    this->frustum.topFace = CreatePlane(this->GetPosition(), cross(this->GetRight(), frontMultFar - this->GetUp() * halfVSide));
+    this->frustum.bottomFace = CreatePlane(this->GetPosition(), cross(frontMultFar+ this->GetUp() * halfVSide, this->GetRight()));
+}
+
+void Camera::UpdateFrustum() {
+    const float DEG2RAD = acos(-1.0f) / 180;
+    const float halfVSide = zFar * tanf(fovY * DEG2RAD * 0.5f);
+    const float halfHSide = halfVSide * aspect;
+    Vector3 frontMultFar = this->GetFront() * zFar;
+    
+    this->frustum.nearFace = CreatePlane(this->GetPosition() + (this->GetFront() * zNear), this->GetFront());
+    this->frustum.farFace = CreatePlane(this->GetPosition() + frontMultFar, this->GetFront() * -1);
+    this->frustum.rightFace = CreatePlane(this->GetPosition(), cross(frontMultFar - (this->GetRight() * halfHSide), this->GetUp()));
+    this->frustum.leftFace = CreatePlane(this->GetPosition(), cross(this->GetUp(), frontMultFar + this->GetRight()  * halfHSide));
+    this->frustum.topFace = CreatePlane(this->GetPosition(), cross(this->GetRight(), frontMultFar - this->GetUp() * halfVSide));
+    this->frustum.bottomFace = CreatePlane(this->GetPosition(), cross(frontMultFar+ this->GetUp() * halfVSide, this->GetRight()));
 }
 
 void Camera::RegisterMouseInput(GLFWwindow *window) {

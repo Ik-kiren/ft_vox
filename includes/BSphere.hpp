@@ -1,7 +1,6 @@
 #pragma once
 #include "./ScopMaths.hpp"
 #include "./Scop.hpp"
-#include "./Camera.hpp"
 
 
 
@@ -43,5 +42,5 @@ struct Indirect {
     GLuint  baseInstance = 0;
 };
 
-Frustum createFrustumFromCamera(Camera &cam, float aspect, float fovY, float zNear, float zFar);
 BSphere generateSphereBV(std::vector<Vector3> vertices);
+Plane CreatePlane(Vector3 p1, Vector3 norm);

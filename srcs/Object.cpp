@@ -164,8 +164,8 @@ void    Object::bindVao() {
 }
 
 void Object::drawMeshInstance(GLFWwindow *window, Camera &camera, ssboObject &objects, ComputeShader &compute) {
-    Frustum frustum = createFrustumFromCamera(camera, (1920.0f / 1200.0f), 90.0f, 0.1f, 300.0f);
-    objects.frustum = frustum;
+    //Frustum frustum = createFrustumFromCamera(camera, (1920.0f / 1200.0f), 90.0f, 0.1f, 300.0f);
+    //objects.frustum = frustum;
 
 
     if (timer < 3)
@@ -231,7 +231,6 @@ void Object::drawMeshInstance(GLFWwindow *window, Camera &camera, ssboObject &ob
     
 
     meshShader.use();
-
     meshShader.setVector4("newColor", color);
     meshShader.setMatrix4("model", model);
     meshShader.setMatrix4("view", camera.GetViewMatrix());

@@ -88,8 +88,6 @@ Mesh::Mesh(std::string str) {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-//regarder meshvertices pk la taille est 300+
-
 void Mesh::InitTexture() {
     glGenTextures(1, &texture);
     glBindTexture(GL_TEXTURE_2D, texture);

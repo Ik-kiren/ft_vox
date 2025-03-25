@@ -1,5 +1,6 @@
 #include "../includes/BSphere.hpp"
 #include <limits>
+#include "../includes/Camera.hpp"
 
 Plane CreatePlane(Vector3 p1, Vector3 norm) {
     Plane tmp;

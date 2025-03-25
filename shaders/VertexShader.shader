@@ -27,8 +27,8 @@ struct Instance {
 
 // Input vertex data, different for all executions of this shader.
 layout(location = 0) in vec3 vertexPosition_modelspace;
-layout(location = 1) in vec3 normalVertex;
-layout(location = 2) in vec2 textureVertex;
+layout(location = 2) in vec3 normalVertex;
+layout(location = 1) in vec2 textureVertex;
 layout(location = 3) in vec3 colorVertex;
 layout(location = 4) in vec3 translation;
 
@@ -45,18 +45,26 @@ uniform mat4 view;
 uniform mat4 projection;
 
 layout (std430, binding = 0) buffer bufferData {
+    vec2 textureVertices[36];
+};
+
+layout (std430, binding = 1) buffer bufferAtomic {
+    uint atomicCounter;
+};
+
+/*layout (std430, binding = 1) buffer bufferData {
     Frustum frustum;
     uint atomicData[8];
     Instance instance[27000];
-};
+};*/
 
-void main(){
+void main() {
     vec3 newVertex = vertexPosition_modelspace;
-    newVertex = newVertex * 8;
-    gl_Position = projection * view * model * vec4((newVertex + instance[gl_DrawID].instMatrix[3].xyz), 1.0);
+    gl_Position = projection * view * model * vec4((newVertex + offset), 1.0);
     vertexPos = newVertex.xyz;
     fragpos = vec3(model * vec4(newVertex, 1.0));
     normal = mat3(transpose(inverse(model))) * normalVertex;
     textureCoords = textureVertex;
     color = colorVertex;
+    atomicAdd(atomicCounter, 1);
 }

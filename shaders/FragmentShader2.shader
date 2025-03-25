@@ -33,11 +33,6 @@ void main()
 	vec3 specular = specularStrength * spec * lightColor;
 
 	vec3 result = (ambient + diffuse + specular) * vec3(0.8, 0.8, 0.1);
-	vec4 tmpTexture = texture(ourTexture, textpos);
-	if (textureCoords != vec2(0, 0))
-		tmpTexture = vec4((ambient + diffuse + specular), 1.0) * texture(ourTexture, textureCoords);
-	if (activeTexture)
-		fragText = vec4(mix(result.x, tmpTexture.x, timerTextureTransition), mix(result.y, tmpTexture.y, timerTextureTransition), mix(result.z, tmpTexture.z, timerTextureTransition), 1.0);
-	else
-		fragText = vec4(mix(tmpTexture.x, result.x, timerTextureTransition), mix(tmpTexture.y, result.y, timerTextureTransition), mix(tmpTexture.z, result.z, timerTextureTransition), 1.0);
+	vec4 tmpTexture = texture(ourTexture, textureCoords);
+	fragText = tmpTexture;
 }
