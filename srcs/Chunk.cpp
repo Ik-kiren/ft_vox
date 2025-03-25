@@ -3,6 +3,7 @@
 #include "../includes/Vector3.hpp"
 
 Chunk::Chunk(Renderer &renderer) : renderer(renderer) {
+    this->meshID = 0;
     this->blocksArray = new Block**[CHUNK_SIZE];
     for (int i = 0; i < CHUNK_SIZE; i++) {
         this->blocksArray[i] = new Block*[CHUNK_SIZE];
@@ -40,60 +41,52 @@ void Chunk::CreateCube(int x, int y, int z, bool xPositif, bool xNegatif, bool y
     unsigned int ui6 = 0;
     unsigned int ui7 = 0;
     unsigned int ui8 = 0;
-    /*ui1 = renderer.AddVertex(meshID, v1);
-    ui2 = renderer.AddVertex(meshID, v2);
-    ui3 = renderer.AddVertex(meshID, v3);
-    ui4 = renderer.AddVertex(meshID, v4);
-    ui5 = renderer.AddVertex(meshID, v5);
-    ui6 = renderer.AddVertex(meshID, v6);
-    ui7 = renderer.AddVertex(meshID, v7);
-    ui8 = renderer.AddVertex(meshID, v8);*/
 
-    ui1 = renderer.AddVertex(meshID, v1);
-    ui5 = renderer.AddVertex(meshID, v5);
-    ui7 = renderer.AddVertex(meshID, v7);
-    ui3 = renderer.AddVertex(meshID, v3);
     if (!yPositif) {
+        ui1 = renderer.AddVertex(meshID, v1);
+        ui5 = renderer.AddVertex(meshID, v5);
+        ui7 = renderer.AddVertex(meshID, v7);
+        ui3 = renderer.AddVertex(meshID, v3);
         renderer.addIndices(meshID, ui1, ui5, ui7);
         renderer.addIndices(meshID, ui1, ui7, ui3);
     }
-    ui4 = renderer.AddVertex(meshID, v4);
-    ui3 = renderer.AddVertex(meshID, v3);
-    ui7 = renderer.AddVertex(meshID, v7);
-    ui8 = renderer.AddVertex(meshID, v8);
     if (!zPositif) {
+        ui4 = renderer.AddVertex(meshID, v4);
+        ui3 = renderer.AddVertex(meshID, v3);
+        ui7 = renderer.AddVertex(meshID, v7);
+        ui8 = renderer.AddVertex(meshID, v8);
         renderer.addIndices(meshID, ui4, ui3, ui7);
         renderer.addIndices(meshID, ui4, ui7, ui8);
     }
-    ui8 = renderer.AddVertex(meshID, v8);
-    ui7 = renderer.AddVertex(meshID, v7);
-    ui5 = renderer.AddVertex(meshID, v5);
-    ui6 = renderer.AddVertex(meshID, v6);
     if (!xNegatif) {
+        ui8 = renderer.AddVertex(meshID, v8);
+        ui7 = renderer.AddVertex(meshID, v7);
+        ui5 = renderer.AddVertex(meshID, v5);
+        ui6 = renderer.AddVertex(meshID, v6);
         renderer.addIndices(meshID, ui8, ui7, ui5);
         renderer.addIndices(meshID, ui8, ui5, ui6);
     }
-    ui6 = renderer.AddVertex(meshID, v6);
-    ui2 = renderer.AddVertex(meshID, v2);
-    ui4 = renderer.AddVertex(meshID, v4);
-    ui8 = renderer.AddVertex(meshID, v8);
     if (!yNegatif) {
+        ui6 = renderer.AddVertex(meshID, v6);
+        ui2 = renderer.AddVertex(meshID, v2);
+        ui4 = renderer.AddVertex(meshID, v4);
+        ui8 = renderer.AddVertex(meshID, v8);
         renderer.addIndices(meshID, ui6, ui2, ui4);
         renderer.addIndices(meshID, ui6, ui4, ui8);
     }
-    ui2 = renderer.AddVertex(meshID, v2);
-    ui1 = renderer.AddVertex(meshID, v1);
-    ui3 = renderer.AddVertex(meshID, v3);
-    ui4 = renderer.AddVertex(meshID, v4);
     if (!xPositif) {
+        ui2 = renderer.AddVertex(meshID, v2);
+        ui1 = renderer.AddVertex(meshID, v1);
+        ui3 = renderer.AddVertex(meshID, v3);
+        ui4 = renderer.AddVertex(meshID, v4);
         renderer.addIndices(meshID, ui2, ui1, ui3);
         renderer.addIndices(meshID, ui2, ui3, ui4);
     }
-    ui6 = renderer.AddVertex(meshID, v6);
-    ui5 = renderer.AddVertex(meshID, v5);
-    ui1 = renderer.AddVertex(meshID, v1);
-    ui2 = renderer.AddVertex(meshID, v2);
     if (!zNegatif) {
+        ui6 = renderer.AddVertex(meshID, v6);
+        ui5 = renderer.AddVertex(meshID, v5);
+        ui1 = renderer.AddVertex(meshID, v1);
+        ui2 = renderer.AddVertex(meshID, v2);
         renderer.addIndices(meshID, ui6, ui5, ui1);
         renderer.addIndices(meshID, ui6, ui1, ui2);
     }

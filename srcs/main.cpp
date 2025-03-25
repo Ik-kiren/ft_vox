@@ -97,9 +97,19 @@ int main(void) {
     Chunk newChunk(renderer);
     newChunk.CreateMesh();
 
-    /*Chunk newChunk2(renderer);
-    newChunk2.Translation(Vector3(16, 0, 0));
-    newChunk.CreateMesh();*/
+    Chunk newChunk2(renderer);
+    newChunk2.CreateMesh();
+    newChunk2.Translation(Vector3(0, 16, 0));
+
+    Chunk newChunk3(renderer);
+    newChunk3.CreateMesh();
+    newChunk3.Translation(Vector3(0, 0, 32));
+
+    Chunk newChunk4(renderer);
+    newChunk4.CreateMesh();
+    newChunk4.Translation(Vector3(0, 16, 32));
+
+
 
     while ((glfwGetKey(window, GLFW_KEY_ESCAPE ) != GLFW_PRESS &&
         glfwWindowShouldClose(window) == 0)) {
