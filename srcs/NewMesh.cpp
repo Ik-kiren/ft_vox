@@ -1,4 +1,5 @@
 #include "../includes/NewMesh.hpp"
+#include <iostream>
 
 NewMesh::NewMesh() {
 }
@@ -29,6 +30,10 @@ void NewMesh::AddVertex(Vector2 vec) {
 void NewMesh::AddVertex(float f1, float f2) {
     this->vertexArray.push_back(f1);
     this->vertexArray.push_back(f2);
+}
+
+void NewMesh::AddFloat(float nbr) {
+    this->vertexArray.push_back(nbr);
 }
 
 void NewMesh::AddIndices(unsigned int v1, unsigned int v2, unsigned int v3) {

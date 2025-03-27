@@ -10,6 +10,7 @@
 #include "../includes/Animation.hpp"
 #include "../includes/Button.hpp"
 #include "../includes/Chunk.hpp"
+#include "../includes/ChunkManager.hpp"
 
 
 void viewport_size_callback(GLFWwindow* window, int width, int height) {
@@ -74,7 +75,7 @@ int main(void) {
 
     //Mesh cubeMesh = Mesh("./objects/DirtCube.obj");  
 
-    Camera camera = Camera(Vector3(15, 0, 0), Vector3(0, 1, 0));
+    Camera camera = Camera(Vector3(40, 20, 150), Vector3(0, 1, 0));
 
     //Object cubeObj = Object(cubeShader, &cubeMesh, Vector4(1, 1, 1, 1));
 
@@ -93,23 +94,7 @@ int main(void) {
     std::string lastFps = "0";
 
     Renderer renderer(cubeShader, camera);
-
-    Chunk newChunk(renderer);
-    newChunk.CreateMesh();
-
-    Chunk newChunk2(renderer);
-    newChunk2.CreateMesh();
-    newChunk2.Translation(Vector3(0, 16, 0));
-
-    Chunk newChunk3(renderer);
-    newChunk3.CreateMesh();
-    newChunk3.Translation(Vector3(0, 0, 32));
-
-    Chunk newChunk4(renderer);
-    newChunk4.CreateMesh();
-    newChunk4.Translation(Vector3(0, 16, 32));
-
-
+    ChunkManager test(&renderer);
 
     while ((glfwGetKey(window, GLFW_KEY_ESCAPE ) != GLFW_PRESS &&
         glfwWindowShouldClose(window) == 0)) {
@@ -131,6 +116,7 @@ int main(void) {
             Vector3 camPos = camera.GetPosition();
             
             //cubeObj.drawMeshInstance(window, camera, objects, compute);
+            test.LoadChunk();
             renderer.Render();
             camera.RegisterKeyboardInput(window);
             camera.RegisterMouseInput(window);

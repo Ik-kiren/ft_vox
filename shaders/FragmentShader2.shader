@@ -6,11 +6,13 @@ in vec3 normal;
 in vec3 fragpos;
 in vec2 textureCoords;
 in vec3 color;
+in float textureIndice;
 
 uniform vec3 cameraPos;
 
 uniform float timeValue;
-uniform sampler2D ourTexture;
+uniform sampler2D dirtTexture;
+uniform sampler2D stoneTexture;
 uniform bool activeTexture;
 uniform float timerTextureTransition;
 uniform vec3 lightPos;
@@ -33,6 +35,9 @@ void main()
 	vec3 specular = specularStrength * spec * lightColor;
 
 	vec3 result = (ambient + diffuse + specular) * vec3(0.8, 0.8, 0.1);
-	vec4 tmpTexture = texture(ourTexture, textureCoords);
+	vec4 tmpTexture = texture(dirtTexture, textureCoords);
+	if (textureIndice == 1) {
+		tmpTexture = texture(stoneTexture, textureCoords);
+	}
 	fragText = tmpTexture;
 }

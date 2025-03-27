@@ -24,6 +24,7 @@ class Shader {
     ~Shader();
 
     void use();
+    GLint GetUniformLocation(const std::string name);
     void setFloat(const std::string name, float nbr);
     void setInt(const std::string name, int nbr);
     void setMatrix4(const std::string name, Matrix4 matrix);

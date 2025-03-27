@@ -2,7 +2,8 @@
 #include "../includes/Block.hpp"
 #include "../includes/Vector3.hpp"
 
-Chunk::Chunk(Renderer &renderer) : renderer(renderer) {
+Chunk::Chunk(Renderer *renderer) : renderer(renderer) {
+    this->loaded = false;
     this->meshID = 0;
     this->blocksArray = new Block**[CHUNK_SIZE];
     for (int i = 0; i < CHUNK_SIZE; i++) {
@@ -23,7 +24,7 @@ Chunk::~Chunk() {
     delete[] this->blocksArray;
 }
 
-void Chunk::CreateCube(int x, int y, int z, bool xPositif, bool xNegatif, bool yPositif, bool yNegatif, bool zPositif, bool zNegatif) {
+void Chunk::CreateCube(int x, int y, int z, bool xPositif, bool xNegatif, bool yPositif, bool yNegatif, bool zPositif, bool zNegatif, float type) {
     Vector3 v1 = {x + Block::BLOCK_SIZE, y + Block::BLOCK_SIZE, z - Block::BLOCK_SIZE};
     Vector3 v2 = {x + Block::BLOCK_SIZE, y - Block::BLOCK_SIZE, z - Block::BLOCK_SIZE};
     Vector3 v3 = {x + Block::BLOCK_SIZE, y + Block::BLOCK_SIZE, z + Block::BLOCK_SIZE};
@@ -43,57 +44,57 @@ void Chunk::CreateCube(int x, int y, int z, bool xPositif, bool xNegatif, bool y
     unsigned int ui8 = 0;
 
     if (!yPositif) {
-        ui1 = renderer.AddVertex(meshID, v1);
-        ui5 = renderer.AddVertex(meshID, v5);
-        ui7 = renderer.AddVertex(meshID, v7);
-        ui3 = renderer.AddVertex(meshID, v3);
-        renderer.addIndices(meshID, ui1, ui5, ui7);
-        renderer.addIndices(meshID, ui1, ui7, ui3);
+        ui1 = renderer->AddVertex(meshID, v1, type);
+        ui5 = renderer->AddVertex(meshID, v5, type);
+        ui7 = renderer->AddVertex(meshID, v7, type);
+        ui3 = renderer->AddVertex(meshID, v3, type);
+        renderer->addIndices(meshID, ui1, ui5, ui7);
+        renderer->addIndices(meshID, ui1, ui7, ui3);
     }
     if (!zPositif) {
-        ui4 = renderer.AddVertex(meshID, v4);
-        ui3 = renderer.AddVertex(meshID, v3);
-        ui7 = renderer.AddVertex(meshID, v7);
-        ui8 = renderer.AddVertex(meshID, v8);
-        renderer.addIndices(meshID, ui4, ui3, ui7);
-        renderer.addIndices(meshID, ui4, ui7, ui8);
+        ui4 = renderer->AddVertex(meshID, v4, type);
+        ui3 = renderer->AddVertex(meshID, v3, type);
+        ui7 = renderer->AddVertex(meshID, v7, type);
+        ui8 = renderer->AddVertex(meshID, v8, type);
+        renderer->addIndices(meshID, ui4, ui3, ui7);
+        renderer->addIndices(meshID, ui4, ui7, ui8);
     }
     if (!xNegatif) {
-        ui8 = renderer.AddVertex(meshID, v8);
-        ui7 = renderer.AddVertex(meshID, v7);
-        ui5 = renderer.AddVertex(meshID, v5);
-        ui6 = renderer.AddVertex(meshID, v6);
-        renderer.addIndices(meshID, ui8, ui7, ui5);
-        renderer.addIndices(meshID, ui8, ui5, ui6);
+        ui8 = renderer->AddVertex(meshID, v8, type);
+        ui7 = renderer->AddVertex(meshID, v7, type);
+        ui5 = renderer->AddVertex(meshID, v5, type);
+        ui6 = renderer->AddVertex(meshID, v6, type);
+        renderer->addIndices(meshID, ui8, ui7, ui5);
+        renderer->addIndices(meshID, ui8, ui5, ui6);
     }
     if (!yNegatif) {
-        ui6 = renderer.AddVertex(meshID, v6);
-        ui2 = renderer.AddVertex(meshID, v2);
-        ui4 = renderer.AddVertex(meshID, v4);
-        ui8 = renderer.AddVertex(meshID, v8);
-        renderer.addIndices(meshID, ui6, ui2, ui4);
-        renderer.addIndices(meshID, ui6, ui4, ui8);
+        ui6 = renderer->AddVertex(meshID, v6, type);
+        ui2 = renderer->AddVertex(meshID, v2, type);
+        ui4 = renderer->AddVertex(meshID, v4, type);
+        ui8 = renderer->AddVertex(meshID, v8, type);
+        renderer->addIndices(meshID, ui6, ui2, ui4);
+        renderer->addIndices(meshID, ui6, ui4, ui8);
     }
     if (!xPositif) {
-        ui2 = renderer.AddVertex(meshID, v2);
-        ui1 = renderer.AddVertex(meshID, v1);
-        ui3 = renderer.AddVertex(meshID, v3);
-        ui4 = renderer.AddVertex(meshID, v4);
-        renderer.addIndices(meshID, ui2, ui1, ui3);
-        renderer.addIndices(meshID, ui2, ui3, ui4);
+        ui2 = renderer->AddVertex(meshID, v2, type);
+        ui1 = renderer->AddVertex(meshID, v1, type);
+        ui3 = renderer->AddVertex(meshID, v3, type);
+        ui4 = renderer->AddVertex(meshID, v4, type);
+        renderer->addIndices(meshID, ui2, ui1, ui3);
+        renderer->addIndices(meshID, ui2, ui3, ui4);
     }
     if (!zNegatif) {
-        ui6 = renderer.AddVertex(meshID, v6);
-        ui5 = renderer.AddVertex(meshID, v5);
-        ui1 = renderer.AddVertex(meshID, v1);
-        ui2 = renderer.AddVertex(meshID, v2);
-        renderer.addIndices(meshID, ui6, ui5, ui1);
-        renderer.addIndices(meshID, ui6, ui1, ui2);
+        ui6 = renderer->AddVertex(meshID, v6, type);
+        ui5 = renderer->AddVertex(meshID, v5, type);
+        ui1 = renderer->AddVertex(meshID, v1, type);
+        ui2 = renderer->AddVertex(meshID, v2, type);
+        renderer->addIndices(meshID, ui6, ui5, ui1);
+        renderer->addIndices(meshID, ui6, ui1, ui2);
     }
 }
 
 void Chunk::CreateMesh() {
-    renderer.CreateMesh(meshID);
+    renderer->CreateMesh(meshID);
     for (int x = 0; x < CHUNK_SIZE; x++) {
         for (int y = 0; y < CHUNK_SIZE; y++) {
             for (int z = 0; z < CHUNK_SIZE; z++) {
@@ -122,20 +123,21 @@ void Chunk::CreateMesh() {
                     zNegatif = this->blocksArray[x][y][z - 1].IsActive();              
                 if (xPositif && xNegatif && yPositif && yNegatif && zPositif && zNegatif)
                     continue;
-                CreateCube(x, y, z, xPositif, xNegatif, yPositif, yNegatif, zPositif, zNegatif);
+                CreateCube(x, y, z, xPositif, xNegatif, yPositif, yNegatif, zPositif, zNegatif, this->blocksArray[x][y][z].type);
             }
         }
     }
-    renderer.FinishMesh(meshID);
+    renderer->FinishMesh(meshID);
+    renderer->meshes[meshID].SetPosition(position);
+    loaded = true;
 }
 
 void Chunk::Render() {
-    renderer.Render(meshID);
+    renderer->Render(meshID);
 }
 
 void Chunk::Translation(Vector3 vec) {
     this->position = this->position + vec;
-    renderer.meshes[meshID].SetPosition(position);
 }
 
 Block ***Chunk::GetBlocksArray() {

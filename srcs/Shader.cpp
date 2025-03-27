@@ -68,6 +68,10 @@ void Shader::use() {
     glUseProgram(programID);
 }
 
+GLint Shader::GetUniformLocation(const std::string name) {
+    return glGetUniformLocation(programID, name.c_str());
+}
+
 void Shader::setFloat(const std::string name, float nbr) {
     glUniform1f(glGetUniformLocation(programID, name.c_str()), nbr);
 }
