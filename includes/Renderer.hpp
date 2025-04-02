@@ -4,6 +4,7 @@
 #include "./NewMesh.hpp"
 #include "./Shader.hpp"
 #include "./Camera.hpp"
+#include "./Chunk.hpp"
 
 class Renderer
 {
@@ -35,6 +36,7 @@ public:
     void FinishMesh(unsigned int &meshID);
     void Render();
     void Render(unsigned int meshID);
+    void Render(std::vector<Chunk *> &chunks);
     void InitTexture();
 
     Renderer &operator=(const Renderer &rhs);

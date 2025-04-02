@@ -119,6 +119,41 @@ void Renderer::Render(unsigned int meshID) {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
+void Renderer::Render(std::vector<Chunk *> &chunks) {
+    shader.use();
+
+    shader.setVector4("newColor", Vector3(0.2, 0.5, 0.8));
+    shader.setMatrix4("model", model);
+    shader.setMatrix4("view", camera.GetViewMatrix());
+    shader.setMatrix4("projection", camera.GetProjectionMat());
+    shader.setVector3("cameraPos", camera.GetPosition());
+    shader.setFloat("timeValue", sin(glfwGetTime()) / 0.3f);
+    shader.setBool("activeTexture", true);
+    shader.setFloat("timerTextureTransition", 1.0f);
+
+    GLint dirtTexture = shader.GetUniformLocation("dirtTexture");
+    GLint stoneTexture = shader.GetUniformLocation("stoneTexture");
+
+    glUniform1i(dirtTexture, 0);
+    glUniform1i(stoneTexture, 1);
+
+    glActiveTexture(GL_TEXTURE0 + 0);
+    glBindTexture(GL_TEXTURE_2D, textureID);
+    glActiveTexture(GL_TEXTURE0 + 1);
+    glBindTexture(GL_TEXTURE_2D, textureID2);
+
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, textureSSBO);
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, atomicID);
+    for (size_t i = 0; i < chunks.size(); i++) {
+        shader.setVector3("offset", meshes[chunks[i]->meshID].GetPosition());
+        glBindVertexArray(meshes[chunks[i]->meshID].VAO);
+        //glDrawArrays(GL_TRIANGLES, 0, meshes[0].GetVertexArray().size());
+        glDrawElements(GL_TRIANGLES, meshes[chunks[i]->meshID].GetIndicesArray().size(), GL_UNSIGNED_INT, 0);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+    }
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+}
+
 void Renderer::InitTexture() {
     glGenTextures(1, &textureID);
     glBindTexture(GL_TEXTURE_2D, textureID);

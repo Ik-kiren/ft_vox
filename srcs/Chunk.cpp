@@ -1,6 +1,7 @@
 #include "../includes/Chunk.hpp"
 #include "../includes/Block.hpp"
 #include "../includes/Vector3.hpp"
+#include "../includes/Renderer.hpp"
 
 Chunk::Chunk(Renderer *renderer) : renderer(renderer) {
     this->loaded = false;

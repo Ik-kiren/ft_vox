@@ -1,6 +1,9 @@
 #pragma once
 #include "./Block.hpp"
-#include "./Renderer.hpp"
+#include "./Vector3.hpp"
+#include "./Camera.hpp"
+
+class Renderer;
 
 class Chunk
 {

@@ -29,5 +29,6 @@ class Vector3 {
     Vector3 operator+(Vector3 rhs);
     Vector3 &operator=(Vector3 const &rhs);
 };
+bool operator!=(Vector3 const &lhs, Vector3 const &rhs);
 
 std::ostream &operator<<(std::ostream &out, Vector3 &rhs);

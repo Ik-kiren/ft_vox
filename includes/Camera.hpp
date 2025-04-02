@@ -50,6 +50,8 @@ class Camera {
     void RegisterMouseInput(GLFWwindow *window);
     void RegisterKeyboardInput(GLFWwindow *window);
     void UpdateFrustum();
+    
+    bool InsideFrustum(BSphere bsphere);
 
     Camera &operator=(const Camera &rhs);
 };

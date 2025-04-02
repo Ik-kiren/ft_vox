@@ -2,13 +2,24 @@
 #include "./ScopMaths.hpp"
 #include "./Scop.hpp"
 
-
+class Camera;
 
 struct Plane {
     float normal[3] = {0.0f, 1.0f, 0.0f}; 
     float distance = 0.0f;
+
+    float GetDistanceToPlane(Vector3 point, Camera *camera);
 };
 
+struct BSphere {
+    float center[3] = {0.0f, 0.0f, 0.0f};
+    float radius = 0.0f;
+
+    bool IsOnForwardPlane(Plane &plane, Camera *camera ) {
+        std::cout << "center " << center[0] << " " << center[1] << " " << center[2] << " " << radius << std::endl;
+        return (plane.GetDistanceToPlane(Vector3(center[0], center[1], center[2]), camera) > -radius);
+    }
+};
 
 struct Frustum {
     Plane topFace;
@@ -17,11 +28,16 @@ struct Frustum {
     Plane leftFace;
     Plane nearFace;
     Plane farFace;
-};
 
-struct BSphere {
-    float center[3] = {0.0f, 0.0f, 0.0f};
-    float radius = 0.0f;
+    bool IsInFrustum(BSphere &bsphere, Camera *camera) {
+        return (bsphere.IsOnForwardPlane(rightFace, camera));
+                // bsphere.IsOnForwardPlane(bottomFace) &&
+                // bsphere.IsOnForwardPlane(rightFace) &&
+                // bsphere.IsOnForwardPlane(leftFace) &&
+                // bsphere.IsOnForwardPlane(nearFace) &&
+                // bsphere.IsOnForwardPlane(farFace));
+    }
+
 };
 
 struct Instance {
@@ -44,3 +60,4 @@ struct Indirect {
 
 BSphere generateSphereBV(std::vector<Vector3> vertices);
 Plane CreatePlane(Vector3 p1, Vector3 norm);
+Vector3 oneToThree(int idx, int sizeX, int sizeY, int sizeZ);

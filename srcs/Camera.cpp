@@ -13,7 +13,7 @@ Camera::Camera(Vector3 cameraPos, Vector3 up) : position(cameraPos), worldUp(up)
     setCameraVectors();
     lastPosX = cameraPos.x;
     lastPosY = cameraPos.y;
-    CreateFrustum((1920.0f / 1200.0f), 90.0f, 0.1f, 300.0f);
+    CreateFrustum((1920.0f / 1200.0f), 90.0f, 0.1f, 200.0f);
     projectionMat = Perspective(9.0f, (1920.0f / 1200.0f), 0.1f, 300.0f);
 }
 
@@ -67,7 +67,7 @@ void Camera::CreateFrustum(float aspect, float fovY, float zNear, float zFar) {
     this->frustum.rightFace = CreatePlane(this->GetPosition(), cross(frontMultFar - (this->GetRight() * halfHSide), this->GetUp()));
     this->frustum.leftFace = CreatePlane(this->GetPosition(), cross(this->GetUp(), frontMultFar + this->GetRight()  * halfHSide));
     this->frustum.topFace = CreatePlane(this->GetPosition(), cross(this->GetRight(), frontMultFar - this->GetUp() * halfVSide));
-    this->frustum.bottomFace = CreatePlane(this->GetPosition(), cross(frontMultFar+ this->GetUp() * halfVSide, this->GetRight()));
+    this->frustum.bottomFace = CreatePlane(this->GetPosition(), cross(frontMultFar + this->GetUp() * halfVSide, this->GetRight()));
 }
 
 void Camera::UpdateFrustum() {
@@ -82,6 +82,10 @@ void Camera::UpdateFrustum() {
     this->frustum.leftFace = CreatePlane(this->GetPosition(), cross(this->GetUp(), frontMultFar + this->GetRight()  * halfHSide));
     this->frustum.topFace = CreatePlane(this->GetPosition(), cross(this->GetRight(), frontMultFar - this->GetUp() * halfVSide));
     this->frustum.bottomFace = CreatePlane(this->GetPosition(), cross(frontMultFar+ this->GetUp() * halfVSide, this->GetRight()));
+}
+
+bool Camera::InsideFrustum(BSphere bsphere) {
+    return frustum.IsInFrustum(bsphere, this);
 }
 
 void Camera::RegisterMouseInput(GLFWwindow *window) {

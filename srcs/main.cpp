@@ -11,6 +11,7 @@
 #include "../includes/Button.hpp"
 #include "../includes/Chunk.hpp"
 #include "../includes/ChunkManager.hpp"
+#include "../includes/Renderer.hpp"
 
 
 void viewport_size_callback(GLFWwindow* window, int width, int height) {
@@ -75,7 +76,7 @@ int main(void) {
 
     //Mesh cubeMesh = Mesh("./objects/DirtCube.obj");  
 
-    Camera camera = Camera(Vector3(40, 20, 150), Vector3(0, 1, 0));
+    Camera camera = Camera(Vector3(0, 0, 0), Vector3(0, 1, 0));
 
     //Object cubeObj = Object(cubeShader, &cubeMesh, Vector4(1, 1, 1, 1));
 
@@ -94,7 +95,7 @@ int main(void) {
     std::string lastFps = "0";
 
     Renderer renderer(cubeShader, camera);
-    ChunkManager test(&renderer);
+    ChunkManager test(&renderer, &camera);
 
     while ((glfwGetKey(window, GLFW_KEY_ESCAPE ) != GLFW_PRESS &&
         glfwWindowShouldClose(window) == 0)) {
@@ -112,12 +113,14 @@ int main(void) {
                 lastFps = std::to_string(fps);
                 fps = 0;
             }
+            camera.UpdateFrustum();
             font.RenderText(fontShader, lastFps, 0.5, 1100, 2, Vector3(1, 0.2, 0.2));
             Vector3 camPos = camera.GetPosition();
             
             //cubeObj.drawMeshInstance(window, camera, objects, compute);
             test.LoadChunk();
-            renderer.Render();
+            test.ChunkVisibility();
+            //renderer.Render();
             camera.RegisterKeyboardInput(window);
             camera.RegisterMouseInput(window);
             

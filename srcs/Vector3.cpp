@@ -99,6 +99,10 @@ Vector3 &Vector3::operator=(Vector3 const &rhs) {
     return *this;
 }
 
+bool operator!=(Vector3 const &lhs, Vector3 const &rhs){
+    return (lhs.x != rhs.x || lhs.y != rhs.y || lhs.z != rhs.z);
+}
+
 std::ostream &operator<<(std::ostream &out, Vector3 &rhs) {
     out << "<";
     for (int i = 0; i < 3; i++) {

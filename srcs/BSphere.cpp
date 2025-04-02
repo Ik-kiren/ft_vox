@@ -38,6 +38,14 @@ Frustum createFrustumFromCamera(Camera &cam, float aspect, float fovY, float zNe
     return frustum;
 }
 
+Vector3 oneToThree(int idx, int sizeX, int sizeY, int sizeZ) {
+    Vector3 vec;
+    vec.x = idx % sizeX;
+    vec.y = (idx / sizeX) % sizeY;
+    vec.z = idx / (sizeY * sizeZ);
+    return vec;
+}
+
 BSphere generateSphereBV(std::vector<Vector3> vertices)
 {
 	Vector3 minAABB = Vector3(std::numeric_limits<float>::max());
@@ -55,5 +63,11 @@ BSphere generateSphereBV(std::vector<Vector3> vertices)
     
 
 
-	return CreateBSphere((maxAABB + minAABB) * 0.5f, magnitude(minAABB - maxAABB));
+	return CreateBSphere((maxAABB + minAABB) * 16.0f, magnitude(minAABB - maxAABB));
+}
+
+float Plane::GetDistanceToPlane(Vector3 point, Camera *camera) {
+    Vector3 test = point - camera->GetPosition();
+    std::cout << "normale " << test << " test " << normal[0] << " " << normal[1] << " " << normal[2] << " " << distance << " " << Dot(Vector3(normal[0], normal[1], normal[2]), point - camera->GetPosition()) - distance << std::endl;
+    return Dot(Vector3(normal[0], normal[1], normal[2]), point) - distance; 
 }
