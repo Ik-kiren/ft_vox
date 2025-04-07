@@ -52,6 +52,7 @@ class Camera {
     void UpdateFrustum();
     
     bool InsideFrustum(BSphere bsphere);
+    bool InsideFrustum(AABB aabb);
 
     Camera &operator=(const Camera &rhs);
 };

@@ -13,8 +13,8 @@ Camera::Camera(Vector3 cameraPos, Vector3 up) : position(cameraPos), worldUp(up)
     setCameraVectors();
     lastPosX = cameraPos.x;
     lastPosY = cameraPos.y;
-    CreateFrustum((1920.0f / 1200.0f), 90.0f, 0.1f, 200.0f);
-    projectionMat = Perspective(9.0f, (1920.0f / 1200.0f), 0.1f, 300.0f);
+    CreateFrustum((1920.0f / 1200.0f), 60.0f, 0.1f, 200.0f);
+    projectionMat = Perspective(60.0f, (1920.0f / 1200.0f), 0.1f, 200.0f);
 }
 
 Camera::~Camera() {}
@@ -57,7 +57,7 @@ void Camera::CreateFrustum(float aspect, float fovY, float zNear, float zFar) {
     this->fovY = fovY;
     this->zNear = zNear;
     this->zFar = zFar;
-    const float DEG2RAD = acos(-1.0f) / 180;
+    const float DEG2RAD = M_PI / 180;
     const float halfVSide = zFar * tanf(fovY * DEG2RAD * 0.5f);
     const float halfHSide = halfVSide * aspect;
     Vector3 frontMultFar = this->GetFront() * zFar;
@@ -71,7 +71,7 @@ void Camera::CreateFrustum(float aspect, float fovY, float zNear, float zFar) {
 }
 
 void Camera::UpdateFrustum() {
-    const float DEG2RAD = acos(-1.0f) / 180;
+    const float DEG2RAD = M_PI / 180;
     const float halfVSide = zFar * tanf(fovY * DEG2RAD * 0.5f);
     const float halfHSide = halfVSide * aspect;
     Vector3 frontMultFar = this->GetFront() * zFar;
@@ -85,7 +85,11 @@ void Camera::UpdateFrustum() {
 }
 
 bool Camera::InsideFrustum(BSphere bsphere) {
-    return frustum.IsInFrustum(bsphere, this);
+    return frustum.IsInFrustum(bsphere);
+}
+
+bool Camera::InsideFrustum(AABB aabb) {
+    return frustum.IsInFrustum(aabb);
 }
 
 void Camera::RegisterMouseInput(GLFWwindow *window) {

@@ -12,6 +12,7 @@
 #include "../includes/Chunk.hpp"
 #include "../includes/ChunkManager.hpp"
 #include "../includes/Renderer.hpp"
+#include "../includes/glm/glm.hpp"
 
 
 void viewport_size_callback(GLFWwindow* window, int width, int height) {
@@ -76,7 +77,7 @@ int main(void) {
 
     //Mesh cubeMesh = Mesh("./objects/DirtCube.obj");  
 
-    Camera camera = Camera(Vector3(0, 0, 0), Vector3(0, 1, 0));
+    Camera camera = Camera(Vector3(0, 0, 15), Vector3(0, 1, 0));
 
     //Object cubeObj = Object(cubeShader, &cubeMesh, Vector4(1, 1, 1, 1));
 
@@ -115,12 +116,11 @@ int main(void) {
             }
             camera.UpdateFrustum();
             font.RenderText(fontShader, lastFps, 0.5, 1100, 2, Vector3(1, 0.2, 0.2));
-            Vector3 camPos = camera.GetPosition();
             
             //cubeObj.drawMeshInstance(window, camera, objects, compute);
             test.LoadChunk();
             test.ChunkVisibility();
-            //renderer.Render();
+            
             camera.RegisterKeyboardInput(window);
             camera.RegisterMouseInput(window);
             

@@ -66,8 +66,6 @@ BSphere generateSphereBV(std::vector<Vector3> vertices)
 	return CreateBSphere((maxAABB + minAABB) * 16.0f, magnitude(minAABB - maxAABB));
 }
 
-float Plane::GetDistanceToPlane(Vector3 point, Camera *camera) {
-    Vector3 test = point - camera->GetPosition();
-    std::cout << "normale " << test << " test " << normal[0] << " " << normal[1] << " " << normal[2] << " " << distance << " " << Dot(Vector3(normal[0], normal[1], normal[2]), point - camera->GetPosition()) - distance << std::endl;
+float Plane::GetDistanceToPlane(Vector3 point) {
     return Dot(Vector3(normal[0], normal[1], normal[2]), point) - distance; 
 }

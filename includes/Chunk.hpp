@@ -2,6 +2,7 @@
 #include "./Block.hpp"
 #include "./Vector3.hpp"
 #include "./Camera.hpp"
+#include <mutex>
 
 class Renderer;
 
@@ -11,7 +12,9 @@ private:
     Block ***blocksArray;
     Vector3 position;
 public:
+    bool activated;
     bool loaded;
+    bool meshed;
     Renderer *renderer;
     unsigned int meshID;
     static const int CHUNK_SIZE = 16;
@@ -21,10 +24,12 @@ public:
     ~Chunk();
 
     Block ***GetBlocksArray();
-    void CreateCube(int x, int y, int z, bool xPositif, bool xNegatif, bool yPositif, bool yNegatif, bool zPositif, bool zNegatif, float type);
+    void CreateCube(int &x, int &y, int &z, bool &xPositif, bool &xNegatif, bool &yPositif, bool &yNegatif, bool &zPositif, bool &zNegatif, float type);
     void CreateMesh();
     void Update();
     void Render();
     void Translation(Vector3 vec);
+
+    Vector3 GetPosition();
 };
 

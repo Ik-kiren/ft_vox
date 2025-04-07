@@ -15,7 +15,7 @@ std::vector<unsigned int> NewMesh::GetIndicesArray() {
 }
 
 
-void NewMesh::AddVertex(Vector3 vec) {
+void NewMesh::AddVertex(Vector3 &vec) {
     for (int i = 0; i < 3; i++) {
         this->vertexArray.push_back(vec[i]);   
     }
@@ -30,6 +30,12 @@ void NewMesh::AddVertex(Vector2 vec) {
 void NewMesh::AddVertex(float f1, float f2) {
     this->vertexArray.push_back(f1);
     this->vertexArray.push_back(f2);
+}
+
+void NewMesh::AddVertex(float x, float y, float z) {
+    this->vertexArray.push_back(x);
+    this->vertexArray.push_back(y);
+    this->vertexArray.push_back(z);
 }
 
 void NewMesh::AddFloat(float nbr) {

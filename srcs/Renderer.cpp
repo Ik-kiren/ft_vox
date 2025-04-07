@@ -3,6 +3,7 @@
 
 Renderer::Renderer(Shader &shader, Camera &camera) : shader(shader), camera(camera) {
     this->textureIndex = 0;
+    model = Matrix4(1);
     this->InitTexture();
 
     glGenBuffers(1, &textureSSBO);
@@ -19,42 +20,64 @@ Renderer::Renderer(Shader &shader, Camera &camera) : shader(shader), camera(came
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 }
 
-Renderer::~Renderer() {}
+Renderer::~Renderer() {
 
-void Renderer::CreateMesh(unsigned int &meshID) {
-    meshID = this->meshes.size();
-    NewMesh newMesh;
-    this->meshes.push_back(newMesh);
-    model = Matrix4(1);
+    for (size_t i = 0; i < meshes.size(); i++)
+    {
+        delete meshes[i];
+    }
     
 }
 
-unsigned int Renderer::AddVertex(unsigned int meshID, Vector3 vec, float type) {
-    unsigned int index = this->meshes[meshID].GetVertexArray().size() / STRIDE_SIZE;
-    meshes[meshID].AddVertex(vec);
-    meshes[meshID].AddVertex(this->textureVertices[this->textureIndex]);
-    meshes[meshID].AddFloat(type);
+void Renderer::CreateMesh(unsigned int &meshID) {
+    renderMutex.lock();
+    meshID = this->meshes.size();
+    NewMesh *newMesh = new NewMesh;
+    this->meshes.push_back(newMesh);
+    renderMutex.unlock();
+}
+
+unsigned int Renderer::AddVertex(unsigned int &meshID, Vector3 &vec, float type) {
+    renderMutex.lock();
+    unsigned int index = this->meshes[meshID]->GetVertexArray().size() / STRIDE_SIZE;
+    meshes[meshID]->AddVertex(vec);
+    meshes[meshID]->AddVertex(this->textureVertices[this->textureIndex]);
+    meshes[meshID]->AddFloat(type);
     this->textureIndex = (this->textureIndex + 1) % 4;
+    renderMutex.unlock();
     return index;
 }
 
-void Renderer::addIndices(unsigned int meshID, unsigned int v1, unsigned int v2, unsigned int v3) {
-    meshes[meshID].AddIndices(v1, v2, v3);
+unsigned int Renderer::AddVertex(unsigned int &meshID, float x, float y, float z, float type) {
+    renderMutex.lock();
+    unsigned int index = this->meshes[meshID]->GetVertexArray().size() / STRIDE_SIZE;
+    meshes[meshID]->AddVertex(x, y, z);
+    meshes[meshID]->AddVertex(this->textureVertices[this->textureIndex]);
+    meshes[meshID]->AddFloat(type);
+    this->textureIndex = (this->textureIndex + 1) % 4;
+    renderMutex.unlock();
+    return index;
+}
+
+void Renderer::addIndices(unsigned int &meshID, unsigned int &v1, unsigned int &v2, unsigned int &v3) {
+    renderMutex.lock();
+    meshes[meshID]->AddIndices(v1, v2, v3);
+    renderMutex.unlock();
 }
 
 void Renderer::FinishMesh(unsigned int &meshID) {
     this->textureIndex = 0;
-    glGenVertexArrays(1, &this->meshes[meshID].VAO);
-    glGenBuffers(1, &this->meshes[meshID].VBO);
-    glGenBuffers(1, &this->meshes[meshID].EBO);
-    glBindVertexArray(this->meshes[meshID].VAO);
+    glGenVertexArrays(1, &this->meshes[meshID]->VAO);
+    glGenBuffers(1, &this->meshes[meshID]->VBO);
+    glGenBuffers(1, &this->meshes[meshID]->EBO);
+    glBindVertexArray(this->meshes[meshID]->VAO);
     
 
-    glBindBuffer(GL_ARRAY_BUFFER, this->meshes[meshID].VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(*this->meshes[meshID].GetVertexArray().data()) * this->meshes[meshID].GetVertexArray().size(), this->meshes[meshID].GetVertexArray().data(), GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, this->meshes[meshID]->VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(*this->meshes[meshID]->GetVertexArray().data()) * this->meshes[meshID]->GetVertexArray().size(), this->meshes[meshID]->GetVertexArray().data(), GL_STATIC_DRAW);
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->meshes[meshID].EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(*this->meshes[meshID].GetIndicesArray().data()) * this->meshes[meshID].GetIndicesArray().size(), this->meshes[meshID].GetIndicesArray().data(), GL_STATIC_DRAW);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->meshes[meshID]->EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(*this->meshes[meshID]->GetIndicesArray().data()) * this->meshes[meshID]->GetIndicesArray().size(), this->meshes[meshID]->GetIndicesArray().data(), GL_STATIC_DRAW);
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, STRIDE_SIZE * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
@@ -91,16 +114,16 @@ void Renderer::Render() {
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, textureSSBO);
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, atomicID);
     for (size_t i = 0; i < meshes.size(); i++) {
-        shader.setVector3("offset", meshes[i].GetPosition());
-        glBindVertexArray(meshes[i].VAO);
+        shader.setVector3("offset", meshes[i]->GetPosition());
+        glBindVertexArray(meshes[i]->VAO);
         //glDrawArrays(GL_TRIANGLES, 0, meshes[0].GetVertexArray().size());
-        glDrawElements(GL_TRIANGLES, meshes[i].GetIndicesArray().size(), GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, meshes[i]->GetIndicesArray().size(), GL_UNSIGNED_INT, 0);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
     }
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 }
 
-void Renderer::Render(unsigned int meshID) {
+void Renderer::Render(unsigned int &meshID) {
     shader.use();
 
     shader.setVector4("newColor", Vector3(0.2, 0.5, 0.8));
@@ -111,11 +134,11 @@ void Renderer::Render(unsigned int meshID) {
     shader.setFloat("timeValue", sin(glfwGetTime()) / 0.3f);
     shader.setBool("activeTexture", true);
     shader.setFloat("timerTextureTransition", 0.0f);
-    shader.setVector3("offset", meshes[meshID].GetPosition());
+    shader.setVector3("offset", meshes[meshID]->GetPosition());
 
-    glBindVertexArray(meshes[meshID].VAO);
+    glBindVertexArray(meshes[meshID]->VAO);
     //glDrawArrays(GL_TRIANGLES, 0, meshes[0].GetVertexArray().size());
-    glDrawElements(GL_TRIANGLES, meshes[meshID].GetIndicesArray().size(), GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, meshes[meshID]->GetIndicesArray().size(), GL_UNSIGNED_INT, 0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
@@ -145,10 +168,10 @@ void Renderer::Render(std::vector<Chunk *> &chunks) {
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, textureSSBO);
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, atomicID);
     for (size_t i = 0; i < chunks.size(); i++) {
-        shader.setVector3("offset", meshes[chunks[i]->meshID].GetPosition());
-        glBindVertexArray(meshes[chunks[i]->meshID].VAO);
+        shader.setVector3("offset", meshes[chunks[i]->meshID]->GetPosition());
+        glBindVertexArray(meshes[chunks[i]->meshID]->VAO);
         //glDrawArrays(GL_TRIANGLES, 0, meshes[0].GetVertexArray().size());
-        glDrawElements(GL_TRIANGLES, meshes[chunks[i]->meshID].GetIndicesArray().size(), GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, meshes[chunks[i]->meshID]->GetIndicesArray().size(), GL_UNSIGNED_INT, 0);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
     }
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);

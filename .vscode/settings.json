@@ -71,6 +71,7 @@
         "semaphore": "cpp",
         "fstream": "cpp",
         "*.ipp": "cpp",
-        "valarray": "cpp"
+        "valarray": "cpp",
+        "future": "cpp"
     }
 }
