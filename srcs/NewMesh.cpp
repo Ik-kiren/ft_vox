@@ -2,6 +2,7 @@
 #include <iostream>
 
 NewMesh::NewMesh() {
+    this->textureIndex = 0;
 }
 
 NewMesh::~NewMesh() {}

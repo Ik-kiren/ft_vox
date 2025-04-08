@@ -21,8 +21,6 @@ private:
     unsigned int textureSSBO;
 
     std::vector<float> normalVertices;
-    Vector2 textureVertices[4] = {Vector2(0, 0), Vector2(1, 0), Vector2(1, 1), Vector2(0, 1)};
-    int textureIndex;
     std::mutex renderMutex;
 public:
     const int STRIDE_SIZE = 6;

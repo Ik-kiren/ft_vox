@@ -9,7 +9,10 @@ private:
     std::vector<float> vertexArray;
     std::vector<unsigned int>   indicesArray;
     Vector3 position;
+    
 public:
+    Vector2 textureVertices[4] = {Vector2(0, 0), Vector2(1, 0), Vector2(1, 1), Vector2(0, 1)};
+    unsigned int    textureIndex;
     unsigned int    VAO;
     unsigned int    VBO;
     unsigned int    EBO;

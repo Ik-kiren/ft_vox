@@ -2,22 +2,8 @@
 #include "../includes/Scop.hpp"
 
 Renderer::Renderer(Shader &shader, Camera &camera) : shader(shader), camera(camera) {
-    this->textureIndex = 0;
     model = Matrix4(1);
     this->InitTexture();
-
-    glGenBuffers(1, &textureSSBO);
-    glBindBuffer(GL_SHADER_STORAGE_BUFFER, textureSSBO);
-    glBufferStorage(GL_SHADER_STORAGE_BUFFER, sizeof(textureVertices), &textureVertices, GL_DYNAMIC_STORAGE_BIT);
-    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, textureSSBO);
-    glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
-    
-    atomicID = 0;
-    glGenBuffers(1, &atomicID);
-    glBindBuffer(GL_SHADER_STORAGE_BUFFER, atomicID);
-    glBufferStorage(GL_SHADER_STORAGE_BUFFER, sizeof(atomicCounter), &atomicCounter, GL_DYNAMIC_STORAGE_BIT);
-    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, atomicCounter);
-    glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 }
 
 Renderer::~Renderer() {
@@ -30,43 +16,36 @@ Renderer::~Renderer() {
 }
 
 void Renderer::CreateMesh(unsigned int &meshID) {
+    NewMesh *newMesh = new NewMesh;
     renderMutex.lock();
     meshID = this->meshes.size();
-    NewMesh *newMesh = new NewMesh;
     this->meshes.push_back(newMesh);
     renderMutex.unlock();
 }
 
 unsigned int Renderer::AddVertex(unsigned int &meshID, Vector3 &vec, float type) {
-    renderMutex.lock();
     unsigned int index = this->meshes[meshID]->GetVertexArray().size() / STRIDE_SIZE;
     meshes[meshID]->AddVertex(vec);
-    meshes[meshID]->AddVertex(this->textureVertices[this->textureIndex]);
+    meshes[meshID]->AddVertex(meshes[meshID]->textureVertices[meshes[meshID]->textureIndex]);
     meshes[meshID]->AddFloat(type);
-    this->textureIndex = (this->textureIndex + 1) % 4;
-    renderMutex.unlock();
+    meshes[meshID]->textureIndex = (meshes[meshID]->textureIndex + 1) % 4;
     return index;
 }
 
 unsigned int Renderer::AddVertex(unsigned int &meshID, float x, float y, float z, float type) {
-    renderMutex.lock();
     unsigned int index = this->meshes[meshID]->GetVertexArray().size() / STRIDE_SIZE;
     meshes[meshID]->AddVertex(x, y, z);
-    meshes[meshID]->AddVertex(this->textureVertices[this->textureIndex]);
+    meshes[meshID]->AddVertex(meshes[meshID]->textureVertices[meshes[meshID]->textureIndex]);
     meshes[meshID]->AddFloat(type);
-    this->textureIndex = (this->textureIndex + 1) % 4;
-    renderMutex.unlock();
+    meshes[meshID]->textureIndex = (meshes[meshID]->textureIndex + 1) % 4; // look to change that
     return index;
 }
 
 void Renderer::addIndices(unsigned int &meshID, unsigned int &v1, unsigned int &v2, unsigned int &v3) {
-    renderMutex.lock();
     meshes[meshID]->AddIndices(v1, v2, v3);
-    renderMutex.unlock();
 }
 
 void Renderer::FinishMesh(unsigned int &meshID) {
-    this->textureIndex = 0;
     glGenVertexArrays(1, &this->meshes[meshID]->VAO);
     glGenBuffers(1, &this->meshes[meshID]->VBO);
     glGenBuffers(1, &this->meshes[meshID]->EBO);
@@ -111,8 +90,6 @@ void Renderer::Render() {
     glActiveTexture(GL_TEXTURE0 + 1);
     glBindTexture(GL_TEXTURE_2D, textureID2);
 
-    glBindBuffer(GL_SHADER_STORAGE_BUFFER, textureSSBO);
-    glBindBuffer(GL_SHADER_STORAGE_BUFFER, atomicID);
     for (size_t i = 0; i < meshes.size(); i++) {
         shader.setVector3("offset", meshes[i]->GetPosition());
         glBindVertexArray(meshes[i]->VAO);
@@ -120,7 +97,6 @@ void Renderer::Render() {
         glDrawElements(GL_TRIANGLES, meshes[i]->GetIndicesArray().size(), GL_UNSIGNED_INT, 0);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
     }
-    glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 }
 
 void Renderer::Render(unsigned int &meshID) {
@@ -165,8 +141,6 @@ void Renderer::Render(std::vector<Chunk *> &chunks) {
     glActiveTexture(GL_TEXTURE0 + 1);
     glBindTexture(GL_TEXTURE_2D, textureID2);
 
-    glBindBuffer(GL_SHADER_STORAGE_BUFFER, textureSSBO);
-    glBindBuffer(GL_SHADER_STORAGE_BUFFER, atomicID);
     for (size_t i = 0; i < chunks.size(); i++) {
         shader.setVector3("offset", meshes[chunks[i]->meshID]->GetPosition());
         glBindVertexArray(meshes[chunks[i]->meshID]->VAO);
@@ -174,7 +148,6 @@ void Renderer::Render(std::vector<Chunk *> &chunks) {
         glDrawElements(GL_TRIANGLES, meshes[chunks[i]->meshID]->GetIndicesArray().size(), GL_UNSIGNED_INT, 0);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
     }
-    glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 }
 
 void Renderer::InitTexture() {
@@ -226,6 +199,5 @@ Renderer &Renderer::operator=(const Renderer &rhs) {
     this->textureID = rhs.textureID;
     this->textureSSBO = rhs.textureSSBO;
     this->normalVertices = rhs.normalVertices;
-    this->textureIndex = rhs.textureIndex;
     return *this;
 }
