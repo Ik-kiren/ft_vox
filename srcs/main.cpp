@@ -50,8 +50,9 @@ GLFWwindow *InitGLFW() {
     glfwSetFramebufferSizeCallback(window, viewport_size_callback);
 
     glEnable(GL_DEPTH_TEST);
-    glEnable(GL_CULL_FACE);
+    //glEnable(GL_CULL_FACE);
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    //glfwSwapInterval(0);
 
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED); 
     return window;
@@ -66,6 +67,10 @@ void GetTimer(double &lastTime, double &deltaTime) {
 
 int main(void) {
     srand(time(NULL));
+    Renderer renderer;
+    ChunkManager test(&renderer);
+    test.Init();
+
     GLFWwindow *window;
     window = InitGLFW();
 
@@ -77,11 +82,12 @@ int main(void) {
 
     //Mesh cubeMesh = Mesh("./objects/DirtCube.obj");  
 
-    Camera camera = Camera(Vector3(0, 0, 15), Vector3(0, 1, 0));
+    Camera camera = Camera(Vector3(0, 0, 0), Vector3(0, 1, 0));
 
     //Object cubeObj = Object(cubeShader, &cubeMesh, Vector4(1, 1, 1, 1));
 
     Font font = Font();
+    renderer.InitRenderer(&cubeShader, &camera);
 
     double lastTime = 0;
     double deltaTime = 0;
@@ -94,9 +100,6 @@ int main(void) {
     float fpsTimer = 0;
     int fps = 0;
     std::string lastFps = "0";
-
-    Renderer renderer(cubeShader, camera);
-    ChunkManager test(&renderer, &camera);
 
     while ((glfwGetKey(window, GLFW_KEY_ESCAPE ) != GLFW_PRESS &&
         glfwWindowShouldClose(window) == 0)) {
@@ -118,9 +121,10 @@ int main(void) {
             font.RenderText(fontShader, lastFps, 0.5, 1100, 2, Vector3(1, 0.2, 0.2));
             
             //cubeObj.drawMeshInstance(window, camera, objects, compute);
-            test.LoadChunk();
-            test.ChunkVisibility();
-            
+            test.ChunkSetup();
+            test.ChunkVisibility(&camera);
+            //Vector3 camPos = camera.GetPosition() / 16;
+            //std::cout << camPos << std::endl;
             camera.RegisterKeyboardInput(window);
             camera.RegisterMouseInput(window);
             

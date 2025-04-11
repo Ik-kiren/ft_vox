@@ -66,22 +66,16 @@ Vector3 Vector3::operator*(Vector3 rhs) {
 }
 
 
-Vector3 &Vector3::operator/(float rhs) {
+Vector3 Vector3::operator/(float rhs) {
     if (rhs == 0)
         return *this;
-    x = x / rhs;
-    y = y / rhs;
-    z = z / rhs;
-    return *this;
+    return Vector3(x / rhs, y / rhs, z / rhs);
 }
 
-Vector3 &Vector3::operator/(Vector3 rhs) {
+Vector3 Vector3::operator/(Vector3 rhs) {
     if (rhs.x == 0 || rhs.y == 0 || rhs.z == 0)
         return *this;
-    x = x / rhs.x;
-    y = y / rhs.y;
-    z = z / rhs.z;
-    return *this;
+    return Vector3(x / rhs.x, y / rhs.y, z / rhs.z);
 }
 
 Vector3 Vector3::operator-(Vector3 rhs) {
@@ -111,3 +105,9 @@ std::ostream &operator<<(std::ostream &out, Vector3 &rhs) {
     out << ">";
     return out;
 }
+
+bool Vector3::operator==(const Vector3 &other) const
+  { return (this->x == other.x
+            && this->y == other.y
+            && this->z == other.z);
+  }

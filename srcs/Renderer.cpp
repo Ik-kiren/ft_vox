@@ -1,26 +1,29 @@
 #include "../includes/Renderer.hpp"
 #include "../includes/Scop.hpp"
 
-Renderer::Renderer(Shader &shader, Camera &camera) : shader(shader), camera(camera) {
-    model = Matrix4(1);
-    this->InitTexture();
+Renderer::Renderer() {
 }
 
 Renderer::~Renderer() {
-
     for (size_t i = 0; i < meshes.size(); i++)
     {
         delete meshes[i];
     }
-    
+}
+
+void Renderer::InitRenderer(Shader *shader, Camera *camera) {
+    this->shader = shader;
+    this->camera = camera;
+    model = Matrix4(1);
+    this->InitTexture();
 }
 
 void Renderer::CreateMesh(unsigned int &meshID) {
     NewMesh *newMesh = new NewMesh;
-    renderMutex.lock();
+    //renderMutex.lock();
     meshID = this->meshes.size();
     this->meshes.push_back(newMesh);
-    renderMutex.unlock();
+    //renderMutex.unlock();
 }
 
 unsigned int Renderer::AddVertex(unsigned int &meshID, Vector3 &vec, float type) {
@@ -33,10 +36,19 @@ unsigned int Renderer::AddVertex(unsigned int &meshID, Vector3 &vec, float type)
 }
 
 unsigned int Renderer::AddVertex(unsigned int &meshID, float x, float y, float z, float type) {
+
     unsigned int index = this->meshes[meshID]->GetVertexArray().size() / STRIDE_SIZE;
-    meshes[meshID]->AddVertex(x, y, z);
+    /*meshes[meshID]->AddVertex(x, y, z);
     meshes[meshID]->AddVertex(meshes[meshID]->textureVertices[meshes[meshID]->textureIndex]);
-    meshes[meshID]->AddFloat(type);
+    meshes[meshID]->AddFloat(type);*/
+    meshes[meshID]->vertexArray.insert(meshes[meshID]->vertexArray.end(), {
+        x,
+        y,
+        z,
+        meshes[meshID]->textureVertices[meshes[meshID]->textureIndex].x,
+        meshes[meshID]->textureVertices[meshes[meshID]->textureIndex].y,
+        type
+    });
     meshes[meshID]->textureIndex = (meshes[meshID]->textureIndex + 1) % 4; // look to change that
     return index;
 }
@@ -68,19 +80,19 @@ void Renderer::FinishMesh(unsigned int &meshID) {
 }
 
 void Renderer::Render() {
-    shader.use();
+    shader->use();
 
-    shader.setVector4("newColor", Vector3(0.2, 0.5, 0.8));
-    shader.setMatrix4("model", model);
-    shader.setMatrix4("view", camera.GetViewMatrix());
-    shader.setMatrix4("projection", camera.GetProjectionMat());
-    shader.setVector3("cameraPos", camera.GetPosition());
-    shader.setFloat("timeValue", sin(glfwGetTime()) / 0.3f);
-    shader.setBool("activeTexture", true);
-    shader.setFloat("timerTextureTransition", 1.0f);
+    shader->setVector4("newColor", Vector3(0.2, 0.5, 0.8));
+    shader->setMatrix4("model", model);
+    shader->setMatrix4("view", camera->GetViewMatrix());
+    shader->setMatrix4("projection", camera->GetProjectionMat());
+    shader->setVector3("cameraPos", camera->GetPosition());
+    shader->setFloat("timeValue", sin(glfwGetTime()) / 0.3f);
+    shader->setBool("activeTexture", true);
+    shader->setFloat("timerTextureTransition", 1.0f);
 
-    GLint dirtTexture = shader.GetUniformLocation("dirtTexture");
-    GLint stoneTexture = shader.GetUniformLocation("stoneTexture");
+    GLint dirtTexture = shader->GetUniformLocation("dirtTexture");
+    GLint stoneTexture = shader->GetUniformLocation("stoneTexture");
 
     glUniform1i(dirtTexture, 0);
     glUniform1i(stoneTexture, 1);
@@ -91,7 +103,7 @@ void Renderer::Render() {
     glBindTexture(GL_TEXTURE_2D, textureID2);
 
     for (size_t i = 0; i < meshes.size(); i++) {
-        shader.setVector3("offset", meshes[i]->GetPosition());
+        shader->setVector3("offset", meshes[i]->GetPosition());
         glBindVertexArray(meshes[i]->VAO);
         //glDrawArrays(GL_TRIANGLES, 0, meshes[0].GetVertexArray().size());
         glDrawElements(GL_TRIANGLES, meshes[i]->GetIndicesArray().size(), GL_UNSIGNED_INT, 0);
@@ -100,17 +112,17 @@ void Renderer::Render() {
 }
 
 void Renderer::Render(unsigned int &meshID) {
-    shader.use();
+    shader->use();
 
-    shader.setVector4("newColor", Vector3(0.2, 0.5, 0.8));
-    shader.setMatrix4("model", model);
-    shader.setMatrix4("view", camera.GetViewMatrix());
-    shader.setMatrix4("projection", camera.GetProjectionMat());
-    shader.setVector3("cameraPos", camera.GetPosition());
-    shader.setFloat("timeValue", sin(glfwGetTime()) / 0.3f);
-    shader.setBool("activeTexture", true);
-    shader.setFloat("timerTextureTransition", 0.0f);
-    shader.setVector3("offset", meshes[meshID]->GetPosition());
+    shader->setVector4("newColor", Vector3(0.2, 0.5, 0.8));
+    shader->setMatrix4("model", model);
+    shader->setMatrix4("view", camera->GetViewMatrix());
+    shader->setMatrix4("projection", camera->GetProjectionMat());
+    shader->setVector3("cameraPos", camera->GetPosition());
+    shader->setFloat("timeValue", sin(glfwGetTime()) / 0.3f);
+    shader->setBool("activeTexture", true);
+    shader->setFloat("timerTextureTransition", 0.0f);
+    shader->setVector3("offset", meshes[meshID]->GetPosition());
 
     glBindVertexArray(meshes[meshID]->VAO);
     //glDrawArrays(GL_TRIANGLES, 0, meshes[0].GetVertexArray().size());
@@ -119,19 +131,19 @@ void Renderer::Render(unsigned int &meshID) {
 }
 
 void Renderer::Render(std::vector<Chunk *> &chunks) {
-    shader.use();
+    shader->use();
 
-    shader.setVector4("newColor", Vector3(0.2, 0.5, 0.8));
-    shader.setMatrix4("model", model);
-    shader.setMatrix4("view", camera.GetViewMatrix());
-    shader.setMatrix4("projection", camera.GetProjectionMat());
-    shader.setVector3("cameraPos", camera.GetPosition());
-    shader.setFloat("timeValue", sin(glfwGetTime()) / 0.3f);
-    shader.setBool("activeTexture", true);
-    shader.setFloat("timerTextureTransition", 1.0f);
+    shader->setVector4("newColor", Vector3(0.2, 0.5, 0.8));
+    shader->setMatrix4("model", model);
+    shader->setMatrix4("view", camera->GetViewMatrix());
+    shader->setMatrix4("projection", camera->GetProjectionMat());
+    shader->setVector3("cameraPos", camera->GetPosition());
+    shader->setFloat("timeValue", sin(glfwGetTime()) / 0.3f);
+    shader->setBool("activeTexture", true);
+    shader->setFloat("timerTextureTransition", 1.0f);
 
-    GLint dirtTexture = shader.GetUniformLocation("dirtTexture");
-    GLint stoneTexture = shader.GetUniformLocation("stoneTexture");
+    GLint dirtTexture = shader->GetUniformLocation("dirtTexture");
+    GLint stoneTexture = shader->GetUniformLocation("stoneTexture");
 
     glUniform1i(dirtTexture, 0);
     glUniform1i(stoneTexture, 1);
@@ -142,7 +154,7 @@ void Renderer::Render(std::vector<Chunk *> &chunks) {
     glBindTexture(GL_TEXTURE_2D, textureID2);
 
     for (size_t i = 0; i < chunks.size(); i++) {
-        shader.setVector3("offset", meshes[chunks[i]->meshID]->GetPosition());
+        shader->setVector3("offset", meshes[chunks[i]->meshID]->GetPosition());
         glBindVertexArray(meshes[chunks[i]->meshID]->VAO);
         //glDrawArrays(GL_TRIANGLES, 0, meshes[0].GetVertexArray().size());
         glDrawElements(GL_TRIANGLES, meshes[chunks[i]->meshID]->GetIndicesArray().size(), GL_UNSIGNED_INT, 0);

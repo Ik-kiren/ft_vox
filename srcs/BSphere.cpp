@@ -46,6 +46,12 @@ Vector3 oneToThree(int idx, int sizeX, int sizeY, int sizeZ) {
     return vec;
 }
 
+int threeToOne(int x, int y, int z) {
+    int tmp = 0;
+    tmp = (16 * 16 * x) + (16 * y) + z;
+    return tmp;
+}
+
 BSphere generateSphereBV(std::vector<Vector3> vertices)
 {
 	Vector3 minAABB = Vector3(std::numeric_limits<float>::max());

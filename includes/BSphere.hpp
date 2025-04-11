@@ -80,3 +80,4 @@ struct Indirect {
 BSphere generateSphereBV(std::vector<Vector3> vertices);
 Plane CreatePlane(Vector3 p1, Vector3 norm);
 Vector3 oneToThree(int idx, int sizeX, int sizeY, int sizeZ);
+int threeToOne(int x , int y, int z);

@@ -5,12 +5,13 @@
 #include "./Shader.hpp"
 #include "./Camera.hpp"
 #include "./Chunk.hpp"
+#include <mutex>
 
 class Renderer
 {
 private:
-    Shader &shader;
-    Camera &camera;
+    Shader *shader;
+    Camera *camera;
     Matrix4 model;
 
     unsigned int atomicID;
@@ -25,10 +26,10 @@ private:
 public:
     const int STRIDE_SIZE = 6;
     std::vector<NewMesh *> meshes;
-    Renderer(Shader &shader, Camera &camera);
+    Renderer();
     ~Renderer();
 
-    void InitRenderer();
+    void InitRenderer(Shader *shader, Camera *camera);
     void CreateMesh(unsigned int &meshID);
     unsigned int AddVertex(unsigned int &meshID, Vector3 &vecs, float type);
     unsigned int AddVertex(unsigned int &meshID, float x, float y, float z, float type);
