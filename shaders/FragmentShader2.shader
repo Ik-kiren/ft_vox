@@ -35,7 +35,7 @@ void main()
 	vec3 specular = specularStrength * spec * lightColor;
 
 	vec3 result = (ambient + diffuse + specular) * vec3(0.8, 0.8, 0.1);
-	vec4 tmpTexture = texture(stoneTexture, textureCoords);
+	vec4 tmpTexture = texture(dirtTexture, textureCoords);
 	if (textureIndice == 1) {
 		tmpTexture = texture(stoneTexture, textureCoords);
 	}

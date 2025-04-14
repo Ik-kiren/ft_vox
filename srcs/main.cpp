@@ -4,15 +4,12 @@
 #include <stack>
 #include "../includes/Scop.hpp"
 #include "../includes/Camera.hpp"
-#include "../includes/Mesh.hpp"
-#include "../includes/Object.hpp"
-#include "../includes/MatrixStack.hpp"
-#include "../includes/Animation.hpp"
-#include "../includes/Button.hpp"
 #include "../includes/Chunk.hpp"
 #include "../includes/ChunkManager.hpp"
 #include "../includes/Renderer.hpp"
-#include "../includes/glm/glm.hpp"
+#include "../includes/mapGP.hpp"
+
+int seed = 0;
 
 
 void viewport_size_callback(GLFWwindow* window, int width, int height) {
@@ -68,7 +65,9 @@ void GetTimer(double &lastTime, double &deltaTime) {
 int main(void) {
     srand(time(NULL));
     Renderer renderer;
-    ChunkManager test(&renderer);
+    mapGP tab(3, 256);
+
+    ChunkManager test(&renderer, &tab);
     test.Init();
 
     GLFWwindow *window;

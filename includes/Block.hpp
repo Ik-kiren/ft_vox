@@ -14,6 +14,7 @@ public:
     constexpr static float BLOCK_SIZE = 0.5f;
     Block(/* args */);
     ~Block();
+    
     bool IsActive();
     void SetActive(bool active);
 };

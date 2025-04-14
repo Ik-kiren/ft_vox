@@ -2,26 +2,21 @@
 #include "../includes/BSphere.hpp"
 #include "../includes/Renderer.hpp"
 #include <chrono>
+#include <array>
 
 using namespace std::chrono_literals;
 
-ChunkManager::ChunkManager(Renderer *renderer): renderer(renderer) {
+ChunkManager::ChunkManager(Renderer *renderer, mapGP *tab): renderer(renderer) {
     (void)camera;
-    this->maxPos = Vector3(15, -1, 15);
-    this->minPos = Vector3(-15, -16, -15);
+    this->maxPos = Vector3(15, 15, 15);
+    this->minPos = Vector3(0, 0, 0);
+    chunk ***test = tab->chunkToRet(1, 2);
     for (int i = this->minPos.x; i <= this->maxPos.x; i++)
     {
         for (int j = this->minPos.y; j <= this->maxPos.y; j++)
         {
             for (int k = this->minPos.z; k <= this->maxPos.z; k++) {
-                Chunk *newChunk = new Chunk(renderer, this);
-                if (i == 0 && j == -1 && k == 0) {
-                    newChunk->GetBlocksArray()[0][15][0].SetActive(false);
-                    newChunk->GetBlocksArray()[0][15][1].SetActive(false);
-                    newChunk->GetBlocksArray()[1][15][0].SetActive(false);
-                    newChunk->GetBlocksArray()[0][14][0].SetActive(false);
-                    newChunk->GetBlocksArray()[0][13][0].SetActive(false);
-                }
+                Chunk *newChunk = new Chunk(renderer, this, test[i][k][j].voxel);
                 newChunk->Translation(Vector3(i * Chunk::CHUNK_SIZE_X, j * Chunk::CHUNK_SIZE_Y, k * Chunk::CHUNK_SIZE_Z));
                 newChunk->chunkList = &(this->chunkList);
                 loadList.push_back(newChunk);
@@ -30,7 +25,7 @@ ChunkManager::ChunkManager(Renderer *renderer): renderer(renderer) {
             }
         }
     }
-    this->threading = false;
+    freeChunks(test);
     std::cout << loadList.size() << std::endl;
 }
 
@@ -42,7 +37,7 @@ ChunkManager::~ChunkManager() {
 }
 
 void ChunkManager::Init() {
-    while (loadList.size() > 0 || futureList.size() > 0) {
+    while (loadList.size() > 0) {
         LoadChunk();
     }
 }
@@ -56,43 +51,13 @@ void ChunkManager::LoadChunk() {
     int tmp = 0;
     for (std::vector<Chunk *>::iterator it = loadList.begin(); it != loadList.end();) {
         if ((*it)->loaded == false) {
-            threadList.push_back(*it);
+            (*it)->CreateMesh();
+            setupList.push_back(*it);
             it = loadList.erase(it);
-            /*tmp++;
-            if (tmp >= 4)
-                break;*/
         } else {
             it++;
         }
     }
-    tmp = 0;
-    if (threadList.size() == 0) {
-        tmp = 0;
-    } else {
-        tmp = futureList.size();
-    }
-    
-    for (std::vector<Chunk *>::iterator it = threadList.begin(); it != threadList.end();) {
-        //futureList.push_back(std::async(&ChunkManager::LoadThread, this, (*it)));
-        (*it)->CreateMesh();
-        setupList.push_back((*it));
-        it = threadList.erase(it);
-        /*tmp++;
-        if (tmp >= 4)
-            break;*/
-    }
-    /*if (futureList.size() > 0) {
-        for (std::vector<std::future<Chunk *>>::iterator it = futureList.begin(); it != futureList.end(); it++) {
-            if ((*it).wait_for(0s) == std::future_status::ready) {
-                setupList.push_back((*it).get());
-                if (futureList.erase(it) == futureList.end()) {
-                    break;
-                }
-            }
-        }
-        
-    }*/
-    //std::cout << futureList.size() << std::endl;
 }
 
 void ChunkManager::ChunkSetup() {
@@ -108,17 +73,31 @@ void ChunkManager::ChunkSetup() {
 }
 
 void ChunkManager::ChunkVisibility(Camera *camera) {
-    /*renderList.clear();
-    for (std::vector<Chunk *>::iterator it = visibilityList.begin(); it != visibilityList.end(); it++) {
-        AABB aabb;
-        aabb.center[0] = (*it)->GetPosition().x + 8;
-        aabb.center[1] = (*it)->GetPosition().y + 8;
-        aabb.center[2] = (*it)->GetPosition().z + 8;
-        if (camera->InsideFrustum(aabb)) {
-            renderList.push_back(*it);
+    if (lastCamPos != camera->GetPosition() || lastCamDirection != camera->GetFront()) {
+        renderList.clear();
+        for (std::vector<Chunk *>::iterator it = visibilityList.begin(); it != visibilityList.end(); it++) {
+            AABB aabb;
+            aabb.center[0] = (*it)->GetPosition().x + 8;
+            aabb.center[1] = (*it)->GetPosition().y + 8;
+            aabb.center[2] = (*it)->GetPosition().z + 8;
+            if (camera->InsideFrustum(aabb)) {
+                renderList.push_back(*it);
+            }
         }
-    }*/
-    if (visibilityList.size() > 0)
-        renderer->Render(visibilityList);
-    //lastCamPos = camera->GetPosition();
+    }
+    if (renderList.size() > 0)
+        renderer->Render(renderList);
+    lastCamPos = camera->GetPosition();
+    lastCamDirection = camera->GetFront();
+}
+
+void ChunkManager::UnloadChunk(Vector3 direction, Vector3 position) {
+    if (direction == Vector3(1, 0, 0)) {
+        for (int i = minPos.z; i < maxPos.z; i++) {
+            for (int j = minPos.y; j < maxPos.y; j++) {
+                Vector3 tmp = Vector3((abs(minPos.x) + abs(maxPos.x)) - position.x, i, j);
+                std:: cout << tmp << std::endl;
+            }
+        }
+    }
 }

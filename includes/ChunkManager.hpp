@@ -5,6 +5,8 @@
 #include <mutex>
 #include <chrono>
 #include "./Chunk.hpp"
+#include "./mapGP.hpp"
+#include "./utils.hpp"
 #include <unordered_map>
 
 class ChunkManager
@@ -12,7 +14,6 @@ class ChunkManager
 private:
     std::vector<Chunk *> chunkList;
     std::vector<Chunk *> loadList;
-    std::vector<Chunk *> threadList;
     std::vector<Chunk *> setupList;
     std::vector<Chunk *> visibilityList;
     std::vector<Chunk *> renderList;
@@ -20,17 +21,13 @@ private:
     Camera *camera;
     
     Vector3 lastCamPos;
-    std::vector<std::future<Chunk *>> futureList;
-
-    std::mutex listLock;
-
-    bool threading;
+    Vector3 lastCamDirection;
 
 public:
     std::unordered_map<Vector3, Chunk *> chunkMap;
     Vector3 maxPos;
     Vector3 minPos;
-    ChunkManager(Renderer *renderer);
+    ChunkManager(Renderer *renderer, mapGP *mapGP);
     ~ChunkManager();
 
     void Init();
@@ -38,4 +35,5 @@ public:
     Chunk *LoadThread(Chunk *chunk);
     void ChunkSetup();
     void ChunkVisibility(Camera *camera);
+    void UnloadChunk(Vector3 direction, Vector3 position);
 };

@@ -24,7 +24,7 @@ public:
     static const int CHUNK_SIZE_Z = 16;
 
     Chunk();
-    Chunk(Renderer *renderer, ChunkManager *chunkManager);
+    Chunk(Renderer *renderer, ChunkManager *chunkManager, unsigned char ***test);
     ~Chunk();
 
     Block ***GetBlocksArray();
