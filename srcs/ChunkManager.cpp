@@ -6,17 +6,16 @@
 
 using namespace std::chrono_literals;
 
-ChunkManager::ChunkManager(Renderer *renderer, mapGP *tab): renderer(renderer) {
+ChunkManager::ChunkManager(Renderer *renderer, chunk ***tab): renderer(renderer) {
     (void)camera;
     this->maxPos = Vector3(15, 15, 15);
     this->minPos = Vector3(0, 0, 0);
-    chunk ***test = tab->chunkToRet(1, 2);
     for (int i = this->minPos.x; i <= this->maxPos.x; i++)
     {
         for (int j = this->minPos.y; j <= this->maxPos.y; j++)
         {
             for (int k = this->minPos.z; k <= this->maxPos.z; k++) {
-                Chunk *newChunk = new Chunk(renderer, this, test[i][k][j].voxel);
+                Chunk *newChunk = new Chunk(renderer, this, tab[i][k][j].voxel);
                 newChunk->Translation(Vector3(i * Chunk::CHUNK_SIZE_X, j * Chunk::CHUNK_SIZE_Y, k * Chunk::CHUNK_SIZE_Z));
                 newChunk->chunkList = &(this->chunkList);
                 loadList.push_back(newChunk);
@@ -25,7 +24,7 @@ ChunkManager::ChunkManager(Renderer *renderer, mapGP *tab): renderer(renderer) {
             }
         }
     }
-    freeChunks(test);
+    freeChunks(tab);
     std::cout << loadList.size() << std::endl;
 }
 
@@ -100,4 +99,20 @@ void ChunkManager::UnloadChunk(Vector3 direction, Vector3 position) {
             }
         }
     }
+}
+
+void	ChunkManager::loadNewChunk(chunk ***toLoad, int xdiff, int zdiff) {
+    for (int i = 0; i < 16; i++) {
+        for (int j = 0; j < 16; j++) {
+            for (int k = 0; k < 16; k++) {
+                Chunk *newChunk = new Chunk(this->renderer, this, toLoad[i][k][j].voxel);
+                newChunk->Translation(Vector3((i + xdiff) * Chunk::CHUNK_SIZE_X, j * Chunk::CHUNK_SIZE_Y, (k + zdiff) * Chunk::CHUNK_SIZE_Z));
+				newChunk->chunkList = &(this->chunkList);
+				loadList.push_back(newChunk);
+                chunkList.push_back(newChunk);
+				chunkMap.insert({newChunk->GetNormalizedPos(), newChunk});
+			}
+		}
+	}
+    freeChunks(toLoad);
 }

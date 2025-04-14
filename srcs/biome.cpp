@@ -10,7 +10,7 @@ biome::biome(int size, square sq) {
 	this->_heightDiff = this->_heightMax - this->_heightMin;
 	this->_sq = sq;
 	this->_nbrGP = 8;
-	this->_Hb = 6;
+	this->_Hb = 8;
 
 	for (int i = 0; i < this->_size; i++) {
 		std::vector<heightGP>	tmp;
@@ -161,6 +161,8 @@ void	biome::doGPCalculColumn(int i, int j, int mid, int l, float H1, float H2, f
 }
 
 void	biome::doGPLine(int i, coord2d cd) {
+	newSeed(cd.x, cd.y);
+	this->_Hb = randFloatBetween(2) + 8;
 	float	H1 = 2 / this->_Hb;
 	float	H2 = 2 / (this->_Hb / 2);
 	float	H3 = 2 / (this->_Hb / 4);
@@ -168,7 +170,6 @@ void	biome::doGPLine(int i, coord2d cd) {
 
 	for (int t = 0; t < this->_nbrGP; t++) {
 		L = 0;
-		newSeed(cd.x, cd.y);
 		for (int j = 1; j < this->_size; j++) {
 			if (this->_tab[i][j].GP > 0) {
 				doGPCalculLine(i, j, (j + L) / 2, L, H1, H2, H3);
@@ -183,6 +184,8 @@ void	biome::doGPLine(int i, coord2d cd) {
 }
 
 void	biome::doGPColumn(int j, coord2d cd) {
+	newSeed(cd.x, cd.y);
+	this->_Hb = randFloatBetween(2) + 8;
 	float	H1 = 2 / this->_Hb;
 	float	H2 = 2 / (this->_Hb / 2);
 	float	H3 = 2 / (this->_Hb / 4);
@@ -190,7 +193,6 @@ void	biome::doGPColumn(int j, coord2d cd) {
 
 	for (int t = 0; t < this->_nbrGP; t++) {
 		l = 0;
-		newSeed(cd.x, cd.y);
 		for (int i = 1; i < this->_size; i++) {
 			if (this->_tab[i][j].GP > 0) {
 				doGPCalculColumn(i, j, (i + l) / 2, l, H1, H2, H3);
@@ -299,8 +301,8 @@ void	biome::dig(int x, int y, int h, int size) {
 }
 
 void	biome::doCave(int x, int y) {
-	cave	c(this->_sq.NE.x, this->_sq.NE.y, 3, 50);
-	int		h = this->_tab[x][y].heightI;
+	cave	c(this->_sq.NE.x, this->_sq.NE.y, 3, 100);
+	int		h = this->_tab[x][y].heightI + 3;
 
 	c.doIniCave();
 	for (int k = 0; k < c.getLenght(); k++) {

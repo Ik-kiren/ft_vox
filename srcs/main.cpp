@@ -64,11 +64,28 @@ void GetTimer(double &lastTime, double &deltaTime) {
 
 int main(void) {
     srand(time(NULL));
+	// seed = std::rand();
+	seed = 100;
     Renderer renderer;
     mapGP tab(3, 256);
+    chunk ***monoC = tab.chunkToRet(3, 3);
+    ChunkManager test(&renderer, monoC);
 
-    ChunkManager test(&renderer, &tab);
-    test.Init();
+	chunk ***monoC2 = tab.chunkToRet(2, 3);
+	test.loadNewChunk(monoC2, -16, 0);
+
+	chunk ***monoC3 = tab.chunkToRet(1, 3);
+	test.loadNewChunk(monoC3, -32, 0);
+
+	chunk ***monoC4 = tab.chunkToRet(3, 2);
+	test.loadNewChunk(monoC4, 0, -16);
+
+	chunk ***monoC5 = tab.chunkToRet(2, 2);
+	test.loadNewChunk(monoC5, -16, -16);
+
+	chunk ***monoC6 = tab.chunkToRet(1, 2);
+	test.loadNewChunk(monoC6, -32, -16);
+	test.Init();
 
     GLFWwindow *window;
     window = InitGLFW();

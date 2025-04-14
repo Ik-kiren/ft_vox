@@ -27,7 +27,7 @@ public:
     std::unordered_map<Vector3, Chunk *> chunkMap;
     Vector3 maxPos;
     Vector3 minPos;
-    ChunkManager(Renderer *renderer, mapGP *mapGP);
+    ChunkManager(Renderer *renderer, chunk ***mapGP);
     ~ChunkManager();
 
     void Init();
@@ -36,4 +36,5 @@ public:
     void ChunkSetup();
     void ChunkVisibility(Camera *camera);
     void UnloadChunk(Vector3 direction, Vector3 position);
+	void	loadNewChunk(chunk ***toLoad, int xdiff, int zdiff);
 };
