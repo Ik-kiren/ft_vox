@@ -22,6 +22,7 @@ struct chunk {
 	unsigned char	***voxel;
 };
 
+square	squarelvl1(square sq, int x, int y, int size);
 coord2d	gene2D(int x, int y);
 float	randFloatBetween(float h);
 float	roundPreci(float x, int preci);

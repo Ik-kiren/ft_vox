@@ -1,7 +1,7 @@
 CXX = c++ -I${HOME}/.brew/opt/freetype/include/freetype2
 NAME = vox
 SRCS = srcs/utils.cpp srcs/cave.cpp srcs/mapGP.cpp srcs/biome.cpp srcs/ChunkManager.cpp srcs/NewMesh.cpp srcs/Renderer.cpp srcs/Block.cpp srcs/Chunk.cpp srcs/ComputeShader.cpp srcs/BSphere.cpp srcs/Button.cpp srcs/Font.cpp srcs/Animation.cpp srcs/MatrixStack.cpp srcs/main.cpp srcs/Shader.cpp srcs/Vector2.cpp srcs/Vector3.cpp srcs/stb.cpp srcs/Vector4.cpp srcs/Matrix4.cpp srcs/Mesh.cpp srcs/ScopMaths.cpp srcs/Camera.cpp srcs/Object.cpp
-CPPFLAGS = -Werror
+CPPFLAGS = -Werror -g3 -fsanitize=address
 LIBS = -lGL -lGLU -lglfw -lX11 -lXxf86vm -lXrandr -lpthread -lXi -lGLEW -lGLU -lGL -lfreetype -fsanitize=address
 OBJS = $(SRCS:cpp=o)
 

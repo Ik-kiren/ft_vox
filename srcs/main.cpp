@@ -9,6 +9,8 @@
 #include "../includes/Renderer.hpp"
 #include "../includes/mapGP.hpp"
 
+#include <sys/time.h>
+
 int seed = 0;
 
 
@@ -67,24 +69,20 @@ int main(void) {
 	// seed = std::rand();
 	seed = 100;
     Renderer renderer;
-    mapGP tab(3, 256);
-    chunk ***monoC = tab.chunkToRet(3, 3);
+
+    mapGP tab(48, 16);
+	coord2d start = gene2D(256, 256);
+    chunk ***monoC = tab.chunkToRet(start.x, start.y);
     ChunkManager test(&renderer, monoC);
 
-	chunk ***monoC2 = tab.chunkToRet(2, 3);
-	test.loadNewChunk(monoC2, -16, 0);
-
-	chunk ***monoC3 = tab.chunkToRet(1, 3);
-	test.loadNewChunk(monoC3, -32, 0);
-
-	chunk ***monoC4 = tab.chunkToRet(3, 2);
-	test.loadNewChunk(monoC4, 0, -16);
-
-	chunk ***monoC5 = tab.chunkToRet(2, 2);
-	test.loadNewChunk(monoC5, -16, -16);
-
-	chunk ***monoC6 = tab.chunkToRet(1, 2);
-	test.loadNewChunk(monoC6, -32, -16);
+	for (int i = 0; i < 10; i++) {
+		for (int j = 0; j < 10; j++) {
+			if (i == 0 && j == 0)
+				continue ;
+			chunk ***monoCx = tab.chunkToRet(start.x + i, start.y + j);
+			test.loadNewChunk(monoCx, i, j);
+		}
+	}
 	test.Init();
 
     GLFWwindow *window;
@@ -98,7 +96,7 @@ int main(void) {
 
     //Mesh cubeMesh = Mesh("./objects/DirtCube.obj");  
 
-    Camera camera = Camera(Vector3(0, 0, 0), Vector3(0, 1, 0));
+    Camera camera = Camera(Vector3(0, 128, 0), Vector3(0, 1, 0));
 
     //Object cubeObj = Object(cubeShader, &cubeMesh, Vector4(1, 1, 1, 1));
 
@@ -116,6 +114,7 @@ int main(void) {
     float fpsTimer = 0;
     int fps = 0;
     std::string lastFps = "0";
+	int ha = 0;
 
     while ((glfwGetKey(window, GLFW_KEY_ESCAPE ) != GLFW_PRESS &&
         glfwWindowShouldClose(window) == 0)) {
@@ -137,7 +136,9 @@ int main(void) {
             font.RenderText(fontShader, lastFps, 0.5, 1100, 2, Vector3(1, 0.2, 0.2));
             
             //cubeObj.drawMeshInstance(window, camera, objects, compute);
+			test.LoadChunk();
             test.ChunkSetup();
+			
             test.ChunkVisibility(&camera);
             //Vector3 camPos = camera.GetPosition() / 16;
             //std::cout << camPos << std::endl;
@@ -146,6 +147,16 @@ int main(void) {
             
             glfwSwapBuffers(window);
             glfwPollEvents();
+
+			if (glfwGetKey(window, GLFW_KEY_R ) == GLFW_PRESS) {	
+				for (int j = 0; j < 10; j++) {
+					tab.checkAround((start.y + 10 + ha) / 16, (start.y + j) / 16);
+					chunk ***monoCy = tab.chunkToRet(start.x + 10 + ha, start.y + j);
+					test.loadNewChunk(monoCy, 10 + ha, j);
+				}
+				ha += 1;
+				std::cout << "test\n";
+			}
     }
     glfwTerminate();
     return 0;

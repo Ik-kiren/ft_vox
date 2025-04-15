@@ -133,14 +133,22 @@ void	mapGP::checkAround(int x, int y) {
 }
 
 chunk	***mapGP::chunkToRet(int x, int y) {
-	chunk	***ret = new chunk**[16];
+	int nbr = 1;
+	chunk	***ret = new chunk**[nbr];
+	int	a = x / 15;
+	int	b = y / 15;
+	int c = x % 15;
+	int	d = y % 15;
 
-	for (int i = 0; i < 16; i++) {
-		ret[i] = new chunk*[16];
-		for (int j = 0; j < 16; j++) {
+	for (int i = 0; i < nbr; i++) {
+		ret[i] = new chunk*[nbr];
+		for (int j = 0; j < nbr; j++) {
 			ret[i][j] = new chunk[16];
+			biome newB(this->_tab[a][b].bio, c, d);
+			newB.doGPlvl1();
+			std::cout << a << " " << b << " " << c << " " << d << '\n';
 			for (int k = 0; k < 16; k++) {
-				ret[i][j][k] = this->_tab[x][y].bio.voxelToChunk(i, j, k);
+				ret[i][j][k] = newB.voxelToChunk(i, j, k);
 			}
 		}
 	}
