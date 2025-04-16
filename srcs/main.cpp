@@ -67,22 +67,23 @@ void GetTimer(double &lastTime, double &deltaTime) {
 int main(void) {
     srand(time(NULL));
 	// seed = std::rand();
-	seed = 100;
+	seed = 110;
     Renderer renderer;
 
-    mapGP tab(48, 16);
-	coord2d start = gene2D(256, 256);
+    mapGP tab(65, 16);
+	coord2d start = gene2D(0, 0);
     chunk ***monoC = tab.chunkToRet(start.x, start.y);
     ChunkManager test(&renderer, monoC);
 
-	for (int i = 0; i < 10; i++) {
-		for (int j = 0; j < 10; j++) {
+	for (int i = -7; i < 8; i++) {
+		for (int j = -7; j < 8; j++) {
 			if (i == 0 && j == 0)
 				continue ;
-			chunk ***monoCx = tab.chunkToRet(start.x + i, start.y + j);
-			test.loadNewChunk(monoCx, i, j);
+			chunk ***monoCx0 = tab.chunkToRet(start.x + i, start.y + j);
+			test.loadNewChunk(monoCx0, i, j);
 		}
 	}
+
 	test.Init();
 
     GLFWwindow *window;
@@ -114,7 +115,10 @@ int main(void) {
     float fpsTimer = 0;
     int fps = 0;
     std::string lastFps = "0";
+
 	int ha = 0;
+	int	cameraCx = camera.GetPosition().x / 16;
+	int	cameraCz = camera.GetPosition().z / 16;
 
     while ((glfwGetKey(window, GLFW_KEY_ESCAPE ) != GLFW_PRESS &&
         glfwWindowShouldClose(window) == 0)) {
@@ -149,13 +153,27 @@ int main(void) {
             glfwPollEvents();
 
 			if (glfwGetKey(window, GLFW_KEY_R ) == GLFW_PRESS) {	
-				for (int j = 0; j < 10; j++) {
-					tab.checkAround((start.y + 10 + ha) / 16, (start.y + j) / 16);
-					chunk ***monoCy = tab.chunkToRet(start.x + 10 + ha, start.y + j);
-					test.loadNewChunk(monoCy, 10 + ha, j);
+				for (int j = -7; j < 8; j++) {
+					// tab.checkAround((start.y + 10 + ha) / 16, (start.y + j) / 16);
+					chunk ***monoCy = tab.chunkToRet(start.x + 7 + ha, start.y + j);
+					test.loadNewChunk(monoCy, 7 + ha, j);
 				}
 				ha += 1;
-				std::cout << "test\n";
+			}
+			// std::cout << (int)(camera.GetPosition().x / 16) << ' ' << camera.GetPosition().y << ' ' << camera.GetPosition().z / 16 << '\n';
+
+			if (cameraCx != (int)(camera.GetPosition().x / 16)) {
+				for (int j = -7; j < 8; j++) {
+					chunk ***monoCx1 = tab.chunkToRet(cameraCx + 7 * signe((int)(camera.GetPosition().x / 16) - cameraCx), cameraCz + j);
+					test.loadNewChunk(monoCx1, cameraCx + 7 * signe((int)(camera.GetPosition().x / 16) - cameraCx), cameraCz + j);
+				}
+				cameraCx = camera.GetPosition().x / 16;
+			} else if (cameraCz != (int)(camera.GetPosition().z / 16)) {
+				// for (int j = -7; j < 8; j++) {
+				// 	chunk ***monoCx2 = tab.chunkToRet(cameraCx + j, cameraCz + 7 * signe((int)(camera.GetPosition().z / 16) - cameraCz));
+				// 	test.loadNewChunk(monoCx2, cameraCx + j, cameraCz + 7 * signe((int)(camera.GetPosition().z / 16) - cameraCz));
+				// }
+				// cameraCz = camera.GetPosition().z / 16;
 			}
     }
     glfwTerminate();

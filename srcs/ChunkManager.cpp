@@ -8,8 +8,10 @@ using namespace std::chrono_literals;
 
 ChunkManager::ChunkManager(Renderer *renderer, chunk ***tab): renderer(renderer) {
     (void)camera;
-    this->maxPos = Vector3(0, 15, 0);
-    this->minPos = Vector3(0, 0, 0);
+    this->maxPos = Vector3(7, 15, 7);
+    this->minPos = Vector3(-7, 0, -7);
+    // this->maxPos = Vector3(0, 15, 0);
+    // this->minPos = Vector3(0, 0, 0);
 	// for (int i = this->minPos.x; i <= this->maxPos.x; i++)
     // {
     //     for (int j = this->minPos.y; j <= this->maxPos.y; j++)
@@ -110,8 +112,21 @@ void ChunkManager::UnloadChunk(Vector3 direction, Vector3 position) {
 }
 
 void	ChunkManager::loadNewChunk(chunk ***toLoad, int xdiff, int zdiff) {
-	this->maxPos = Vector3(0 + xdiff, 15, 0 + zdiff);
-    this->minPos = Vector3(0, 0, 0);
+	// this->maxPos = Vector3(xdiff, 15, zdiff);
+    // this->minPos = Vector3(xdiff, 0, zdiff);
+	// this->maxPos = Vector3(xdiff * signeP(xdiff), 15, zdiff * signeP(zdiff));
+    // this->minPos = Vector3((xdiff) * signeN(xdiff), 0, (zdiff) * signeN(zdiff));
+	// this->maxPos = Vector3(xdiff, 15, zdiff);
+    // this->minPos = Vector3(0, 0, 0);
+	if (xdiff >= 0 && this->maxPos.x < xdiff)
+		this->maxPos = Vector3(xdiff, 15, this->maxPos.z);
+	if (zdiff >= 0 && this->maxPos.z < zdiff)
+		this->maxPos = Vector3(this->maxPos.x, 15, zdiff);
+	if (xdiff < 0 && this->minPos.x > xdiff)
+		this->minPos = Vector3(xdiff, 0, this->minPos.z);
+	if (zdiff < 0 && this->minPos.z > zdiff)
+		this->minPos = Vector3(this->minPos.x, 0, zdiff);
+
     for (int i = 0; i < 1; i++) {
         for (int j = 0; j < 1; j++) {
             for (int k = 0; k < 16; k++) {

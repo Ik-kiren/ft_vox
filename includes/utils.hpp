@@ -29,5 +29,8 @@ float	roundPreci(float x, int preci);
 void	newSeed(int x, int y);
 int		randSeed(int x, int y);
 void	freeChunks(chunk ***toFree);
+int		signe(float x);
+int		signeP(int x);
+int		signeN(int x);
 
 #endif

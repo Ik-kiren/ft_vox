@@ -56,6 +56,7 @@ class biome {
 		std::array<unsigned char, sizeH>	&getArray(int x, int y);
 		chunk	voxelToChunk(int i, int j, int k);
 		void	doGPlvl1();
+		square	getSquare();
 };
 
 #endif

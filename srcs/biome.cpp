@@ -12,7 +12,7 @@ biome::biome(int size, square sq) {
 	this->_heightDiff = this->_heightMax - this->_heightMin;
 	this->_sq = sq;
 	this->_nbrGP = 8;
-	this->_Hb = 8;
+	this->_Hb = 6;
 	this->_level = 2;
 
 	for (int i = 0; i < this->_size; i++) {
@@ -40,9 +40,9 @@ biome::biome(biome biSup, int x, int y) {
 	this->_heightMin = biSup._heightMin;
 	this->_heightMax = biSup._heightMax;
 	this->_heightDiff = this->_heightMax - this->_heightMin;
-	this->_sq = squarelvl1(biSup._sq, x, y, 16);
+	this->_sq = squarelvl1(biSup._sq, x, y, 15);
 	this->_nbrGP = 8;
-	this->_Hb = biSup._Hb * 4;
+	this->_Hb = biSup._Hb * 6;
 	this->_level = 1;
 
 	for (int i = 0; i < this->_size; i++) {
@@ -203,7 +203,8 @@ void	biome::doGPCalculColumn(int i, int j, int mid, int l, float H1, float H2, f
 
 void	biome::doGPLine(int i, coord2d cd) {
 	newSeed(cd.x, cd.y);
-	// this->_Hb = randFloatBetween(2) + 8;
+	if (this->_level == 2)
+		this->_Hb = randFloatBetween(2) + 8;
 	float	H1 = 2 / this->_Hb;
 	float	H2 = 2 / (this->_Hb / 2);
 	float	H3 = 2 / (this->_Hb / 4);
@@ -226,7 +227,8 @@ void	biome::doGPLine(int i, coord2d cd) {
 
 void	biome::doGPColumn(int j, coord2d cd) {
 	newSeed(cd.x, cd.y);
-	// this->_Hb = randFloatBetween(2) + 8;
+	if (this->_level == 2)
+		this->_Hb = randFloatBetween(2) + 8;
 	float	H1 = 2 / this->_Hb;
 	float	H2 = 2 / (this->_Hb / 2);
 	float	H3 = 2 / (this->_Hb / 4);
@@ -286,6 +288,13 @@ void	biome::doGP() {
 		H2 /= (this->_Hb / 2);
 		H3 /= (this->_Hb / 4);
 	}
+
+	for (int i = 0; i < this->_size; i++) {
+		for (int j = 0; j < this->_size; j++) {
+			this->_tab[i][j].heightF = (this->_tab[i][j].heightF1 + this->_tab[i][j].heightF2 / 2 + this->_tab[i][j].heightF3 / 4) / 1.75;
+			this->_tab[i][j].heightF *= 1.5 * signe(this->_tab[i][j].heightF);
+		}
+	}
 }
 
 int	biome::whatTexture(int x, int y) {
@@ -326,7 +335,8 @@ void	biome::afterGP() {
 	for (int i = 0; i < this->_size; i++) {
 		for (int j = 0; j < this->_size; j++) {
 			this->_tab[i][j].heightF = (this->_tab[i][j].heightF1 + this->_tab[i][j].heightF2 / 2 + this->_tab[i][j].heightF3 / 4) / 1.75;
-			this->_tab[i][j].heightI = (this->_tab[i][j].heightF + 1.5) / 3 * this->_heightDiff + this->_heightMin;
+			this->_tab[i][j].heightF *= 1.5 * signe(this->_tab[i][j].heightF);
+			this->_tab[i][j].heightI = ((this->_tab[i][j].heightF * std::abs(this->_tab[i][j].heightF)) + 2.25) / 4.5 * this->_heightDiff + this->_heightMin;
 			this->_tab[i][j].texture = whatTexture(i, j);
 			this->_tab[i][j].arrayH = fillArray(this->_tab[i][j].heightI, this->_tab[i][j].texture);	
 		}
@@ -377,7 +387,13 @@ chunk	biome::voxelToChunk(int a, int b, int c) {
 }
 
 void	biome::iniBiome1(biome biSup, int x, int y) {
-	std::cout << x << " " << y << '\n';
+	x %= 15;
+	y %= 15;
+	if (x <= 0)
+		x = 14 + x;
+	if (y < 0)
+		y = 14 + y;
+	
 	this->_tab[0][0].GP = 2;
 	this->_tab[0][this->_size - 1].GP = 2;
 	this->_tab[this->_size - 1][0].GP = 2;
@@ -443,4 +459,8 @@ void	biome::doGPlvl1() {
 		H3 /= (this->_Hb / 4);
 	}
 	afterGP();
+}
+
+square	biome::getSquare() {
+	return this->_sq;	
 }

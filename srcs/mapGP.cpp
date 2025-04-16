@@ -10,9 +10,12 @@ mapGP::mapGP(int size, int sizeBiome) {
 	this->_sizeZ = 256;
 	this->_sizeBiome = sizeBiome;
 
-	for (int i = 0; i < this->_sizeH; i++) {
+	for (int i = -this->_sizeH / 2; i < this->_sizeH / 2; i++) {
 		std::vector<biomeGP>	tmp;
-		for (int j = 0; j < this->_sizeL; j++) {
+		for (int j = -this->_sizeL / 2; j < this->_sizeL / 2; j++) {
+	// for (int i = 0; i < this->_sizeH; i++) {
+	// 	std::vector<biomeGP>	tmp;
+	// 	for (int j = 0; j < this->_sizeL; j++) {
 			biomeGP	tmpS;	
 			tmpS.sq.NE = gene2D(i, j);
 			tmpS.sq.NO = gene2D(i, j + 1);
@@ -135,18 +138,23 @@ void	mapGP::checkAround(int x, int y) {
 chunk	***mapGP::chunkToRet(int x, int y) {
 	int nbr = 1;
 	chunk	***ret = new chunk**[nbr];
-	int	a = x / 15;
-	int	b = y / 15;
-	int c = x % 15;
-	int	d = y % 15;
+	int	a = x / 15 + 33 - signeN(x);
+	int	b = y / 15 + 33 - signeN(y);
+	// int c = x % 15;
+	// int	d = y % 15;
 
 	for (int i = 0; i < nbr; i++) {
 		ret[i] = new chunk*[nbr];
 		for (int j = 0; j < nbr; j++) {
 			ret[i][j] = new chunk[16];
-			biome newB(this->_tab[a][b].bio, c, d);
+			biome newB(this->_tab[a][b].bio, x, y);
 			newB.doGPlvl1();
-			std::cout << a << " " << b << " " << c << " " << d << '\n';
+			// std::cout << x << " " << y << " " << a << " " << b << " " << c << " " << d << '\n';
+			std::cout << x << " " << y << " " << a << " " << b << '\n';
+			std::cout << newB.getSquare().NE.x << " " << newB.getSquare().NE.y << '\n';
+			std::cout << newB.getSquare().NO.x << " " << newB.getSquare().NO.y << '\n';
+			std::cout << newB.getSquare().SE.x << " " << newB.getSquare().SE.y << '\n';
+			std::cout << newB.getSquare().SO.x << " " << newB.getSquare().SO.y << '\n';
 			for (int k = 0; k < 16; k++) {
 				ret[i][j][k] = newB.voxelToChunk(i, j, k);
 			}
