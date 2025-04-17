@@ -86,17 +86,6 @@ int main(void) {
 	}
 
 	test.Init();
-    mapGP tab(3, 256);
-
-    ChunkManager test(&renderer, &tab);
-    auto t1 = std::chrono::high_resolution_clock::now();
-    test.Init();
-    auto t2 = std::chrono::high_resolution_clock::now();
-
-    auto ms_int = std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1);
-
-    std::chrono::duration<double, std::milli> ms_double = t2 - t1;
-    std::cout << "double t = " << ms_double.count() << std::endl;
 
     GLFWwindow *window;
     window = InitGLFW();
@@ -109,7 +98,6 @@ int main(void) {
 
     //Mesh cubeMesh = Mesh("./objects/DirtCube.obj");  
 
-    Camera camera = Camera(Vector3(0, 128, 0), Vector3(0, 1, 0));
     Camera camera = Camera(Vector3(0, 128, 0), Vector3(0, 1, 0));
 
     //Object cubeObj = Object(cubeShader, &cubeMesh, Vector4(1, 1, 1, 1));

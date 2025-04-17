@@ -141,28 +141,3 @@ void	ChunkManager::loadNewChunk(chunk ***toLoad, int xdiff, int zdiff) {
 	}
     freeChunks(toLoad);
 }
-
-void	ChunkManager::loadNewChunk(chunk ***toLoad, int xdiff, int zdiff) {
-	if (xdiff >= 0 && this->maxPos.x < xdiff)
-		this->maxPos = Vector3(xdiff, 15, this->maxPos.z);
-	if (zdiff >= 0 && this->maxPos.z < zdiff)
-		this->maxPos = Vector3(this->maxPos.x, 15, zdiff);
-	if (xdiff < 0 && this->minPos.x > xdiff)
-		this->minPos = Vector3(xdiff, 0, this->minPos.z);
-	if (zdiff < 0 && this->minPos.z > zdiff)
-		this->minPos = Vector3(this->minPos.x, 0, zdiff);
-
-    for (int i = 0; i < 1; i++) {
-        for (int j = 0; j < 1; j++) {
-            for (int k = 0; k < 16; k++) {
-                Chunk *newChunk = new Chunk(this->renderer, this, toLoad[i][j][k].voxel);
-                newChunk->Translation(Vector3((i + xdiff) * Chunk::CHUNK_SIZE_X, k * Chunk::CHUNK_SIZE_Y, (j + zdiff) * Chunk::CHUNK_SIZE_Z));
-				newChunk->chunkList = &(this->chunkList);
-				loadList.push_back(newChunk);
-                chunkList.push_back(newChunk);
-				chunkMap.insert({newChunk->GetNormalizedPos(), newChunk});
-			}
-		}
-	}
-    freeChunks(toLoad);
-}
