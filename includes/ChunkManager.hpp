@@ -23,7 +23,6 @@ private:
     
     Vector3 lastCamPos;
     Vector3 lastCamDirection;
-    Vector3i lastChunkPos;
 
 public:
     std::unordered_map<Vector3, Chunk *> chunkMap;
@@ -37,6 +36,6 @@ public:
     Chunk *LoadThread(Chunk *chunk);
     void ChunkSetup();
     void ChunkVisibility(Camera *camera);
-    void UnloadChunk(Vector3i direction, Vector3i position);
+    void UnloadChunk(Vector3 position);
 	void loadNewChunk(chunk ***toLoad, int xdiff, int zdiff);
 };

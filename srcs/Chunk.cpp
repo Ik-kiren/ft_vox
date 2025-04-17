@@ -115,7 +115,7 @@ void Chunk::CreateCube(int &x, int &y, int &z, bool &xPositif, bool &xNegatif, b
         size = Vector3(1);
         blocksArray[x][y][z].visited[XNEGATIF] = true;
         for (int j = z; j + 1 < 16; j++) {
-            if (blocksArray[x][y][j + 1].type != blocksArray[x][y][z].type || !blocksArray[x][y][j + 1].IsActive() || blocksArray[x][y][j + 1].visited[XNEGATIF] || (y + 1 < 16 && blocksArray[x][y + 1][j + 1].IsActive()))
+            if (blocksArray[x][y][j + 1].type != blocksArray[x][y][z].type || !blocksArray[x][y][j + 1].IsActive() || blocksArray[x][y][j + 1].visited[XNEGATIF] || (x + 1 < 16 && blocksArray[x + 1][y][j + 1].IsActive()))
                 break;
             size.z += 1;
             blocksArray[x][y][j + 1].visited[XNEGATIF] = true;
@@ -123,7 +123,7 @@ void Chunk::CreateCube(int &x, int &y, int &z, bool &xPositif, bool &xNegatif, b
         for (int i = y; i + 1 < 16; i++) {
             bool is_row_good = true;
             for (int k = z; k < z + size.z && k < 16; k++) {
-                if (blocksArray[x][i + 1][k].type != blocksArray[x][y][z].type || !blocksArray[x][i + 1][k].IsActive() || blocksArray[x][i + 1][k].visited[XNEGATIF] || (x + 1 < 16 && blocksArray[x + 1][i + 1][k].IsActive())) {
+                if (blocksArray[x][i + 1][k].type != blocksArray[x][y][z].type || !blocksArray[x][i + 1][k].IsActive() || blocksArray[x][i + 1][k].visited[XNEGATIF] || (x > 0 && blocksArray[x - 1][i + 1][k].IsActive())) {
                     is_row_good = false;
                     break;
                 }
@@ -183,7 +183,7 @@ void Chunk::CreateCube(int &x, int &y, int &z, bool &xPositif, bool &xNegatif, b
         size = Vector3(1);
         blocksArray[x][y][z].visited[XPOSITIF] = true;
         for (int j = z; j + 1 < 16; j++) {
-            if (blocksArray[x][y][j + 1].type != blocksArray[x][y][z].type || !blocksArray[x][y][j + 1].IsActive() || blocksArray[x][y][j + 1].visited[XPOSITIF] || (y + 1 < 16 && blocksArray[x][y + 1][j + 1].IsActive()))
+            if (blocksArray[x][y][j + 1].type != blocksArray[x][y][z].type || !blocksArray[x][y][j + 1].IsActive() || blocksArray[x][y][j + 1].visited[XPOSITIF] || (x + 1 < 16 && blocksArray[x + 1][y][j + 1].IsActive()))
                 break;
             size.z += 1;
             blocksArray[x][y][j + 1].visited[XPOSITIF] = true;

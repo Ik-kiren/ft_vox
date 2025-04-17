@@ -98,21 +98,16 @@ void ChunkManager::ChunkVisibility(Camera *camera) {
         renderer->Render(renderList);
     lastCamPos = camera->GetPosition();
     lastCamDirection = camera->GetFront();
-    Vector3i tmp(camera->GetPosition() / 16);
-    if (tmp != lastChunkPos) {
-        Vector3 rounded = lastCamDirection.Round();
-        //std::cout << "lastdir = " << rounded << " and " << lastCamPos << std::endl;
-        this->UnloadChunk(lastCamDirection.Round(), lastCamPos / 16);
-    }
-    lastChunkPos = Vector3i(camera->GetPosition() / 16);
 }
 
-void ChunkManager::UnloadChunk(Vector3i direction, Vector3i position) {
-    if (direction == Vector3(1, 0, 0)) {
-        for (int i = minPos.z; i < maxPos.z; i++) {
-            for (int j = minPos.y; j < maxPos.y; j++) {
-                Vector3 tmp = Vector3(position.x - ((abs(minPos.x) + abs(maxPos.x) + 1) / 2), i, j);
-            }
+void ChunkManager::UnloadChunk(Vector3 position) {
+    chunkMap.erase(position);
+    for (std::vector<Chunk *>::iterator it = visibilityList.begin(); it != visibilityList.end();) {
+        if ((*it)->GetPosition() == position) {
+            it = visibilityList.erase(it);
+        }
+        else {
+            it++;
         }
     }
 }
