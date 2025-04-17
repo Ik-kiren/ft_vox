@@ -50,6 +50,10 @@ Vector3 Vector3::Round() {
     return Vector3(round(this->x), round(this->y), round(this->z));
 }
 
+Vector3 Vector3::Floor() {
+    return Vector3(floor(this->x), floor(this->y), floor(this->z));
+}
+
 float &Vector3::operator[](int index) {
     if (index < 0 || index > 2) {
         std::string str = "Vector3: " + std::to_string(index) + " out of range";

@@ -39,4 +39,7 @@ public:
     void UnloadChunkX(int x);
     void UnloadChunkZ(int z);
 	void loadNewChunk(chunk ***toLoad, int xdiff, int zdiff);
+
+    Vector3 GetMaxChunkPos();
+    Vector3 GetMinChunkPos();
 };
