@@ -30,6 +30,7 @@ class biome {
 		square		_sq;
 		int			_nbrGP;
 		float		_Hb;
+		int			_level;
 		std::vector<std::vector<heightGP>>	_tab;
 
 		void	iniBiome();
@@ -42,9 +43,11 @@ class biome {
 		void	afterGP();
 		void	dig(int x, int y, int h, int size);
 		void	doCave(int x, int y);
+		void	iniBiome1(biome biSup, int x, int y);
 	public:
 		biome();
 		biome(int size, square sq);
+		biome(biome biSup, int x, int y);
 		~biome();
 
 		void	printTab(int mode);
@@ -52,6 +55,8 @@ class biome {
 		void	doGP();
 		std::array<unsigned char, sizeH>	&getArray(int x, int y);
 		chunk	voxelToChunk(int i, int j, int k);
+		void	doGPlvl1();
+		square	getSquare();
 };
 
 #endif

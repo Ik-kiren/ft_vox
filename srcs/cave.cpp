@@ -65,8 +65,8 @@ void	cave::doIniCave() {
 void	cave::afterGPcave() {
 	for (int i = 0; i < this->_lenght; i++) {
 		this->_caveX[i].sizeI = std::max(this->_sizeIni + (int)(this->_caveX[i].sizeF * this->_sizeModif), 1);
-		this->_caveX[i].dirXI = (int)(this->_caveX[i].dirXF * 3.0f);
-		this->_caveX[i].dirYI = (int)(this->_caveX[i].dirYF * 3.0f);
+		this->_caveX[i].dirXI = (int)(this->_caveX[i].dirXF * 2.0f);
+		this->_caveX[i].dirYI = (int)(this->_caveX[i].dirYF * 2.0f);
 		this->_caveX[i].dirZI = (int)(this->_caveX[i].dirZF + 1);
 	}
 }

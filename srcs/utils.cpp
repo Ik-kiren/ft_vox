@@ -1,5 +1,15 @@
 #include "../includes/utils.hpp"
 
+square	squarelvl1(square sq, int x, int y, int size) {
+	square	ret;
+
+	ret.NE = gene2D(x, y);
+	ret.NO = gene2D(x, y + 1);
+	ret.SE = gene2D(x + 1, y);
+	ret.SO = gene2D(x + 1, y + 1);
+	return ret;	
+}
+
 coord2d	gene2D(int x, int y) {
 	coord2d	ret;
 
@@ -36,8 +46,8 @@ static void	freeVoxels(chunk toFree) {
 }
 
 void	freeChunks(chunk ***toFree) {
-	for (int i = 0; i < 16; i++) {
-		for (int j = 0; j < 16; j++) {
+	for (int i = 0; i < 1; i++) {
+		for (int j = 0; j < 1; j++) {
 			for (int k = 0; k < 16; k++) {
 				freeVoxels(toFree[i][j][k]);
 			}
@@ -46,4 +56,22 @@ void	freeChunks(chunk ***toFree) {
 		delete [] toFree[i];
 	}
 	delete [] toFree;
+}
+
+int	signe(float x) {
+	if (x < 0)
+		return -1;
+	return 1;
+}
+
+int	signeP(int x) {
+	if (x < 0)
+		return 0;
+	return 1;
+}
+
+int	signeN(int x) {
+	if (x >= 0)
+		return 0;
+	return 1;
 }

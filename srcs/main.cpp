@@ -10,6 +10,8 @@
 #include "../includes/mapGP.hpp"
 #include <chrono>
 
+#include <sys/time.h>
+
 int seed = 0;
 
 
@@ -65,7 +67,25 @@ void GetTimer(double &lastTime, double &deltaTime) {
 
 int main(void) {
     srand(time(NULL));
+	// seed = std::rand();
+	seed = 150;
     Renderer renderer;
+
+    mapGP tab(65, 16);
+	coord2d start = gene2D(0, 0);
+    chunk ***monoC = tab.chunkToRet(start.x, start.y);
+    ChunkManager test(&renderer, monoC);
+
+	for (int i = -7; i < 8; i++) {
+		for (int j = -7; j < 8; j++) {
+			if (i == 0 && j == 0)
+				continue ;
+			chunk ***monoCx0 = tab.chunkToRet(start.x + i, start.y + j);
+			test.loadNewChunk(monoCx0, i, j);
+		}
+	}
+
+	test.Init();
     mapGP tab(3, 256);
 
     ChunkManager test(&renderer, &tab);
@@ -90,6 +110,7 @@ int main(void) {
     //Mesh cubeMesh = Mesh("./objects/DirtCube.obj");  
 
     Camera camera = Camera(Vector3(0, 128, 0), Vector3(0, 1, 0));
+    Camera camera = Camera(Vector3(0, 128, 0), Vector3(0, 1, 0));
 
     //Object cubeObj = Object(cubeShader, &cubeMesh, Vector4(1, 1, 1, 1));
 
@@ -107,6 +128,10 @@ int main(void) {
     float fpsTimer = 0;
     int fps = 0;
     std::string lastFps = "0";
+
+	int ha = 0;
+	int	cameraCx = camera.GetPosition().x / 16;
+	int	cameraCz = camera.GetPosition().z / 16;
 
     while ((glfwGetKey(window, GLFW_KEY_ESCAPE ) != GLFW_PRESS &&
         glfwWindowShouldClose(window) == 0)) {
@@ -131,7 +156,9 @@ int main(void) {
             font.RenderText(fontShader, lastFps, 0.5, 1100, 2, Vector3(1, 0.2, 0.2));
             
             //cubeObj.drawMeshInstance(window, camera, objects, compute);
+			test.LoadChunk();
             test.ChunkSetup();
+			
             test.ChunkVisibility(&camera);
             //Vector3 camPos = camera.GetPosition() / 16;
             //std::cout << camPos << std::endl;
@@ -140,6 +167,32 @@ int main(void) {
             
             glfwSwapBuffers(window);
             glfwPollEvents();
+
+			if (glfwGetKey(window, GLFW_KEY_R ) == GLFW_PRESS) {	
+				for (int j = -7; j < 8; j++) {
+					// tab.checkAround((start.y + 10 + ha) / 16, (start.y + j) / 16);
+					chunk ***monoCy = tab.chunkToRet(start.x + 7 + ha, start.y + j);
+					test.loadNewChunk(monoCy, 7 + ha, j);
+				}
+				ha += 1;
+			}
+			// std::cout << (int)(camera.GetPosition().x / 16) << ' ' << camera.GetPosition().y << ' ' << camera.GetPosition().z / 16 << '\n';
+
+			if (cameraCx != (int)(camera.GetPosition().x / 16)) {
+				for (int j = -7; j < 8; j++) {
+					chunk ***monoCx1 = tab.chunkToRet(cameraCx + 7 * signe((int)(camera.GetPosition().x / 16) - cameraCx), cameraCz + j);
+					test.loadNewChunk(monoCx1, cameraCx + 7 * signe((int)(camera.GetPosition().x / 16) - cameraCx), cameraCz + j);
+				}
+				cameraCx = camera.GetPosition().x / 16;
+			}
+			
+			// if (cameraCz != (int)(camera.GetPosition().z / 16)) {
+			// 	for (int j = -7; j < 8; j++) {
+			// 		chunk ***monoCx2 = tab.chunkToRet(cameraCx + j, cameraCz + 7 * signe((int)(camera.GetPosition().z / 16) - cameraCz));
+			// 		test.loadNewChunk(monoCx2, cameraCx + j, cameraCz + 7 * signe((int)(camera.GetPosition().z / 16) - cameraCz));
+			// 	}
+			// 	cameraCz = camera.GetPosition().z / 16;
+			// }
     }
     glfwTerminate();
     return 0;
