@@ -11,7 +11,7 @@ biome::biome(int size, square sq) {
 	// this->_heightMax = 130;
 	this->_heightDiff = this->_heightMax - this->_heightMin;
 	this->_sq = sq;
-	this->_nbrGP = 8;
+	this->_nbrGP = 4;
 	this->_Hb = 6;
 	this->_level = 2;
 
@@ -188,7 +188,6 @@ void	biome::doGPCalculLine(int i, int j, int mid, int L, float H1, float H2, flo
 		this->_tab[i][mid].heightF2 = (this->_tab[i][L].heightF2 + this->_tab[i][j].heightF2) / 2 + randFloatBetween(H2);
 		this->_tab[i][mid].heightF3 = (this->_tab[i][L].heightF3 + this->_tab[i][j].heightF3) / 2 + randFloatBetween(H3);
 		this->_tab[i][mid].tempF = (this->_tab[i][L].tempF + this->_tab[i][j].tempF) / 2 + randFloatBetween(H1);;
-
 	}
 }
 
@@ -292,7 +291,6 @@ void	biome::doGP() {
 	for (int i = 0; i < this->_size; i++) {
 		for (int j = 0; j < this->_size; j++) {
 			this->_tab[i][j].heightF = (this->_tab[i][j].heightF1 + this->_tab[i][j].heightF2 / 2 + this->_tab[i][j].heightF3 / 4) / 1.75;
-			this->_tab[i][j].heightF *= 1.5 * signe(this->_tab[i][j].heightF);
 		}
 	}
 }
@@ -457,6 +455,16 @@ void	biome::doGPlvl1() {
 		H1 /= this->_Hb;
 		H2 /= (this->_Hb / 2);
 		H3 /= (this->_Hb / 4);
+	}
+	for (int i = 0; i < this->_size; i++) {
+		this->_tab[i][0].GP = 0;
+		doGPCalculLine(i, 0, 0, 1, H1, H2, H3);
+		this->_tab[i][0].GP = 2;
+	}
+	for (int i = 0; i < this->_size; i++) {
+		this->_tab[0][i].GP = 0;
+		doGPCalculColumn(0, i, 0, 1, H1, H2, H3);
+		this->_tab[0][i].GP = 2;
 	}
 	afterGP();
 }
