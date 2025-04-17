@@ -2,31 +2,11 @@
 
 square	squarelvl1(square sq, int x, int y, int size) {
 	square	ret;
-	coord2d	angle;
 
-	if (x >= 0 && y >= 0)
-		angle = sq.NE;
-	else if (x >= 0)
-		angle = sq.NO;
-	else if (y >= 0)
-		angle = sq.SE;
-	else
-		angle = sq.SO;
-
-	// ret.NE = gene2D(angle.x * size + x, angle.y * size + y);
-	// ret.NO = gene2D(angle.x * size + x, angle.y * size + y + signe(y));
-	// ret.SE = gene2D(angle.x * size + x + signe(x), angle.y * size + y);
-	// ret.SO = gene2D(angle.x * size + x + signe(x), angle.y * size + y + signe(y));
-
-	// ret.NE = gene2D(angle.x * size + x, angle.y * size + y);
-	// ret.NO = gene2D(angle.x * size + x, angle.y * size + y + 1);
-	// ret.SE = gene2D(angle.x * size + x + 1, angle.y * size + y);
-	// ret.SO = gene2D(angle.x * size + x + 1, angle.y * size + y + 1);
-
-	ret.NE = gene2D(angle.x + x, angle.y + y);
-	ret.NO = gene2D(angle.x + x, angle.y + y + 1);
-	ret.SE = gene2D(angle.x + x + 1, angle.y + y);
-	ret.SO = gene2D(angle.x + x + 1, angle.y + y + 1);
+	ret.NE = gene2D(x, y);
+	ret.NO = gene2D(x, y + 1);
+	ret.SE = gene2D(x + 1, y);
+	ret.SO = gene2D(x + 1, y + 1);
 	return ret;	
 }
 

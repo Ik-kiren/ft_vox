@@ -67,7 +67,7 @@ void GetTimer(double &lastTime, double &deltaTime) {
 int main(void) {
     srand(time(NULL));
 	// seed = std::rand();
-	seed = 110;
+	seed = 150;
     Renderer renderer;
 
     mapGP tab(65, 16);
@@ -168,13 +168,15 @@ int main(void) {
 					test.loadNewChunk(monoCx1, cameraCx + 7 * signe((int)(camera.GetPosition().x / 16) - cameraCx), cameraCz + j);
 				}
 				cameraCx = camera.GetPosition().x / 16;
-			} else if (cameraCz != (int)(camera.GetPosition().z / 16)) {
-				// for (int j = -7; j < 8; j++) {
-				// 	chunk ***monoCx2 = tab.chunkToRet(cameraCx + j, cameraCz + 7 * signe((int)(camera.GetPosition().z / 16) - cameraCz));
-				// 	test.loadNewChunk(monoCx2, cameraCx + j, cameraCz + 7 * signe((int)(camera.GetPosition().z / 16) - cameraCz));
-				// }
-				// cameraCz = camera.GetPosition().z / 16;
 			}
+			
+			// if (cameraCz != (int)(camera.GetPosition().z / 16)) {
+			// 	for (int j = -7; j < 8; j++) {
+			// 		chunk ***monoCx2 = tab.chunkToRet(cameraCx + j, cameraCz + 7 * signe((int)(camera.GetPosition().z / 16) - cameraCz));
+			// 		test.loadNewChunk(monoCx2, cameraCx + j, cameraCz + 7 * signe((int)(camera.GetPosition().z / 16) - cameraCz));
+			// 	}
+			// 	cameraCz = camera.GetPosition().z / 16;
+			// }
     }
     glfwTerminate();
     return 0;

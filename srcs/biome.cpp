@@ -40,7 +40,7 @@ biome::biome(biome biSup, int x, int y) {
 	this->_heightMin = biSup._heightMin;
 	this->_heightMax = biSup._heightMax;
 	this->_heightDiff = this->_heightMax - this->_heightMin;
-	this->_sq = squarelvl1(biSup._sq, x, y, 15);
+	this->_sq = squarelvl1(biSup._sq, x, y, 14);
 	this->_nbrGP = 8;
 	this->_Hb = biSup._Hb * 6;
 	this->_level = 1;
@@ -203,8 +203,8 @@ void	biome::doGPCalculColumn(int i, int j, int mid, int l, float H1, float H2, f
 
 void	biome::doGPLine(int i, coord2d cd) {
 	newSeed(cd.x, cd.y);
-	if (this->_level == 2)
-		this->_Hb = randFloatBetween(2) + 8;
+	// if (this->_level == 2)
+	// 	this->_Hb = randFloatBetween(2) + 8;
 	float	H1 = 2 / this->_Hb;
 	float	H2 = 2 / (this->_Hb / 2);
 	float	H3 = 2 / (this->_Hb / 4);
@@ -227,8 +227,8 @@ void	biome::doGPLine(int i, coord2d cd) {
 
 void	biome::doGPColumn(int j, coord2d cd) {
 	newSeed(cd.x, cd.y);
-	if (this->_level == 2)
-		this->_Hb = randFloatBetween(2) + 8;
+	// if (this->_level == 2)
+	// 	this->_Hb = randFloatBetween(2) + 8;
 	float	H1 = 2 / this->_Hb;
 	float	H2 = 2 / (this->_Hb / 2);
 	float	H3 = 2 / (this->_Hb / 4);
@@ -386,14 +386,15 @@ chunk	biome::voxelToChunk(int a, int b, int c) {
 	return toRet;
 }
 
-void	biome::iniBiome1(biome biSup, int x, int y) {
-	x %= 15;
-	y %= 15;
-	if (x <= 0)
+void	biome::iniBiome1(biome biSup, int a, int b) {
+	int	x = (a + signeN(a)) % 15;
+	int	y = (b + signeN(b)) % 15;
+
+	if (a < 0)
 		x = 14 + x;
-	if (y < 0)
+	if (b < 0)
 		y = 14 + y;
-	
+
 	this->_tab[0][0].GP = 2;
 	this->_tab[0][this->_size - 1].GP = 2;
 	this->_tab[this->_size - 1][0].GP = 2;

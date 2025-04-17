@@ -112,12 +112,6 @@ void ChunkManager::UnloadChunk(Vector3 direction, Vector3 position) {
 }
 
 void	ChunkManager::loadNewChunk(chunk ***toLoad, int xdiff, int zdiff) {
-	// this->maxPos = Vector3(xdiff, 15, zdiff);
-    // this->minPos = Vector3(xdiff, 0, zdiff);
-	// this->maxPos = Vector3(xdiff * signeP(xdiff), 15, zdiff * signeP(zdiff));
-    // this->minPos = Vector3((xdiff) * signeN(xdiff), 0, (zdiff) * signeN(zdiff));
-	// this->maxPos = Vector3(xdiff, 15, zdiff);
-    // this->minPos = Vector3(0, 0, 0);
 	if (xdiff >= 0 && this->maxPos.x < xdiff)
 		this->maxPos = Vector3(xdiff, 15, this->maxPos.z);
 	if (zdiff >= 0 && this->maxPos.z < zdiff)

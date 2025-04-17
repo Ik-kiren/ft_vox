@@ -13,7 +13,6 @@ struct biomeGP {
 	bool	GP;
 	square	sq;
 	biome	bio;
-	biome	**chunk;
 };
 
 class mapGP {
