@@ -100,10 +100,30 @@ void ChunkManager::ChunkVisibility(Camera *camera) {
     lastCamDirection = camera->GetFront();
 }
 
-void ChunkManager::UnloadChunk(Vector3 position) {
-    chunkMap.erase(position);
+void ChunkManager::UnloadChunkX(int x) {
+    for (int i = minPos.y; i <= maxPos.y; i++) {
+        for (int j = minPos.z; j <= maxPos.z; j++) {
+            chunkMap.erase(Vector3(x, i , j));
+        }
+    }
     for (std::vector<Chunk *>::iterator it = visibilityList.begin(); it != visibilityList.end();) {
-        if ((*it)->GetPosition() == position) {
+        if ((*it)->GetPosition().x == x) {
+            it = visibilityList.erase(it);
+        }
+        else {
+            it++;
+        }
+    }
+}
+
+void ChunkManager::UnloadChunkZ(int z) {
+    for (int i = minPos.x; i <= maxPos.x; i++) {
+        for (int j = minPos.y; j <= maxPos.y; j++) {
+            chunkMap.erase(Vector3(i, j , z));
+        }
+    }
+    for (std::vector<Chunk *>::iterator it = visibilityList.begin(); it != visibilityList.end();) {
+        if ((*it)->GetPosition().z == z) {
             it = visibilityList.erase(it);
         }
         else {

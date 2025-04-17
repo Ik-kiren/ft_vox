@@ -36,6 +36,7 @@ public:
     Chunk *LoadThread(Chunk *chunk);
     void ChunkSetup();
     void ChunkVisibility(Camera *camera);
-    void UnloadChunk(Vector3 position);
+    void UnloadChunkX(int x);
+    void UnloadChunkZ(int z);
 	void loadNewChunk(chunk ***toLoad, int xdiff, int zdiff);
 };

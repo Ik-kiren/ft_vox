@@ -72,6 +72,24 @@
         "fstream": "cpp",
         "*.ipp": "cpp",
         "valarray": "cpp",
-        "future": "cpp"
+        "future": "cpp",
+        "csetjmp": "cpp",
+        "cuchar": "cpp",
+        "any": "cpp",
+        "barrier": "cpp",
+        "charconv": "cpp",
+        "codecvt": "cpp",
+        "coroutine": "cpp",
+        "forward_list": "cpp",
+        "unordered_set": "cpp",
+        "expected": "cpp",
+        "latch": "cpp",
+        "regex": "cpp",
+        "scoped_allocator": "cpp",
+        "shared_mutex": "cpp",
+        "source_location": "cpp",
+        "spanstream": "cpp",
+        "stacktrace": "cpp",
+        "syncstream": "cpp"
     }
 }
