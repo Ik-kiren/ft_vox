@@ -8,7 +8,7 @@ using namespace std::chrono_literals;
 
 ChunkManager::ChunkManager(Renderer *renderer, mapGP *tab): renderer(renderer) {
     (void)camera;
-    this->maxPos = Vector3(15, 15, 15);
+    this->maxPos = Vector3(15, 15, 1);
     this->minPos = Vector3(0, 0, 0);
     chunk ***test = tab->chunkToRet(1, 2);
     for (int i = this->minPos.x; i <= this->maxPos.x; i++)
@@ -89,14 +89,20 @@ void ChunkManager::ChunkVisibility(Camera *camera) {
         renderer->Render(renderList);
     lastCamPos = camera->GetPosition();
     lastCamDirection = camera->GetFront();
+    Vector3i tmp(camera->GetPosition() / 16);
+    if (tmp != lastChunkPos) {
+        Vector3 rounded = lastCamDirection.Round();
+        //std::cout << "lastdir = " << rounded << " and " << lastCamPos << std::endl;
+        this->UnloadChunk(lastCamDirection.Round(), lastCamPos / 16);
+    }
+    lastChunkPos = Vector3i(camera->GetPosition() / 16);
 }
 
-void ChunkManager::UnloadChunk(Vector3 direction, Vector3 position) {
+void ChunkManager::UnloadChunk(Vector3i direction, Vector3i position) {
     if (direction == Vector3(1, 0, 0)) {
         for (int i = minPos.z; i < maxPos.z; i++) {
             for (int j = minPos.y; j < maxPos.y; j++) {
-                Vector3 tmp = Vector3((abs(minPos.x) + abs(maxPos.x)) - position.x, i, j);
-                std:: cout << tmp << std::endl;
+                Vector3 tmp = Vector3(position.x - ((abs(minPos.x) + abs(maxPos.x) + 1) / 2), i, j);
             }
         }
     }

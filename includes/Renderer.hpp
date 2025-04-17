@@ -32,7 +32,7 @@ public:
     void InitRenderer(Shader *shader, Camera *camera);
     void CreateMesh(unsigned int &meshID);
     unsigned int AddVertex(unsigned int &meshID, Vector3 &vecs, float type);
-    unsigned int AddVertex(unsigned int &meshID, float x, float y, float z, float type);
+    unsigned int AddVertex(unsigned int &meshID, float x, float y, float z, float type, Vector2 size);
     void addIndices(unsigned int &meshID, unsigned int &v1, unsigned int &v2, unsigned int &v3);
     void FinishMesh(unsigned int &meshID);
     void Render();

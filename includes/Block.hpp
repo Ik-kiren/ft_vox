@@ -1,8 +1,18 @@
 #pragma once
 
 enum BlockType {
-    GRASS = 0,
-    STONE = 1
+    DEFAULT = 0,
+    GRASS = 1,
+    STONE = 2
+};
+
+enum FacesType {
+    YPOSITIF,
+    YNEGATIF,
+    XPOSITIF,
+    XNEGATIF,
+    ZPOSITIF,
+    ZNEGATIF
 };
 
 class Block
@@ -10,8 +20,9 @@ class Block
 private:
     bool active;
 public:
-    BlockType type = GRASS;
-    constexpr static float BLOCK_SIZE = 0.5f;
+    bool visited[6] = {false, false, false, false, false, false};
+    BlockType type = DEFAULT;
+    constexpr static float BLOCK_SIZE = 1.0f;
     Block(/* args */);
     ~Block();
     

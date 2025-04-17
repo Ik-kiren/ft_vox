@@ -8,6 +8,7 @@
 #include "../includes/ChunkManager.hpp"
 #include "../includes/Renderer.hpp"
 #include "../includes/mapGP.hpp"
+#include <chrono>
 
 int seed = 0;
 
@@ -68,7 +69,14 @@ int main(void) {
     mapGP tab(3, 256);
 
     ChunkManager test(&renderer, &tab);
+    auto t1 = std::chrono::high_resolution_clock::now();
     test.Init();
+    auto t2 = std::chrono::high_resolution_clock::now();
+
+    auto ms_int = std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1);
+
+    std::chrono::duration<double, std::milli> ms_double = t2 - t1;
+    std::cout << "double t = " << ms_double.count() << std::endl;
 
     GLFWwindow *window;
     window = InitGLFW();
@@ -81,7 +89,7 @@ int main(void) {
 
     //Mesh cubeMesh = Mesh("./objects/DirtCube.obj");  
 
-    Camera camera = Camera(Vector3(0, 0, 0), Vector3(0, 1, 0));
+    Camera camera = Camera(Vector3(0, 128, 0), Vector3(0, 1, 0));
 
     //Object cubeObj = Object(cubeShader, &cubeMesh, Vector4(1, 1, 1, 1));
 
@@ -104,6 +112,9 @@ int main(void) {
         glfwWindowShouldClose(window) == 0)) {
             glClearColor(0.0f, 0.45f, 0.3f, 0.0f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            if (glfwGetKey(window, GLFW_KEY_R ) == GLFW_PRESS) {
+                glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+            }
             glfwGetCursorPos(window, &xpos, &ypos);
             ypos = abs(ypos - windowHeigth);
             glfwGetWindowSize(window, &windowWidth, &windowHeigth);

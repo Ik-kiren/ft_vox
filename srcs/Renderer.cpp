@@ -35,7 +35,7 @@ unsigned int Renderer::AddVertex(unsigned int &meshID, Vector3 &vec, float type)
     return index;
 }
 
-unsigned int Renderer::AddVertex(unsigned int &meshID, float x, float y, float z, float type) {
+unsigned int Renderer::AddVertex(unsigned int &meshID, float x, float y, float z, float type , Vector2 size) {
 
     unsigned int index = this->meshes[meshID]->GetVertexArray().size() / STRIDE_SIZE;
     /*meshes[meshID]->AddVertex(x, y, z);
@@ -45,8 +45,8 @@ unsigned int Renderer::AddVertex(unsigned int &meshID, float x, float y, float z
         x,
         y,
         z,
-        meshes[meshID]->textureVertices[meshes[meshID]->textureIndex].x,
-        meshes[meshID]->textureVertices[meshes[meshID]->textureIndex].y,
+        meshes[meshID]->textureVertices[meshes[meshID]->textureIndex].x * size.x,
+        meshes[meshID]->textureVertices[meshes[meshID]->textureIndex].y * size.y,
         type
     });
     meshes[meshID]->textureIndex = (meshes[meshID]->textureIndex + 1) % 4; // look to change that

@@ -7,6 +7,7 @@
 #include "./Chunk.hpp"
 #include "./mapGP.hpp"
 #include "./utils.hpp"
+#include "../includes/Vector3i.hpp"
 #include <unordered_map>
 
 class ChunkManager
@@ -22,6 +23,7 @@ private:
     
     Vector3 lastCamPos;
     Vector3 lastCamDirection;
+    Vector3i lastChunkPos;
 
 public:
     std::unordered_map<Vector3, Chunk *> chunkMap;
@@ -35,5 +37,5 @@ public:
     Chunk *LoadThread(Chunk *chunk);
     void ChunkSetup();
     void ChunkVisibility(Camera *camera);
-    void UnloadChunk(Vector3 direction, Vector3 position);
+    void UnloadChunk(Vector3i direction, Vector3i position);
 };

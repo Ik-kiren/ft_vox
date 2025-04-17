@@ -34,7 +34,7 @@ public:
     void Render();
     void Translation(Vector3 vec);
     Vector3 GetNormalizedPos();
-
+    bool CheckXPositifIsVisible(int x, int y, int z);
     Vector3 GetPosition();
 };
 

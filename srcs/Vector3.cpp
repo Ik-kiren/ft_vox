@@ -1,6 +1,7 @@
 #include "../includes/Vector3.hpp"
 #include <vector>
 #include <string>
+#include <math.h>
 #include "../includes/Vector4.hpp"
 
 Vector3::Vector3() {
@@ -42,7 +43,11 @@ Vector3::Vector3(const Vector4 &vec) {
 Vector3::~Vector3() {}
 
 Vector3 Vector3::Inverse() {
-    return Vector3(x * -1, y * -1, z * -1);
+    return Vector3(this->x * -1, this->y * -1, this->z * -1);
+}
+
+Vector3 Vector3::Round() {
+    return Vector3(round(this->x), round(this->y), round(this->z));
 }
 
 float &Vector3::operator[](int index) {
