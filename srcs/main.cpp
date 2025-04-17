@@ -72,19 +72,7 @@ int main(void) {
     Renderer renderer;
 
     mapGP tab(65, 16);
-	coord2d start = gene2D(0, 0);
-    chunk ***monoC = tab.chunkToRet(start.x, start.y);
-    ChunkManager test(&renderer, monoC);
-
-	for (int i = -7; i < 8; i++) {
-		for (int j = -7; j < 8; j++) {
-			if (i == 0 && j == 0)
-				continue ;
-			chunk ***monoCx0 = tab.chunkToRet(start.x + i, start.y + j);
-			test.loadNewChunk(monoCx0, i, j);
-		}
-	}
-
+    ChunkManager test(&renderer, tab);
 	test.Init();
 
     GLFWwindow *window;
@@ -117,7 +105,6 @@ int main(void) {
     int fps = 0;
     std::string lastFps = "0";
 
-	int ha = 0;
 	int	cameraCx = camera.GetPosition().x / 16;
 	int	cameraCz = camera.GetPosition().z / 16;
 
@@ -156,31 +143,15 @@ int main(void) {
             glfwSwapBuffers(window);
             glfwPollEvents();
 
-			if (glfwGetKey(window, GLFW_KEY_R ) == GLFW_PRESS) {	
-				for (int j = -7; j < 8; j++) {
-					// tab.checkAround((start.y + 10 + ha) / 16, (start.y + j) / 16);
-					chunk ***monoCy = tab.chunkToRet(start.x + 7 + ha, start.y + j);
-					test.loadNewChunk(monoCy, 7 + ha, j);
-				}
-				ha += 1;
-			}
-			// std::cout << (int)(camera.GetPosition().x / 16) << ' ' << camera.GetPosition().y << ' ' << camera.GetPosition().z / 16 << '\n';
-
 			if (cameraCx != (int)(camera.GetPosition().x / 16)) {
-				for (int j = -7; j < 8; j++) {
-					chunk ***monoCx1 = tab.chunkToRet(cameraCx + 7 * signe((int)(camera.GetPosition().x / 16) - cameraCx), cameraCz + j);
-					test.loadNewChunk(monoCx1, cameraCx + 7 * signe((int)(camera.GetPosition().x / 16) - cameraCx), cameraCz + j);
-				}
+				test.loadNewLine(cameraCx, camera.GetPosition().x, cameraCz);
 				cameraCx = camera.GetPosition().x / 16;
 			}
 			
-			// if (cameraCz != (int)(camera.GetPosition().z / 16)) {
-			// 	for (int j = -7; j < 8; j++) {
-			// 		chunk ***monoCx2 = tab.chunkToRet(cameraCx + j, cameraCz + 7 * signe((int)(camera.GetPosition().z / 16) - cameraCz));
-			// 		test.loadNewChunk(monoCx2, cameraCx + j, cameraCz + 7 * signe((int)(camera.GetPosition().z / 16) - cameraCz));
-			// 	}
-			// 	cameraCz = camera.GetPosition().z / 16;
-			// }
+			if (cameraCz != (int)(camera.GetPosition().z / 16)) {
+				test.loadNewColumn(cameraCz, camera.GetPosition().z, cameraCx);
+				cameraCz = camera.GetPosition().z / 16;
+			}
     }
     glfwTerminate();
     return 0;

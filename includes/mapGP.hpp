@@ -36,7 +36,7 @@ class mapGP {
 		void	printSquareGP(int x, int y, int mode);
 		void	printCave(int x, int y, int a, int b);
 		void	checkAround(int x, int y);
-		chunk	***chunkToRet(int x, int y);
+		chunk	*chunkToRet(int x, int y);
 };
 
 #endif

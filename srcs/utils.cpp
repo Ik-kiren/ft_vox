@@ -45,15 +45,9 @@ static void	freeVoxels(chunk toFree) {
 	delete [] toFree.voxel;
 }
 
-void	freeChunks(chunk ***toFree) {
-	for (int i = 0; i < 1; i++) {
-		for (int j = 0; j < 1; j++) {
-			for (int k = 0; k < 16; k++) {
-				freeVoxels(toFree[i][j][k]);
-			}
-			delete [] toFree[i][j];
-		}
-		delete [] toFree[i];
+void	freeChunks(chunk *toFree) {
+	for (int k = 0; k < 16; k++) {
+		freeVoxels(toFree[k]);
 	}
 	delete [] toFree;
 }

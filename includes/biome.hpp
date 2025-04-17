@@ -54,7 +54,7 @@ class biome {
 		void	printCave(int x, int y);
 		void	doGP();
 		std::array<unsigned char, sizeH>	&getArray(int x, int y);
-		chunk	voxelToChunk(int i, int j, int k);
+		chunk	voxelToChunk(int k);
 		void	doGPlvl1();
 		square	getSquare();
 };

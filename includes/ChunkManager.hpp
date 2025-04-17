@@ -24,11 +24,13 @@ private:
     Vector3 lastCamPos;
     Vector3 lastCamDirection;
 
+	mapGP	tab;
+
 public:
     std::unordered_map<Vector3, Chunk *> chunkMap;
     Vector3 maxPos;
     Vector3 minPos;
-    ChunkManager(Renderer *renderer, chunk ***mapGP);
+    ChunkManager(Renderer *renderer, mapGP tab);
     ~ChunkManager();
 
     void Init();
@@ -38,5 +40,7 @@ public:
     void ChunkVisibility(Camera *camera);
     void UnloadChunkX(int x);
     void UnloadChunkZ(int z);
-	void loadNewChunk(chunk ***toLoad, int xdiff, int zdiff);
+	void loadNewChunk(chunk *toLoad, int xdiff, int zdiff);
+	void loadNewLine(int oldx, int newx, int z);
+	void loadNewColumn(int oldz, int newz, int x);
 };

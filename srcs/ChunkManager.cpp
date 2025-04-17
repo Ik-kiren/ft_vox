@@ -6,33 +6,18 @@
 
 using namespace std::chrono_literals;
 
-ChunkManager::ChunkManager(Renderer *renderer, chunk ***tab): renderer(renderer) {
+ChunkManager::ChunkManager(Renderer *renderer, mapGP tab): renderer(renderer) {
     (void)camera;
     this->maxPos = Vector3(7, 15, 7);
     this->minPos = Vector3(-7, 0, -7);
-    // this->maxPos = Vector3(0, 15, 0);
-    // this->minPos = Vector3(0, 0, 0);
-	// for (int i = this->minPos.x; i <= this->maxPos.x; i++)
-    // {
-    //     for (int j = this->minPos.y; j <= this->maxPos.y; j++)
-    //     {
-    //         for (int k = this->minPos.z; k <= this->maxPos.z; k++) {
-    for (int i = 0; i < 1; i++)
-    {
-        for (int j = 0; j < 1; j++)
-        {
-            for (int k = 0; k < 16; k++) {
-                Chunk *newChunk = new Chunk(renderer, this, tab[i][j][k].voxel);
-                newChunk->Translation(Vector3(i * Chunk::CHUNK_SIZE_X, k * Chunk::CHUNK_SIZE_Y, j * Chunk::CHUNK_SIZE_Z));
-                newChunk->chunkList = &(this->chunkList);
-                loadList.push_back(newChunk);
-                chunkList.push_back(newChunk);
-                chunkMap.insert({newChunk->GetNormalizedPos(), newChunk});
-            }
-        }
-    }
-    freeChunks(tab);
-    std::cout << loadList.size() << std::endl;
+	this->tab = tab;
+
+ 	for (int i = this->minPos.x; i <= this->maxPos.x; i++) {
+		for (int j = this->minPos.z; j <= this->maxPos.z; j++) {
+			chunk *monoCx0 = tab.chunkToRet(i, j);
+			this->loadNewChunk(monoCx0, i, j);
+		}
+	}
 }
 
 ChunkManager::~ChunkManager() {
@@ -107,7 +92,7 @@ void ChunkManager::UnloadChunkX(int x) {
         }
     }
     for (std::vector<Chunk *>::iterator it = visibilityList.begin(); it != visibilityList.end();) {
-        if ((*it)->GetPosition().x == x) {
+        if ((*it)->GetNormalizedPos().x == x) {
             it = visibilityList.erase(it);
         }
         else {
@@ -123,7 +108,7 @@ void ChunkManager::UnloadChunkZ(int z) {
         }
     }
     for (std::vector<Chunk *>::iterator it = visibilityList.begin(); it != visibilityList.end();) {
-        if ((*it)->GetPosition().z == z) {
+        if ((*it)->GetNormalizedPos().z == z) {
             it = visibilityList.erase(it);
         }
         else {
@@ -132,27 +117,39 @@ void ChunkManager::UnloadChunkZ(int z) {
     }
 }
 
-void	ChunkManager::loadNewChunk(chunk ***toLoad, int xdiff, int zdiff) {
-	if (xdiff >= 0 && this->maxPos.x < xdiff)
-		this->maxPos = Vector3(xdiff, 15, this->maxPos.z);
-	if (zdiff >= 0 && this->maxPos.z < zdiff)
-		this->maxPos = Vector3(this->maxPos.x, 15, zdiff);
-	if (xdiff < 0 && this->minPos.x > xdiff)
-		this->minPos = Vector3(xdiff, 0, this->minPos.z);
-	if (zdiff < 0 && this->minPos.z > zdiff)
-		this->minPos = Vector3(this->minPos.x, 0, zdiff);
+void	ChunkManager::loadNewChunk(chunk *toLoad, int xdiff, int zdiff) {
+	// if (xdiff >= 0 && this->maxPos.x < xdiff)
+	// 	this->maxPos = Vector3(xdiff, 15, this->maxPos.z);
+	// if (zdiff >= 0 && this->maxPos.z < zdiff)
+	// 	this->maxPos = Vector3(this->maxPos.x, 15, zdiff);
+	// if (xdiff < 0 && this->minPos.x > xdiff)
+	// 	this->minPos = Vector3(xdiff, 0, this->minPos.z);
+	// if (zdiff < 0 && this->minPos.z > zdiff)
+	// 	this->minPos = Vector3(this->minPos.x, 0, zdiff);
 
-    for (int i = 0; i < 1; i++) {
-        for (int j = 0; j < 1; j++) {
-            for (int k = 0; k < 16; k++) {
-                Chunk *newChunk = new Chunk(this->renderer, this, toLoad[i][j][k].voxel);
-                newChunk->Translation(Vector3((i + xdiff) * Chunk::CHUNK_SIZE_X, k * Chunk::CHUNK_SIZE_Y, (j + zdiff) * Chunk::CHUNK_SIZE_Z));
-				newChunk->chunkList = &(this->chunkList);
-				loadList.push_back(newChunk);
-                chunkList.push_back(newChunk);
-				chunkMap.insert({newChunk->GetNormalizedPos(), newChunk});
-			}
-		}
+	for (int k = 0; k < 16; k++) {
+		Chunk *newChunk = new Chunk(this->renderer, this, toLoad[k].voxel);
+		newChunk->Translation(Vector3(xdiff * Chunk::CHUNK_SIZE_X, k * Chunk::CHUNK_SIZE_Y, zdiff * Chunk::CHUNK_SIZE_Z));
+		newChunk->chunkList = &(this->chunkList);
+		loadList.push_back(newChunk);
+		chunkList.push_back(newChunk);
+		chunkMap.insert({newChunk->GetNormalizedPos(), newChunk});
 	}
     freeChunks(toLoad);
+}
+
+void	ChunkManager::loadNewLine(int oldx, int newx, int z) {
+	this->UnloadChunkX(oldx - 7 * signe((int)(newx / 16) - oldx));
+	for (int j = this->minPos.z; j <= this->maxPos.z; j++) {
+		chunk *monoCx1 = this->tab.chunkToRet(oldx + 7 * signe((int)(newx / 16) - oldx) + signe((int)(newx / 16) - oldx), z + j);
+		this->loadNewChunk(monoCx1, oldx + 7 * signe((int)(newx / 16) - oldx) + signe((int)(newx / 16) - oldx), z + j);
+	}
+}
+
+void	ChunkManager::loadNewColumn(int oldz, int newz, int x) {
+	this->UnloadChunkZ(oldz - 7 * signe((int)(newz / 16) - oldz));
+	for (int j = this->minPos.x; j <= this->maxPos.x; j++) {
+		chunk *monoCx2 = this->tab.chunkToRet(x + j, oldz + 7 * signe((int)(newz / 16) - oldz) + signe((int)(newz / 16) - oldz));
+		this->loadNewChunk(monoCx2, x + j, oldz + 7 * signe((int)(newz / 16) - oldz) + signe((int)(newz / 16) - oldz));
+	}
 }
