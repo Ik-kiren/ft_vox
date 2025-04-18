@@ -273,7 +273,7 @@ void Chunk::CreateMesh() {
 
                 bool xPositif = false;
                 if (!blocksArray[x][y][z].visited[XPOSITIF]) {
-                    if (x == CHUNK_SIZE_X - 1 && normalizedPos.x == chunkManager->maxPos.x)
+                    if (x == CHUNK_SIZE_X - 1 && normalizedPos.x == chunkManager->GetMaxChunkPos().x)
                         xPositif = true;
                     else if (x < CHUNK_SIZE_X - 1)
                         xPositif = this->blocksArray[x + 1][y][z].IsActive();
@@ -285,7 +285,7 @@ void Chunk::CreateMesh() {
 
                 bool xNegatif = false;
                 if (!blocksArray[x][y][z].visited[XNEGATIF]) {
-                    if (x == 0 && normalizedPos.x == chunkManager->minPos.x)
+                    if (x == 0 && normalizedPos.x == chunkManager->GetMinChunkPos().x)
                         xNegatif = true;
                     else if (x > 0)
                         xNegatif = this->blocksArray[x - 1][y][z].IsActive();
@@ -309,7 +309,7 @@ void Chunk::CreateMesh() {
                 
                 bool yNegatif = false;
                 if (!blocksArray[x][y][z].visited[YNEGATIF]) {
-                    if (y == 0 && normalizedPos.y == chunkManager->minPos.y)
+                    if (y == 0 && normalizedPos.y == chunkManager->GetMinChunkPos().y)
                         yNegatif = true;
                     else if (y > 0)
                         yNegatif = this->blocksArray[x][y - 1][z].IsActive();
@@ -321,7 +321,7 @@ void Chunk::CreateMesh() {
 
                 bool zPositif = false;
                 if (!blocksArray[x][y][z].visited[ZPOSITIF]) {
-                    if (z == CHUNK_SIZE_Z - 1 && normalizedPos.z == chunkManager->maxPos.z)
+                    if (z == CHUNK_SIZE_Z - 1 && normalizedPos.z == chunkManager->GetMaxChunkPos().z)
                         zPositif = true;
                     else if (z < CHUNK_SIZE_Z - 1)
                         zPositif = this->blocksArray[x][y][z + 1].IsActive();
@@ -333,7 +333,7 @@ void Chunk::CreateMesh() {
 
                 bool zNegatif = false;
                 if (!blocksArray[x][y][z].visited[ZNEGATIF]) {
-                    if (z == 0 && normalizedPos.z == chunkManager->minPos.z)
+                    if (z == 0 && normalizedPos.z == chunkManager->GetMinChunkPos().z)
                         zNegatif = true;
                     else if (z > 0)
                         zNegatif = this->blocksArray[x][y][z - 1].IsActive();

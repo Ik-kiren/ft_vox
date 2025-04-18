@@ -140,6 +140,27 @@ void	ChunkManager::loadNewChunk(chunk *toLoad, int xdiff, int zdiff) {
     freeChunks(toLoad);
 }
 
+Vector3 ChunkManager::GetMaxChunkPos() {
+    Vector3 tmp(0.0);
+    if (camera != NULL)
+        tmp = camera->GetPosition();
+    else
+        tmp = Vector3(0, 0, 0);
+    tmp = tmp / 16 + ((maxPos - minPos) / 2);
+    return tmp.Floor();
+}
+
+Vector3 ChunkManager::GetMinChunkPos() {
+    Vector3 tmp(0.0);
+    if (camera != NULL)
+        tmp = camera->GetPosition();
+    else
+        tmp = Vector3(0, 0, 0);
+    tmp = tmp / 16 - ((maxPos - minPos) / 2);
+    return tmp.Floor();
+}
+
+
 void	ChunkManager::loadNewLine(int oldx, int newx, int z) {
 	this->UnloadChunkX(oldx - 7 * signe((int)(newx) - oldx));
 	for (int j = this->minPos.z; j <= this->maxPos.z; j++) {

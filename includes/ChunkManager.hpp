@@ -40,6 +40,10 @@ public:
     void ChunkVisibility(Camera *camera);
     void UnloadChunkX(int x);
     void UnloadChunkZ(int z);
+	void loadNewChunk(chunk ***toLoad, int xdiff, int zdiff);
+
+    Vector3 GetMaxChunkPos();
+    Vector3 GetMinChunkPos();
 	void loadNewChunk(chunk *toLoad, int xdiff, int zdiff);
 	void loadNewLine(int oldx, int newx, int z);
 	void loadNewColumn(int oldz, int newz, int x);
