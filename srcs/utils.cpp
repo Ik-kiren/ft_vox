@@ -18,6 +18,15 @@ coord2d	gene2D(int x, int y) {
 	return ret;
 }
 
+coord3d	gene3D(int x, int y, int z) {
+	coord3d	ret;
+
+	ret.x = x;
+	ret.y = y;
+	ret.z = z;
+	return ret;
+}
+
 float	randFloatBetween(float h) {
 	return (((double)std::rand()) / RAND_MAX) * 2 * h - h;
 }
@@ -27,7 +36,7 @@ float	roundPreci(float x, int preci) {
 }
 
 void	newSeed(int x, int y) {
-	std::srand(abs(seed + (1453 ^ x) * 12 - (8469 ^ y) * 13));
+	std::srand(abs(seed + (1453 ^ x) * 12 - (8469 ^ y) * 31));
 }
 
 int		randSeed(int x, int y) {
@@ -65,6 +74,12 @@ int	signeP(int x) {
 }
 
 int	signeN(int x) {
+	if (x >= 0)
+		return 0;
+	return 1;
+}
+
+int	signeN(float x) {
 	if (x >= 0)
 		return 0;
 	return 1;

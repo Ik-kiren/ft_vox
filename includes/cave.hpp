@@ -16,6 +16,11 @@ struct caveGP {
 	int		dirZI;
 };
 
+struct caveDig {
+	bool					impact;
+	std::vector<coord3d>	toDel;
+};
+
 class cave {
 	private:
 		int	_seed;
@@ -23,13 +28,17 @@ class cave {
 		int	_lenght;
 		int	_nbrGP;
 		int	_sizeModif;
-		std::vector<caveGP>	_caveX;	
+		std::vector<caveGP>	_caveX;
 
 		void	afterGPcave();
+		void	dig(int x, int y, int h, int size);
+		void	doDig(int x, int y, int h);
 	public:
 		cave();
 		cave(int x, int y, int size, int lenght);
 		~cave();
+		
+		caveDig			**_tab;
 
 		void	doIniCave();
 		int		getLenght();

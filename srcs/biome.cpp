@@ -14,6 +14,7 @@ biome::biome(int size, square sq) {
 	this->_nbrGP = 4;
 	this->_Hb = 6;
 	this->_level = 2;
+	this->_cave = NULL;
 
 	for (int i = 0; i < this->_size; i++) {
 		std::vector<heightGP>	tmp;
@@ -34,7 +35,7 @@ biome::biome(int size, square sq) {
 	}
 }
 
-biome::biome(biome biSup, int x, int y) {
+biome::biome(biome &biSup, int x, int y) {
 	this->_size = 16;
 	this->_sizeZ = 256;
 	this->_heightMin = biSup._heightMin;
@@ -44,6 +45,7 @@ biome::biome(biome biSup, int x, int y) {
 	this->_nbrGP = 8;
 	this->_Hb = biSup._Hb * 6;
 	this->_level = 1;
+	this->_cave = NULL;
 
 	for (int i = 0; i < this->_size; i++) {
 		std::vector<heightGP>	tmp;
@@ -65,7 +67,11 @@ biome::biome(biome biSup, int x, int y) {
 	iniBiome1(biSup, x, y);
 }
 
-biome::~biome() {}
+biome::~biome() {
+	if (this->_cave == NULL)
+		return ;
+	delete this->_cave;
+}
 
 void	biome::printTab(int mode) {
 	if (mode == 1) {
@@ -288,11 +294,14 @@ void	biome::doGP() {
 		H3 /= (this->_Hb / 4);
 	}
 
-	for (int i = 0; i < this->_size; i++) {
-		for (int j = 0; j < this->_size; j++) {
-			this->_tab[i][j].heightF = (this->_tab[i][j].heightF1 + this->_tab[i][j].heightF2 / 2 + this->_tab[i][j].heightF3 / 4) / 1.75;
-		}
-	}
+	// for (int i = 0; i < this->_size; i++) {
+	// 	for (int j = 0; j < this->_size; j++) {
+	// 		this->_tab[i][j].heightF = (this->_tab[i][j].heightF1 + this->_tab[i][j].heightF2 / 2 + this->_tab[i][j].heightF3 / 4) / 1.75;
+	// 	}
+	// }
+	// if ((this->_sq.NE.x < 3 && this->_sq.NE.x > -3) && (this->_sq.NE.y > -3 && this->_sq.NE.y < 3)) {
+	// 	this->_cave = new cave(this->_sq.NE.x, this->_sq.NE.y, 3, 100);
+	// }
 }
 
 int	biome::whatTexture(int x, int y) {
@@ -340,27 +349,27 @@ void	biome::afterGP() {
 	}
 }
 
-void	biome::dig(int x, int y, int h, int size) {
-	for (int i = std::max(x - size, 0); i < std::min(x + size, this->_size); i++) {
-		for (int j = std::max(y - size, 0); j < std::min(y + size, this->_size); j++) {
-			for (int l = std::max(h - size, 0); l < std::min(h + size, this->_sizeZ); l++)
-				this->_tab[i][j].arrayH[l] = 0;
-		}
-	}
-}
+// void	biome::dig(int x, int y, int h, int size) {
+// 	for (int i = std::max(x - size, 0); i < std::min(x + size, this->_size); i++) {
+// 		for (int j = std::max(y - size, 0); j < std::min(y + size, this->_size); j++) {
+// 			for (int l = std::max(h - size, 0); l < std::min(h + size, this->_sizeZ); l++)
+// 				this->_tab[i][j].arrayH[l] = 0;
+// 		}
+// 	}
+// }
 
-void	biome::doCave(int x, int y) {
-	cave	c(this->_sq.NE.x, this->_sq.NE.y, 3, 100);
-	int		h = this->_tab[x][y].heightI + 3;
+// void	biome::doCave(int x, int y) {
+// 	cave	c(this->_sq.NE.x, this->_sq.NE.y, 3, 100);
+// 	int		h = this->_tab[x][y].heightI + 3;
 
-	c.doIniCave();
-	for (int k = 0; k < c.getLenght(); k++) {
-		h -= c.getCaveX(k).dirZI;
-		x += c.getCaveX(k).dirXI;
-		y += c.getCaveX(k).dirYI;
-		this->dig(x, y, h, c.getCaveX(k).sizeI);
-	}
-}
+// 	c.doIniCave();
+// 	for (int k = 0; k < c.getLenght(); k++) {
+// 		h -= c.getCaveX(k).dirZI;
+// 		x += c.getCaveX(k).dirXI;
+// 		y += c.getCaveX(k).dirYI;
+// 		this->dig(x, y, h, c.getCaveX(k).sizeI);
+// 	}
+// }
 
 std::array<unsigned char, sizeH>	&biome::getArray(int x, int y) {
 	return this->_tab[x][y].arrayH;
@@ -383,7 +392,7 @@ chunk	biome::voxelToChunk(int c) {
 	return toRet;
 }
 
-void	biome::iniBiome1(biome biSup, int a, int b) {
+void	biome::iniBiome1(biome &biSup, int a, int b) {
 	int	x = (a + signeN(a)) % 15;
 	int	y = (b + signeN(b)) % 15;
 
@@ -456,19 +465,33 @@ void	biome::doGPlvl1() {
 		H2 /= (this->_Hb / 2);
 		H3 /= (this->_Hb / 4);
 	}
-	for (int i = 0; i < this->_size; i++) {
-		this->_tab[i][0].GP = 0;
-		doGPCalculLine(i, 0, 0, 1, H1, H2, H3);
-		this->_tab[i][0].GP = 2;
-	}
-	for (int i = 0; i < this->_size; i++) {
-		this->_tab[0][i].GP = 0;
-		doGPCalculColumn(0, i, 0, 1, H1, H2, H3);
-		this->_tab[0][i].GP = 2;
-	}
+	// for (int i = 0; i < this->_size; i++) {
+	// 	this->_tab[i][0].GP = 0;
+	// 	doGPCalculLine(i, 0, 0, 1, H1, H2, H3);
+	// 	this->_tab[i][0].GP = 2;
+	// }
+	// for (int i = 0; i < this->_size; i++) {
+	// 	this->_tab[0][i].GP = 0;
+	// 	doGPCalculColumn(0, i, 0, 1, H1, H2, H3);
+	// 	this->_tab[0][i].GP = 2;
+	// }
 	afterGP();
 }
 
 square	biome::getSquare() {
 	return this->_sq;	
+}
+
+void	biome::dig(biome &biSup, int x, int y) {
+	if (biSup._cave->_tab[x][y].impact == 0)
+		return ;
+	int i;
+	int j;
+	int	k;
+	for (int l = 0; l < biSup._cave->_tab[x][y].toDel.size(); l++) {
+		i = biSup._cave->_tab[x][y].toDel[l].x;
+		j = biSup._cave->_tab[x][y].toDel[l].y;
+		k = biSup._cave->_tab[x][y].toDel[l].z;
+		this->_tab[i][j].arrayH[k] = 0;
+	}
 }
