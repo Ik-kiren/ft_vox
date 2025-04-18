@@ -37,7 +37,7 @@ public:
     void LoadChunk();
     Chunk *LoadThread(Chunk *chunk);
     void ChunkSetup();
-    void ChunkVisibility(Camera *camera);
+    void ChunkVisibility();
     void UnloadChunkX(int x);
     void UnloadChunkZ(int z);
 	void loadNewChunk(chunk ***toLoad, int xdiff, int zdiff);
@@ -47,4 +47,6 @@ public:
 	void loadNewChunk(chunk *toLoad, int xdiff, int zdiff);
 	void loadNewLine(int oldx, int newx, int z);
 	void loadNewColumn(int oldz, int newz, int x);
+
+    void SetCamera(Camera *camera);
 };

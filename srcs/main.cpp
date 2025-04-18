@@ -87,6 +87,7 @@ int main(void) {
     //Mesh cubeMesh = Mesh("./objects/DirtCube.obj");  
 
     Camera camera = Camera(Vector3(0, 128, 0), Vector3(0, 1, 0));
+    test.SetCamera(&camera);
 
     //Object cubeObj = Object(cubeShader, &cubeMesh, Vector4(1, 1, 1, 1));
 
@@ -134,7 +135,7 @@ int main(void) {
 			test.LoadChunk();
             test.ChunkSetup();
 			
-            test.ChunkVisibility(&camera);
+            test.ChunkVisibility();
             //Vector3 camPos = camera.GetPosition() / 16;
             //std::cout << camPos << std::endl;
             camera.RegisterKeyboardInput(window);
@@ -143,14 +144,20 @@ int main(void) {
             glfwSwapBuffers(window);
             glfwPollEvents();
 
-			if (cameraCx != (int)(camera.GetPosition().x / 16)) {
-				test.loadNewLine(cameraCx, camera.GetPosition().x, cameraCz);
-				cameraCx = camera.GetPosition().x / 16;
+			if (cameraCx != (int)camera.GetChunkPos().x) {
+                int tmp = 0;
+                if (camera.GetPosition().x < 0)
+                    tmp = 16;
+				test.loadNewLine(cameraCx, camera.GetPosition().x - tmp, cameraCz);
+				cameraCx = camera.GetChunkPos().x;
 			}
 			
-			if (cameraCz != (int)(camera.GetPosition().z / 16)) {
+			if (cameraCz != (int)camera.GetChunkPos().z) {
+                int tmp = 0;
+                if (camera.GetPosition().z < 0)
+                    tmp = 16;
 				test.loadNewColumn(cameraCz, camera.GetPosition().z, cameraCx);
-				cameraCz = camera.GetPosition().z / 16;
+				cameraCz = camera.GetChunkPos().z;
 			}
     }
     glfwTerminate();

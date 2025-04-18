@@ -277,7 +277,7 @@ void Chunk::CreateMesh() {
                         xPositif = true;
                     else if (x < CHUNK_SIZE_X - 1)
                         xPositif = this->blocksArray[x + 1][y][z].IsActive();
-                    else if (this->chunkManager->chunkMap.find(normalizedPos + Vector3(1, 0, 0)) != this->chunkManager->chunkMap.end() && x == CHUNK_SIZE_X - 1 && normalizedPos.x < chunkManager->maxPos.x)
+                    else if (this->chunkManager->chunkMap.find(normalizedPos + Vector3(1, 0, 0)) != this->chunkManager->chunkMap.end() && x == CHUNK_SIZE_X - 1 && normalizedPos.x < chunkManager->GetMaxChunkPos().x)
                         xPositif = this->chunkManager->chunkMap[normalizedPos + Vector3(1, 0, 0)]->GetBlocksArray()[0][y][z].IsActive();
                 } else {
                     xPositif = true;
@@ -289,7 +289,7 @@ void Chunk::CreateMesh() {
                         xNegatif = true;
                     else if (x > 0)
                         xNegatif = this->blocksArray[x - 1][y][z].IsActive();
-                    else if (this->chunkManager->chunkMap.find(normalizedPos + Vector3(-1, 0, 0)) != this->chunkManager->chunkMap.end() && x == 0 && normalizedPos.x > chunkManager->minPos.x)
+                    else if (this->chunkManager->chunkMap.find(normalizedPos + Vector3(-1, 0, 0)) != this->chunkManager->chunkMap.end() && x == 0 && normalizedPos.x > chunkManager->GetMinChunkPos().x)
                         xNegatif = this->chunkManager->chunkMap[normalizedPos + Vector3(-1, 0, 0)]->GetBlocksArray()[15][y][z].IsActive();
                 } else {
                     xNegatif = true;
@@ -309,7 +309,7 @@ void Chunk::CreateMesh() {
                 
                 bool yNegatif = false;
                 if (!blocksArray[x][y][z].visited[YNEGATIF]) {
-                    if (y == 0 && normalizedPos.y == chunkManager->GetMinChunkPos().y)
+                    if (y == 0 && normalizedPos.y == chunkManager->minPos.y)
                         yNegatif = true;
                     else if (y > 0)
                         yNegatif = this->blocksArray[x][y - 1][z].IsActive();
@@ -325,7 +325,7 @@ void Chunk::CreateMesh() {
                         zPositif = true;
                     else if (z < CHUNK_SIZE_Z - 1)
                         zPositif = this->blocksArray[x][y][z + 1].IsActive();
-                    else if (this->chunkManager->chunkMap.find(normalizedPos + Vector3(0, 0, 1)) != this->chunkManager->chunkMap.end() && z == CHUNK_SIZE_Z - 1 && normalizedPos.z < chunkManager->maxPos.z)
+                    else if (this->chunkManager->chunkMap.find(normalizedPos + Vector3(0, 0, 1)) != this->chunkManager->chunkMap.end() && z == CHUNK_SIZE_Z - 1 && normalizedPos.z < chunkManager->GetMaxChunkPos().z)
                         zPositif = this->chunkManager->chunkMap[normalizedPos + Vector3(0, 0, 1)]->GetBlocksArray()[x][y][0].IsActive();
                 } else {
                     zPositif = true;
@@ -337,7 +337,7 @@ void Chunk::CreateMesh() {
                         zNegatif = true;
                     else if (z > 0)
                         zNegatif = this->blocksArray[x][y][z - 1].IsActive();
-                    else if (this->chunkManager->chunkMap.find(normalizedPos + Vector3(0, 0, -1)) != this->chunkManager->chunkMap.end() && z == 0 && normalizedPos.z > chunkManager->minPos.z)
+                    else if (this->chunkManager->chunkMap.find(normalizedPos + Vector3(0, 0, -1)) != this->chunkManager->chunkMap.end() && z == 0 && normalizedPos.z > chunkManager->GetMinChunkPos().z)
                         zNegatif = this->chunkManager->chunkMap[normalizedPos + Vector3(0, 0, -1)]->GetBlocksArray()[x][y][15].IsActive();
                 } else {
                     zNegatif = true;

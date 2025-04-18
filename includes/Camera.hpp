@@ -50,6 +50,8 @@ class Camera {
     void RegisterMouseInput(GLFWwindow *window);
     void RegisterKeyboardInput(GLFWwindow *window);
     void UpdateFrustum();
+
+    Vector3 GetChunkPos();
     
     bool InsideFrustum(BSphere bsphere);
     bool InsideFrustum(AABB aabb);

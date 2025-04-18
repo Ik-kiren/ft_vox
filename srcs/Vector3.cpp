@@ -50,8 +50,8 @@ Vector3 Vector3::Round() {
     return Vector3(round(this->x), round(this->y), round(this->z));
 }
 
-Vector3 Vector3::Floor() {
-    return Vector3(floor(this->x), floor(this->y), floor(this->z));
+Vector3 Vector3::Trunc() {
+    return Vector3(trunc(this->x), trunc(this->y), trunc(this->z));
 }
 
 float &Vector3::operator[](int index) {

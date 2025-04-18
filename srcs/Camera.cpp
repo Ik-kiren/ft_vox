@@ -150,6 +150,16 @@ void Camera::setCameraVectors() {
     up = normalized(cross(right, front));
 }
 
+Vector3 Camera::GetChunkPos() {
+    Vector3 tmp(0.0);
+    tmp = this->GetPosition();
+    if (tmp.x < 0)
+        tmp.x -= 16;
+    if (tmp.z < 0)
+        tmp.z -= 16;
+    return (tmp / 16).Trunc();
+}
+
 Camera &Camera::operator=(const Camera &rhs) {
     this->position = rhs.position;
     this->front = rhs.front;

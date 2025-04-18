@@ -20,7 +20,7 @@ class Vector3 {
 
     Vector3 Inverse();
     Vector3 Round();
-    Vector3 Floor();
+    Vector3 Trunc();
 
     float   &operator[](int index);
     Vector3 operator*(float rhs);
