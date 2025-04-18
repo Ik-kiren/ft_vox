@@ -8,7 +8,7 @@ using namespace std::chrono_literals;
 
 ChunkManager::ChunkManager(Renderer *renderer, mapGP &tab): renderer(renderer) {
     camera = NULL;
-	int nbr = 14;
+	int nbr = 8;
     this->maxPos = Vector3(nbr, 15, nbr);
     this->minPos = Vector3(-nbr, 0, -nbr);
 	this->tab = tab;
