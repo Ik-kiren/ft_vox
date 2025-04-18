@@ -8,8 +8,9 @@ using namespace std::chrono_literals;
 
 ChunkManager::ChunkManager(Renderer *renderer, mapGP &tab): renderer(renderer) {
     camera = NULL;
-    this->maxPos = Vector3(1, 15, 1);
-    this->minPos = Vector3(-1, 0, -1);
+	int nbr = 14;
+    this->maxPos = Vector3(nbr, 15, nbr);
+    this->minPos = Vector3(-nbr, 0, -nbr);
 	this->tab = tab;
 
  	for (int i = this->minPos.x; i <= this->maxPos.x; i++) {
@@ -86,9 +87,12 @@ void ChunkManager::ChunkVisibility() {
 }
 
 void ChunkManager::UnloadChunkX(int x) {
-    for (int i = minPos.y; i <= maxPos.y; i++) {
-        for (int j = GetMinChunkPos().z; j <= GetMaxChunkPos().z; j++) {
-            chunkMap.erase(Vector3(x, i , j));
+    for (std::vector<Chunk *>::iterator it = loadList.begin(); it != loadList.end();) {
+        if ((*it)->GetNormalizedPos().x == x) {
+            it = loadList.erase(it);
+        }
+        else {
+            it++;
         }
     }
     for (std::vector<Chunk *>::iterator it = visibilityList.begin(); it != visibilityList.end();) {
@@ -99,8 +103,8 @@ void ChunkManager::UnloadChunkX(int x) {
             it++;
         }
     }
-    for (int i = minPos.y; i <= maxPos.y; i++) {
-        for (int j = minPos.z; j <= maxPos.z; j++) {
+    for (int i = GetMinChunkPos().y; i <= GetMaxChunkPos().y; i++) {
+        for (int j = GetMinChunkPos().z; j <= GetMaxChunkPos().z; j++) {
 			// delete chunkMap[Vector3(x, i, j)];
             chunkMap.erase(Vector3(x, i , j));
         }
@@ -108,11 +112,14 @@ void ChunkManager::UnloadChunkX(int x) {
 }
 
 void ChunkManager::UnloadChunkZ(int z) {
-    for (int i = GetMinChunkPos().x; i <= GetMaxChunkPos().x; i++) {
-        for (int j = minPos.y; j <= maxPos.y; j++) {
-            chunkMap.erase(Vector3(i, j , z));
-        }
-    }
+	for (std::vector<Chunk *>::iterator it = loadList.begin(); it != loadList.end();) {
+		if ((*it)->GetNormalizedPos().z == z) {
+			it = loadList.erase(it);
+		}
+		else {
+			it++;
+		}
+	}
     for (std::vector<Chunk *>::iterator it = visibilityList.begin(); it != visibilityList.end();) {
         if ((*it)->GetNormalizedPos().z == z) {
             it = visibilityList.erase(it);
@@ -121,8 +128,8 @@ void ChunkManager::UnloadChunkZ(int z) {
             it++;
         }
     }
-    for (int i = minPos.x; i <= maxPos.x; i++) {
-        for (int j = minPos.y; j <= maxPos.y; j++) {
+    for (int i = GetMinChunkPos().x; i <= GetMaxChunkPos().x; i++) {
+        for (int j = GetMinChunkPos().y; j <= GetMaxChunkPos().y; j++) {
 			// delete chunkMap[Vector3(i, j, z)];
             chunkMap.erase(Vector3(i, j , z));
         }
@@ -182,19 +189,21 @@ Vector3 ChunkManager::GetMinChunkPos() {
 
 
 void	ChunkManager::loadNewLine(int oldx, int newx, int z) {
-	this->UnloadChunkX(oldx - 7 * signe((int)(newx) - oldx));
+	int nbr = 14;
 	for (int j = this->minPos.z; j <= this->maxPos.z; j++) {
-		chunk *monoCx1 = this->tab.chunkToRet(oldx + 7 * signe((int)(newx) - oldx) + signe((int)(newx) - oldx), z + j);
-		this->loadNewChunk(monoCx1, oldx + 7 * signe((int)(newx) - oldx) + signe((int)(newx) - oldx), z + j);
+		chunk *monoCx1 = this->tab.chunkToRet(oldx + nbr * signe((int)(newx) - oldx) + signe((int)(newx) - oldx), z + j);
+		this->loadNewChunk(monoCx1, oldx + nbr * signe((int)(newx) - oldx) + signe((int)(newx) - oldx), z + j);
 	}
+	this->UnloadChunkX(oldx - nbr * signe((int)(newx) - oldx));
 }
 
 void	ChunkManager::loadNewColumn(int oldz, int newz, int x) {
-	this->UnloadChunkZ(oldz - 7 * signe((int)(newz) - oldz));
+	int nbr = 14;
 	for (int j = this->minPos.x; j <= this->maxPos.x; j++) {
-		chunk *monoCx2 = this->tab.chunkToRet(x + j, oldz + 7 * signe((int)(newz) - oldz) + signe((int)(newz) - oldz));
-		this->loadNewChunk(monoCx2, x + j, oldz + 7 * signe((int)(newz) - oldz) + signe((int)(newz) - oldz));
+		chunk *monoCx2 = this->tab.chunkToRet(x + j, oldz + nbr * signe((int)(newz) - oldz) + signe((int)(newz) - oldz));
+		this->loadNewChunk(monoCx2, x + j, oldz + nbr * signe((int)(newz) - oldz) + signe((int)(newz) - oldz));
 	}
+	this->UnloadChunkZ(oldz - nbr * signe((int)(newz) - oldz));
 }
 
 void ChunkManager::SetCamera(Camera *camera) {
