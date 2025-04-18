@@ -1,6 +1,9 @@
 #include "../includes/cave.hpp"
 
-cave::cave() {}
+cave::cave() {
+	this->_lenght = 0;
+	this->_tab = NULL;
+}
 
 cave::cave(int x, int y, int size, int lenght) {
 	this->_seed = randSeed(x, y);
@@ -34,9 +37,26 @@ cave::cave(int x, int y, int size, int lenght) {
 	this->_caveX[this->_lenght - 1].dirXF = randFloatBetween(1);
 	this->_caveX[this->_lenght - 1].dirYF = randFloatBetween(1);
 	this->_caveX[this->_lenght - 1].dirZF = randFloatBetween(1);
+
+	caveDig	**ret = new caveDig*[16];
+	for (int i = 0; i < 16; i++) {
+		ret[i] = new caveDig[16];
+		for (int j = 0; j < 16; j++)
+			ret[i][j].impact = 0;
+	}
+	this->_tab = ret;
+
+	this->doIniCave();
+	this->doDig(8, 8, 120);
 }
 
-cave::~cave() {}
+cave::~cave() {
+	if (this->_tab == NULL)
+		return ;
+	for (int i = 0; i < 16; i++)
+		delete [] this->_tab[i];
+	delete [] this->_tab;
+}
 
 void	cave::doIniCave() {
 	std::srand(this->_seed);
@@ -70,6 +90,29 @@ void	cave::afterGPcave() {
 		this->_caveX[i].dirZI = (int)(this->_caveX[i].dirZF + 1);
 	}
 }
+
+void	cave::dig(int x, int y, int h, int size) {
+	for (int i = std::max(x - size, 0); i < std::min(x + size, 255); i++) {
+		for (int j = std::max(y - size, 0); j < std::min(y + size, 255); j++) {
+			for (int l = std::max(h - size, 0); l < std::min(h + size, 255); l++) {
+				this->_tab[i / 16][j / 16].impact = 1;
+				this->_tab[i / 16][j / 16].toDel.push_back(gene3D(i % 16, j % 16, l));
+			}	
+		}
+	}
+}
+
+void	cave::doDig(int x, int y, int h) {
+	x *= 16;
+	y *= 16;
+	for (int i = 0; i < this->_lenght; i++) {
+		h -= this->_caveX[i].dirZI;
+		x += this->_caveX[i].dirXI;
+		y += this->_caveX[i].dirYI;
+		this->dig(x, y, h, this->_caveX[i].sizeI);
+	}
+}
+
 
 int		cave::getLenght() {
 	return this->_lenght;

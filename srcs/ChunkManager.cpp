@@ -6,7 +6,7 @@
 
 using namespace std::chrono_literals;
 
-ChunkManager::ChunkManager(Renderer *renderer, mapGP tab): renderer(renderer) {
+ChunkManager::ChunkManager(Renderer *renderer, mapGP &tab): renderer(renderer) {
     (void)camera;
     this->maxPos = Vector3(7, 15, 7);
     this->minPos = Vector3(-7, 0, -7);
@@ -86,11 +86,6 @@ void ChunkManager::ChunkVisibility(Camera *camera) {
 }
 
 void ChunkManager::UnloadChunkX(int x) {
-    for (int i = minPos.y; i <= maxPos.y; i++) {
-        for (int j = minPos.z; j <= maxPos.z; j++) {
-            chunkMap.erase(Vector3(x, i , j));
-        }
-    }
     for (std::vector<Chunk *>::iterator it = visibilityList.begin(); it != visibilityList.end();) {
         if ((*it)->GetNormalizedPos().x == x) {
             it = visibilityList.erase(it);
@@ -99,20 +94,27 @@ void ChunkManager::UnloadChunkX(int x) {
             it++;
         }
     }
+    for (int i = minPos.y; i <= maxPos.y; i++) {
+        for (int j = minPos.z; j <= maxPos.z; j++) {
+			// delete chunkMap[Vector3(x, i, j)];
+            chunkMap.erase(Vector3(x, i , j));
+        }
+    }
 }
 
 void ChunkManager::UnloadChunkZ(int z) {
-    for (int i = minPos.x; i <= maxPos.x; i++) {
-        for (int j = minPos.y; j <= maxPos.y; j++) {
-            chunkMap.erase(Vector3(i, j , z));
-        }
-    }
     for (std::vector<Chunk *>::iterator it = visibilityList.begin(); it != visibilityList.end();) {
         if ((*it)->GetNormalizedPos().z == z) {
             it = visibilityList.erase(it);
         }
         else {
             it++;
+        }
+    }
+    for (int i = minPos.x; i <= maxPos.x; i++) {
+        for (int j = minPos.y; j <= maxPos.y; j++) {
+			// delete chunkMap[Vector3(i, j, z)];
+            chunkMap.erase(Vector3(i, j , z));
         }
     }
 }
@@ -139,17 +141,17 @@ void	ChunkManager::loadNewChunk(chunk *toLoad, int xdiff, int zdiff) {
 }
 
 void	ChunkManager::loadNewLine(int oldx, int newx, int z) {
-	this->UnloadChunkX(oldx - 7 * signe((int)(newx / 16) - oldx));
+	this->UnloadChunkX(oldx - 7 * signe((int)(newx) - oldx));
 	for (int j = this->minPos.z; j <= this->maxPos.z; j++) {
-		chunk *monoCx1 = this->tab.chunkToRet(oldx + 7 * signe((int)(newx / 16) - oldx) + signe((int)(newx / 16) - oldx), z + j);
-		this->loadNewChunk(monoCx1, oldx + 7 * signe((int)(newx / 16) - oldx) + signe((int)(newx / 16) - oldx), z + j);
+		chunk *monoCx1 = this->tab.chunkToRet(oldx + 7 * signe((int)(newx) - oldx) + signe((int)(newx) - oldx), z + j);
+		this->loadNewChunk(monoCx1, oldx + 7 * signe((int)(newx) - oldx) + signe((int)(newx) - oldx), z + j);
 	}
 }
 
 void	ChunkManager::loadNewColumn(int oldz, int newz, int x) {
-	this->UnloadChunkZ(oldz - 7 * signe((int)(newz / 16) - oldz));
+	this->UnloadChunkZ(oldz - 7 * signe((int)(newz) - oldz));
 	for (int j = this->minPos.x; j <= this->maxPos.x; j++) {
-		chunk *monoCx2 = this->tab.chunkToRet(x + j, oldz + 7 * signe((int)(newz / 16) - oldz) + signe((int)(newz / 16) - oldz));
-		this->loadNewChunk(monoCx2, x + j, oldz + 7 * signe((int)(newz / 16) - oldz) + signe((int)(newz / 16) - oldz));
+		chunk *monoCx2 = this->tab.chunkToRet(x + j, oldz + 7 * signe((int)(newz) - oldz) + signe((int)(newz) - oldz));
+		this->loadNewChunk(monoCx2, x + j, oldz + 7 * signe((int)(newz) - oldz) + signe((int)(newz) - oldz));
 	}
 }

@@ -58,8 +58,10 @@ void	mapGP::printCave(int x, int y, int a, int b) {
 void	mapGP::doGPIniBiome() {
 	for (int i = 1; i < this->_sizeH - 1; i++) {
 		for (int j = 1; j < this->_sizeL - 1; j++) {
-			this->_tab[i][j].bio.doGP();
-			this->_tab[i][j].GP = 1;
+			if (this->_tab[i][j].GP == 0) {
+				this->_tab[i][j].bio.doGP();
+				this->_tab[i][j].GP = 1;
+			}
 		}
 	}
 }
@@ -142,6 +144,8 @@ chunk	*mapGP::chunkToRet(int x, int y) {
 	chunk	*ret = new chunk[16];
 	biome newB(this->_tab[a][b].bio, x, y);
 	newB.doGPlvl1();
+	// if ((this->_tab[a][b].sq.NE.x == 0 || this->_tab[a][b].sq.NE.x == -1) && (this->_tab[a][b].sq.NE.y == 0 || this->_tab[a][b].sq.NE.y == -1))
+	// 	newB.dig(this->_tab[a][b].bio, a, b);
 	for (int k = 0; k < 16; k++) {
 		ret[k] = newB.voxelToChunk(k);
 	}

@@ -71,7 +71,13 @@ int main(void) {
 	seed = 150;
     Renderer renderer;
 
+	struct timeval tp0;
+	gettimeofday(&tp0, NULL);
     mapGP tab(65, 16);
+	struct timeval tp1;
+	gettimeofday(&tp1, NULL);
+	std::cout << tp1.tv_sec - tp0.tv_sec << " sec " << tp1.tv_usec - tp0.tv_usec << " ms\n";
+
     ChunkManager test(&renderer, tab);
 	test.Init();
 
@@ -143,15 +149,18 @@ int main(void) {
             glfwSwapBuffers(window);
             glfwPollEvents();
 
-			if (cameraCx != (int)(camera.GetPosition().x / 16)) {
-				test.loadNewLine(cameraCx, camera.GetPosition().x, cameraCz);
-				cameraCx = camera.GetPosition().x / 16;
+			if (cameraCx != (int)(camera.GetPosition().x / 16 - signeN(camera.GetPosition().x))) {
+				test.loadNewLine(cameraCx, camera.GetPosition().x / 16 - signeN(camera.GetPosition().x), cameraCz);
+				cameraCx = camera.GetPosition().x / 16 - signeN(camera.GetPosition().x);
 			}
 			
-			if (cameraCz != (int)(camera.GetPosition().z / 16)) {
-				test.loadNewColumn(cameraCz, camera.GetPosition().z, cameraCx);
-				cameraCz = camera.GetPosition().z / 16;
+			if (cameraCz != (int)(camera.GetPosition().z / 16 - signeN(camera.GetPosition().z))) {
+				test.loadNewColumn(cameraCz, camera.GetPosition().z / 16 - signeN(camera.GetPosition().z), cameraCx);
+				cameraCz = camera.GetPosition().z / 16 - signeN(camera.GetPosition().z);
 			}
+
+			if ((glfwGetKey(window, GLFW_KEY_F ) == GLFW_PRESS))
+				std::cout << cameraCx << " " << cameraCz << " " << camera.GetPosition().x << " " << camera.GetPosition().z << '\n';
     }
     glfwTerminate();
     return 0;
