@@ -23,6 +23,7 @@ struct heightGP {
 class biome {
 	private:
 		int			_size;
+		int			_nbr;
 		int			_sizeZ;
 		int			_heightMin;
 		int			_heightMax;
@@ -41,6 +42,7 @@ class biome {
 		void	doGPColumn(int j, coord2d cd);
 		int		whatTexture(int x, int y);
 		std::array<unsigned char, sizeH>	fillArray(int h, int texture);
+		int		heightFtoI(float heightF);
 		void	afterGP();
 		// void	dig(int x, int y, int h, int size);
 		// void	doCave(int x, int y);
@@ -51,13 +53,17 @@ class biome {
 		biome(biome &biSup, int x, int y);
 		~biome();
 
+
 		void	printTab(int mode);
 		void	printCave(int x, int y);
 		void	doGP();
 		std::array<unsigned char, sizeH>	&getArray(int x, int y);
 		chunk	voxelToChunk(int k);
 		void	doGPlvl1();
-		square	getSquare();
+		square	getSquare();	
+		cave	*getCave();
+		void	setCave(int x, int y, int size, int lenght, float H);
+		float	getHeightF(int x, int y);
 		void	dig(biome &biSup, int x, int y);
 };
 

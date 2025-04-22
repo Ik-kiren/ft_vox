@@ -4,6 +4,7 @@ biome::biome() {}
 
 biome::biome(int size, square sq) {
 	this->_size = size;
+	this->_nbr = size;
 	this->_sizeZ = 256;
 	this->_heightMin = 32;
 	this->_heightMax = 224;
@@ -11,7 +12,7 @@ biome::biome(int size, square sq) {
 	// this->_heightMax = 130;
 	this->_heightDiff = this->_heightMax - this->_heightMin;
 	this->_sq = sq;
-	this->_nbrGP = 4;
+	this->_nbrGP = 8;
 	this->_Hb = 6;
 	this->_level = 2;
 	this->_cave = NULL;
@@ -37,11 +38,12 @@ biome::biome(int size, square sq) {
 
 biome::biome(biome &biSup, int x, int y) {
 	this->_size = 16;
+	this->_nbr = biSup._nbr - 1;
 	this->_sizeZ = 256;
 	this->_heightMin = biSup._heightMin;
 	this->_heightMax = biSup._heightMax;
 	this->_heightDiff = this->_heightMax - this->_heightMin;
-	this->_sq = squarelvl1(biSup._sq, x, y, 14);
+	this->_sq = squarelvl1(biSup._sq, x, y);
 	this->_nbrGP = 8;
 	this->_Hb = biSup._Hb * 6;
 	this->_level = 1;
@@ -68,9 +70,10 @@ biome::biome(biome &biSup, int x, int y) {
 }
 
 biome::~biome() {
-	if (this->_cave == NULL)
+	if (!this->_cave)
 		return ;
 	delete this->_cave;
+	this->_cave = NULL;
 }
 
 void	biome::printTab(int mode) {
@@ -148,7 +151,7 @@ void	biome::printTab(int mode) {
 
 void	biome::printCave(int x, int y) {
 	for (int i = 0; i < 256; i++) {
-		std::cout << this->_tab[x][y].arrayH[i];
+		std::cout << (int)this->_tab[x][y].arrayH[i];
 	}
 	std::cout << '\n';
 }
@@ -294,13 +297,13 @@ void	biome::doGP() {
 		H3 /= (this->_Hb / 4);
 	}
 
-	// for (int i = 0; i < this->_size; i++) {
-	// 	for (int j = 0; j < this->_size; j++) {
-	// 		this->_tab[i][j].heightF = (this->_tab[i][j].heightF1 + this->_tab[i][j].heightF2 / 2 + this->_tab[i][j].heightF3 / 4) / 1.75;
-	// 	}
-	// }
+	for (int i = 0; i < this->_size; i++) {
+		for (int j = 0; j < this->_size; j++) {
+			this->_tab[i][j].heightF = (this->_tab[i][j].heightF1 + this->_tab[i][j].heightF2 / 2 + this->_tab[i][j].heightF3 / 4) / 1.75;
+		}
+	}
 	// if ((this->_sq.NE.x < 3 && this->_sq.NE.x > -3) && (this->_sq.NE.y > -3 && this->_sq.NE.y < 3)) {
-	// 	this->_cave = new cave(this->_sq.NE.x, this->_sq.NE.y, 3, 100);
+	// 	this->_cave = new cave(this->_sq.NE.x, this->_sq.NE.y, 3, 100, 130);
 	// }
 }
 
@@ -338,11 +341,15 @@ std::array<unsigned char, sizeH>	biome::fillArray(int h, int texture) {
 	return ret;
 }
 
+int		biome::heightFtoI(float heightF) {
+	return ((heightF * std::abs(heightF)) + 1) / 2 * this->_heightDiff + this->_heightMin;
+}
+
 void	biome::afterGP() {
 	for (int i = 0; i < this->_size; i++) {
 		for (int j = 0; j < this->_size; j++) {
 			this->_tab[i][j].heightF = (this->_tab[i][j].heightF1 + this->_tab[i][j].heightF2 / 2 + this->_tab[i][j].heightF3 / 4) / 1.75;
-			this->_tab[i][j].heightI = ((this->_tab[i][j].heightF * std::abs(this->_tab[i][j].heightF)) + 1) / 2 * this->_heightDiff + this->_heightMin;
+			this->_tab[i][j].heightI = this->heightFtoI(this->_tab[i][j].heightF);
 			this->_tab[i][j].texture = whatTexture(i, j);
 			this->_tab[i][j].arrayH = fillArray(this->_tab[i][j].heightI, this->_tab[i][j].texture);	
 		}
@@ -377,14 +384,14 @@ std::array<unsigned char, sizeH>	&biome::getArray(int x, int y) {
 
 chunk	biome::voxelToChunk(int c) {
 	chunk toRet;
-	unsigned char	***ret = new unsigned char**[16];
+	unsigned char	***ret = new unsigned char**[this->_size];
 
-	for (int i = 0; i < 16; i++) {
-		ret[i] = new unsigned char*[16];
-		for (int j = 0; j < 16; j++) {
-			ret[i][j] = new unsigned char[16];
-			for (int k = 0; k < 16; k++) {
-				ret[i][j][k] = this->_tab[i][j].arrayH[c * 16 + k];
+	for (int i = 0; i < this->_size; i++) {
+		ret[i] = new unsigned char*[this->_size];
+		for (int j = 0; j < this->_size; j++) {
+			ret[i][j] = new unsigned char[this->_size];
+			for (int k = 0; k < this->_size; k++) {
+				ret[i][j][k] = this->_tab[i][j].arrayH[c * this->_size + k];
 			}
 		}
 	}
@@ -393,13 +400,13 @@ chunk	biome::voxelToChunk(int c) {
 }
 
 void	biome::iniBiome1(biome &biSup, int a, int b) {
-	int	x = (a + signeN(a)) % 15;
-	int	y = (b + signeN(b)) % 15;
+	int	x = (a + signeN(a)) % this->_nbr;
+	int	y = (b + signeN(b)) % this->_nbr;
 
 	if (a < 0)
-		x = 14 + x;
+		x = this->_nbr - 1 + x;
 	if (b < 0)
-		y = 14 + y;
+		y = this->_nbr - 1 + y;
 
 	this->_tab[0][0].GP = 2;
 	this->_tab[0][this->_size - 1].GP = 2;
@@ -482,8 +489,29 @@ square	biome::getSquare() {
 	return this->_sq;	
 }
 
-void	biome::dig(biome &biSup, int x, int y) {
-	if (biSup._cave->_tab[x][y].impact == 0)
+cave	*biome::getCave() {
+	return this->_cave;
+}
+
+void	biome::setCave(int x, int y, int size, int lenght, float H) {
+	int Hint = this->heightFtoI(H);
+	this->_cave = new cave(x, y, size, lenght, Hint, this->_nbr);
+}
+
+float	biome::getHeightF(int x, int y) {
+	return this->_tab[x][y].heightF;
+}
+
+void	biome::dig(biome &biSup, int a, int b) {
+	int	x = (a + signeN(a)) % this->_nbr;
+	int	y = (b + signeN(b)) % this->_nbr;
+
+	if (a < 0)
+		x = this->_nbr - 1 + x;
+	if (b < 0)
+		y = this->_nbr - 1 + y;
+
+		if (biSup._cave->_tab[x][y].impact == 0)
 		return ;
 	int i;
 	int j;

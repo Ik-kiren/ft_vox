@@ -1,6 +1,6 @@
 #include "../includes/utils.hpp"
 
-square	squarelvl1(square sq, int x, int y, int size) {
+square	squarelvl1(square sq, int x, int y) {
 	square	ret;
 
 	ret.NE = gene2D(x, y);
@@ -28,6 +28,11 @@ coord3d	gene3D(int x, int y, int z) {
 }
 
 float	randFloatBetween(float h) {
+	return (((double)std::rand()) / RAND_MAX) * 2 * h - h;
+}
+
+int		randIntBetween(int h) {
+	h += 1;
 	return (((double)std::rand()) / RAND_MAX) * 2 * h - h;
 }
 

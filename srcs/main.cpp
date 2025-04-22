@@ -68,17 +68,18 @@ void GetTimer(double &lastTime, double &deltaTime) {
 int main(void) {
     srand(time(NULL));
 	// seed = std::rand();
-	seed = 150;
+	seed = 255;
     Renderer renderer;
 
 	struct timeval tp0;
 	gettimeofday(&tp0, NULL);
-    mapGP tab(65, 16);
+    // mapGP tab(65, 16);
+    mapGP tab(33, 32);
 	struct timeval tp1;
 	gettimeofday(&tp1, NULL);
 	std::cout << tp1.tv_sec - tp0.tv_sec << " sec " << tp1.tv_usec - tp0.tv_usec << " ms\n";
 
-    ChunkManager test(&renderer, tab);
+    ChunkManager test(&renderer, &tab);
 	test.Init();
 
     GLFWwindow *window;
@@ -92,7 +93,7 @@ int main(void) {
 
     //Mesh cubeMesh = Mesh("./objects/DirtCube.obj");  
 
-    Camera camera = Camera(Vector3(0, 128, 0), Vector3(0, 1, 0));
+    Camera camera = Camera(Vector3(0, 92, 0), Vector3(0, 1, 0));
     test.SetCamera(&camera);
 
     //Object cubeObj = Object(cubeShader, &cubeMesh, Vector4(1, 1, 1, 1));
