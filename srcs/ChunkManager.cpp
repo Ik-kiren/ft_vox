@@ -8,9 +8,8 @@ using namespace std::chrono_literals;
 
 ChunkManager::ChunkManager(Renderer *renderer, mapGP &tab): renderer(renderer) {
     camera = NULL;
-	int nbr = 8;
-    this->maxPos = Vector3(nbr, 15, nbr);
-    this->minPos = Vector3(-nbr, 0, -nbr);
+    this->maxPos = Vector3(RENDERSIZE, 15, RENDERSIZE);
+    this->minPos = Vector3(-RENDERSIZE, 0, -RENDERSIZE);
 	this->tab = tab;
 
  	for (int i = this->minPos.x; i <= this->maxPos.x; i++) {
@@ -189,21 +188,19 @@ Vector3 ChunkManager::GetMinChunkPos() {
 
 
 void	ChunkManager::loadNewLine(int oldx, int newx, int z) {
-	int nbr = 14;
 	for (int j = this->minPos.z; j <= this->maxPos.z; j++) {
-		chunk *monoCx1 = this->tab.chunkToRet(oldx + nbr * signe((int)(newx) - oldx) + signe((int)(newx) - oldx), z + j);
-		this->loadNewChunk(monoCx1, oldx + nbr * signe((int)(newx) - oldx) + signe((int)(newx) - oldx), z + j);
+		chunk *monoCx1 = this->tab.chunkToRet(oldx + RENDERSIZE * signe((int)(newx) - oldx) + signe((int)(newx) - oldx), z + j);
+		this->loadNewChunk(monoCx1, oldx + RENDERSIZE * signe((int)(newx) - oldx) + signe((int)(newx) - oldx), z + j);
 	}
-	this->UnloadChunkX(oldx - nbr * signe((int)(newx) - oldx));
+	this->UnloadChunkX(oldx - RENDERSIZE * signe((int)(newx) - oldx));
 }
 
 void	ChunkManager::loadNewColumn(int oldz, int newz, int x) {
-	int nbr = 14;
 	for (int j = this->minPos.x; j <= this->maxPos.x; j++) {
-		chunk *monoCx2 = this->tab.chunkToRet(x + j, oldz + nbr * signe((int)(newz) - oldz) + signe((int)(newz) - oldz));
-		this->loadNewChunk(monoCx2, x + j, oldz + nbr * signe((int)(newz) - oldz) + signe((int)(newz) - oldz));
+		chunk *monoCx2 = this->tab.chunkToRet(x + j, oldz + RENDERSIZE * signe((int)(newz) - oldz) + signe((int)(newz) - oldz));
+		this->loadNewChunk(monoCx2, x + j, oldz + RENDERSIZE * signe((int)(newz) - oldz) + signe((int)(newz) - oldz));
 	}
-	this->UnloadChunkZ(oldz - nbr * signe((int)(newz) - oldz));
+	this->UnloadChunkZ(oldz - RENDERSIZE * signe((int)(newz) - oldz));
 }
 
 void ChunkManager::SetCamera(Camera *camera) {
