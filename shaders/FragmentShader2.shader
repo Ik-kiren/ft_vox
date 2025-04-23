@@ -13,6 +13,13 @@ uniform vec3 cameraPos;
 uniform float timeValue;
 uniform sampler2D dirtTexture;
 uniform sampler2D stoneTexture;
+uniform sampler2D sandTexture;
+uniform sampler2D redSandTexture;
+uniform sampler2D snowTexture;
+uniform sampler2D iceTexture;
+uniform sampler2D gravelTexture;
+uniform sampler2D waterTexture;
+uniform sampler2D oldGrassTexture;
 uniform bool activeTexture;
 uniform float timerTextureTransition;
 uniform vec3 lightPos;
@@ -38,6 +45,19 @@ void main()
 	vec4 tmpTexture = texture(dirtTexture, textureCoords);
 	if (textureIndice == 1) {
 		tmpTexture = texture(stoneTexture, textureCoords);
-	}
+	} else if (textureIndice == 2) {
+		tmpTexture = texture(sandTexture, textureCoords);
+	} else if (textureIndice == 3) {
+		tmpTexture = texture(redSandTexture, textureCoords);
+	} else if (textureIndice == 4) {
+		tmpTexture = texture(snowTexture, textureCoords);
+	} else if (textureIndice == 5) {
+		tmpTexture = texture(iceTexture, textureCoords);
+	} else if (textureIndice == 6) {
+		tmpTexture = texture(gravelTexture, textureCoords);
+	} else if (textureIndice == 7) {
+		tmpTexture = texture(waterTexture, textureCoords);
+	} else if (textureIndice == 8) {
+		tmpTexture = texture(oldGrassTexture, textureCoords);
 	fragText = tmpTexture;
 }
