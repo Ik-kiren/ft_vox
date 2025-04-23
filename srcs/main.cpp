@@ -82,10 +82,6 @@ int main(void) {
     ChunkManager test(&renderer, &tab);
 	test.Init();
 
-	struct timeval tp3;
-	gettimeofday(&tp3, NULL);
-	std::cout << tp3.tv_sec - tp2.tv_sec << " sec " << tp3.tv_usec - tp2.tv_usec << " ms\n";
-
     GLFWwindow *window;
     window = InitGLFW();
 
