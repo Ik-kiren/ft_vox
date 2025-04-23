@@ -43,21 +43,20 @@ void main()
 
 	vec3 result = (ambient + diffuse + specular) * vec3(0.8, 0.8, 0.1);
 	vec4 tmpTexture = texture(dirtTexture, textureCoords);
-	if (textureIndice == 1) {
+	if (textureIndice == 2) {
 		tmpTexture = texture(stoneTexture, textureCoords);
-	} else if (textureIndice == 2) {
-		tmpTexture = texture(sandTexture, textureCoords);
 	} else if (textureIndice == 3) {
-		tmpTexture = texture(redSandTexture, textureCoords);
+		tmpTexture = texture(sandTexture, textureCoords);
 	} else if (textureIndice == 4) {
-		tmpTexture = texture(snowTexture, textureCoords);
+		tmpTexture = texture(redSandTexture, textureCoords);
 	} else if (textureIndice == 5) {
-		tmpTexture = texture(iceTexture, textureCoords);
+		tmpTexture = texture(snowTexture, textureCoords);
 	} else if (textureIndice == 6) {
-		tmpTexture = texture(gravelTexture, textureCoords);
+		tmpTexture = texture(iceTexture, textureCoords);
 	} else if (textureIndice == 7) {
-		tmpTexture = texture(waterTexture, textureCoords);
+		tmpTexture = texture(gravelTexture, textureCoords);
 	} else if (textureIndice == 8) {
 		tmpTexture = texture(oldGrassTexture, textureCoords);
+	}
 	fragText = tmpTexture;
 }

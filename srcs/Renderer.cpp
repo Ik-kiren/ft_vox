@@ -157,13 +157,13 @@ void Renderer::Render(std::vector<Chunk *> &chunks) {
     glUniform1i(stoneTexture, 1);
 
 
-    for (int i = 0; i < 9; i++) {
+    for (int i = 0; i < 6; i++) {
         glActiveTexture(GL_TEXTURE0 + i);
         glBindTexture(GL_TEXTURE_2D, textureIDs[i]);
     }
     
 
-    for (size_t i = 0; i < chunks.size(); i++) {
+    for (size_t i = 8; i < chunks.size(); i++) {
         shader->setVector3("offset", meshes[chunks[i]->meshID]->GetPosition());
         glBindVertexArray(meshes[chunks[i]->meshID]->VAO);
         //glDrawArrays(GL_TRIANGLES, 0, meshes[chunks[i]->meshID]->GetIndicesArray().size());
@@ -172,10 +172,9 @@ void Renderer::Render(std::vector<Chunk *> &chunks) {
 }
 
 void Renderer::InitTexture() {
-    for (int i = 0; i < 9; i++) {
+    for (int i = 0; i < 8; i++) {
         glGenTextures(1, &textureIDs[i]);
         glBindTexture(GL_TEXTURE_2D, textureIDs[i]);
-        //glbindtextures()
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);

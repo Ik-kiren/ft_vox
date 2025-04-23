@@ -9,8 +9,7 @@ enum BlockType {
 	SNOW = 5,
 	ICE = 6,
 	GRAVEL = 7,
-	WATER = 8,
-	GRASS = 9
+	GRASS = 8
 };
 
 enum FacesType {

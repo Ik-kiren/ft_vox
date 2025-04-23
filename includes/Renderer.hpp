@@ -24,10 +24,10 @@ private:
 
     std::vector<float> normalVertices;
     std::mutex renderMutex;
-    unsigned int textureIDs[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
+    unsigned int textureIDs[8] = {0, 0, 0, 0, 0, 0, 0, 0};
 public:
-    const std::string textureArray[9] = {"./textures/dirt.png", "./textures/stone.png", "./textures/sand.png", "./textures/red_sand.png", "./textures/snow.png",
-        "./textures/ice.png", "./textures/gravel.png", "./textures/water_placeholder.png", "./textures/OldGrass.png"};
+    const std::string textureArray[8] = {"./textures/dirt.png", "./textures/stone.png", "./textures/sand.png", "./textures/red_sand.png", "./textures/snow.png",
+        "./textures/ice.png", "./textures/gravel.png", "./textures/OldGrass.png"};
     
     const int STRIDE_SIZE = 6;
     std::vector<NewMesh *> meshes;

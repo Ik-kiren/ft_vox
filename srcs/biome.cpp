@@ -300,8 +300,6 @@ void	biome::doGP() {
 }
 
 int	biome::whatTexture(int x, int y) {
-	if (this->_tab[x][y].heightI < 64)
-		return 8;
 	if (this->_tab[x][y].tempF < -0.5) {
 		if (this->_tab[x][y].heightF < 0)
 			return 6;
@@ -313,10 +311,10 @@ int	biome::whatTexture(int x, int y) {
 	} else if (this->_tab[x][y].tempF < 0) {
 		if (this->_tab[x][y].heightF < 0)
 			return 1;
-		return 9;
+		return 8;
 	} else {
 		if (this->_tab[x][y].heightF < 0)
-			return 9;
+			return 8;
 		return 7;
 	}
 }
