@@ -7,7 +7,7 @@ NewMesh::NewMesh() {
 
 NewMesh::~NewMesh() {}
 
-std::vector<float> NewMesh::GetVertexArray() {
+std::vector<int> NewMesh::GetVertexArray() {
     return this->vertexArray;
 }
 
@@ -39,7 +39,7 @@ void NewMesh::AddVertex(float x, float y, float z) {
     this->vertexArray.push_back(z);
 }
 
-void NewMesh::AddFloat(float nbr) {
+void NewMesh::AddInt(int nbr) {
     this->vertexArray.push_back(nbr);
 }
 

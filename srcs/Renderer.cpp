@@ -1,5 +1,6 @@
 #include "../includes/Renderer.hpp"
 #include "../includes/Scop.hpp"
+#include <sys/time.h>
 
 Renderer::Renderer() {
 }
@@ -30,25 +31,36 @@ unsigned int Renderer::AddVertex(unsigned int &meshID, Vector3 &vec, float type)
     unsigned int index = this->meshes[meshID]->GetVertexArray().size() / STRIDE_SIZE;
     meshes[meshID]->AddVertex(vec);
     meshes[meshID]->AddVertex(meshes[meshID]->textureVertices[meshes[meshID]->textureIndex]);
-    meshes[meshID]->AddFloat(type);
+    meshes[meshID]->AddInt(type);
     meshes[meshID]->textureIndex = (meshes[meshID]->textureIndex + 1) % 4;
     return index;
 }
 
 unsigned int Renderer::AddVertex(unsigned int &meshID, float x, float y, float z, float type , Vector2 size) {
 
-    unsigned int index = this->meshes[meshID]->GetVertexArray().size() / STRIDE_SIZE;
+    int tmp = 0;
+    unsigned int index = this->meshes[meshID]->GetVertexArray().size();
+    tmp = (int)x;
+    tmp = (tmp << 5) + (int)y;
+    tmp = (tmp << 5) + (int)z;
+    tmp = (tmp << 5) + (int)(meshes[meshID]->textureVertices[meshes[meshID]->textureIndex].x * size.x);
+    tmp = (tmp << 5) + (int)(meshes[meshID]->textureVertices[meshes[meshID]->textureIndex].y * size.y);
+    tmp = (tmp << 4) + (int)type;
+    //std::cout << x <<  " " << y << " " << z << " " << meshes[meshID]->textureVertices[meshes[meshID]->textureIndex].x * size.x << " " << meshes[meshID]->textureVertices[meshes[meshID]->textureIndex].y * size.y << " " << type << std::endl;
+    //std::cout << ((tmp >> 24) & 31) <<  " " << ((tmp >> 19) & 31) <<  " " << ((tmp >> 14) & 31) <<  " " <<  ((tmp >> 9) & 31) <<  " " << ((tmp >> 4) & 31) <<  " " << (tmp & 15) <<  " " << std::endl;
+    
+    meshes[meshID]->AddInt(tmp);
     /*meshes[meshID]->AddVertex(x, y, z);
     meshes[meshID]->AddVertex(meshes[meshID]->textureVertices[meshes[meshID]->textureIndex]);
     meshes[meshID]->AddFloat(type);*/
-    meshes[meshID]->vertexArray.insert(meshes[meshID]->vertexArray.end(), {
+    /*meshes[meshID]->vertexArray.insert(meshes[meshID]->vertexArray.end(), {
         x,
         y,
         z,
         meshes[meshID]->textureVertices[meshes[meshID]->textureIndex].x * size.x,
         meshes[meshID]->textureVertices[meshes[meshID]->textureIndex].y * size.y,
         type
-    });
+    });*/
     meshes[meshID]->textureIndex = (meshes[meshID]->textureIndex + 1) % 4; // look to change that
     return index;
 }
@@ -58,11 +70,11 @@ void Renderer::addIndices(unsigned int &meshID, unsigned int &v1, unsigned int &
 }
 
 void Renderer::FinishMesh(unsigned int &meshID) {
+
     glGenVertexArrays(1, &this->meshes[meshID]->VAO);
     glGenBuffers(1, &this->meshes[meshID]->VBO);
     glGenBuffers(1, &this->meshes[meshID]->EBO);
     glBindVertexArray(this->meshes[meshID]->VAO);
-    
 
     glBindBuffer(GL_ARRAY_BUFFER, this->meshes[meshID]->VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(*this->meshes[meshID]->GetVertexArray().data()) * this->meshes[meshID]->GetVertexArray().size(), this->meshes[meshID]->GetVertexArray().data(), GL_STATIC_DRAW);
@@ -70,12 +82,8 @@ void Renderer::FinishMesh(unsigned int &meshID) {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->meshes[meshID]->EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(*this->meshes[meshID]->GetIndicesArray().data()) * this->meshes[meshID]->GetIndicesArray().size(), this->meshes[meshID]->GetIndicesArray().data(), GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, STRIDE_SIZE * sizeof(float), (void*)0);
+    glVertexAttribIPointer(0, 1, GL_INT, 0, (void*)0);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, STRIDE_SIZE * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, STRIDE_SIZE * sizeof(float), (void*)(5 * sizeof(float)));
-    glEnableVertexAttribArray(2);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
@@ -156,9 +164,8 @@ void Renderer::Render(std::vector<Chunk *> &chunks) {
     for (size_t i = 0; i < chunks.size(); i++) {
         shader->setVector3("offset", meshes[chunks[i]->meshID]->GetPosition());
         glBindVertexArray(meshes[chunks[i]->meshID]->VAO);
-        //glDrawArrays(GL_TRIANGLES, 0, meshes[0].GetVertexArray().size());
+        //glDrawArrays(GL_TRIANGLES, 0, meshes[chunks[i]->meshID]->GetIndicesArray().size());
         glDrawElements(GL_TRIANGLES, meshes[chunks[i]->meshID]->GetIndicesArray().size(), GL_UNSIGNED_INT, 0);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
     }
 }
 

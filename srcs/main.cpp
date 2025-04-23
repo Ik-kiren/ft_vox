@@ -79,7 +79,14 @@ int main(void) {
 	std::cout << tp1.tv_sec - tp0.tv_sec << " sec " << tp1.tv_usec - tp0.tv_usec << " ms\n";
 
     ChunkManager test(&renderer, tab);
+    struct timeval tp2;
+	gettimeofday(&tp2, NULL);
+
 	test.Init();
+
+	struct timeval tp3;
+	gettimeofday(&tp3, NULL);
+	std::cout << tp3.tv_sec - tp2.tv_sec << " sec " << tp3.tv_usec - tp2.tv_usec << " ms\n";
 
     GLFWwindow *window;
     window = InitGLFW();
