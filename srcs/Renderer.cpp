@@ -150,14 +150,14 @@ void Renderer::Render(std::vector<Chunk *> &chunks) {
     shader->setFloat("timerTextureTransition", 1.0f);
 
 
-    for (int i = 0; i < 8; i++) {
+    for (int i = 0; i < nbr; i++) {
         textureLocation[i] = shader->GetUniformLocation(textureName[i]);
         glUniform1i(textureLocation[i], i);
         glActiveTexture(GL_TEXTURE0 + i);
         glBindTexture(GL_TEXTURE_2D, textureIDs[i]);
     }
 
-    for (size_t i = 8; i < chunks.size(); i++) {
+    for (size_t i = 0; i < chunks.size(); i++) {
         shader->setVector3("offset", meshes[chunks[i]->meshID]->GetPosition());
         glBindVertexArray(meshes[chunks[i]->meshID]->VAO);
         //glDrawArrays(GL_TRIANGLES, 0, meshes[chunks[i]->meshID]->GetIndicesArray().size());
@@ -166,7 +166,7 @@ void Renderer::Render(std::vector<Chunk *> &chunks) {
 }
 
 void Renderer::InitTexture() {
-    for (int i = 0; i < 8; i++) {
+    for (int i = 0; i < nbr; i++) {
         glGenTextures(1, &textureIDs[i]);
         glBindTexture(GL_TEXTURE_2D, textureIDs[i]);
 

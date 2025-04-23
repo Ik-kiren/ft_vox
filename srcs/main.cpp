@@ -93,7 +93,7 @@ int main(void) {
 
     //Mesh cubeMesh = Mesh("./objects/DirtCube.obj");  
 
-    Camera camera = Camera(Vector3(0, 92, 0), Vector3(0, 1, 0));
+    Camera camera = Camera(Vector3(8000, 128, 0), Vector3(0, 1, 0));
     test.SetCamera(&camera);
 
     //Object cubeObj = Object(cubeShader, &cubeMesh, Vector4(1, 1, 1, 1));

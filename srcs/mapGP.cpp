@@ -143,7 +143,8 @@ chunk	*mapGP::chunkToRet(int x, int y) {
 	biome newB(this->_tab[a][b].bio, x, y);
 	newB.doGPlvl1();
 	if (!this->_tab[a][b].bio.getCave()) {
-		this->_tab[a][b].bio.setCave(this->_tab[a][b].sq.NE.x, this->_tab[a][b].sq.NE.y, 3, 300, this->_tab[a][b].bio.getHeightF(8, 8));
+		// this->_tab[a][b].bio.setCave(this->_tab[a][b].sq.NE.x, this->_tab[a][b].sq.NE.y, 4, 4, 3, 300, this->_tab[a][b].bio);
+		this->_tab[a][b].bio.setCaves(this->_tab[a][b].sq.NE.x, this->_tab[a][b].sq.NE.y, this->_tab[a][b].bio);
 	}
 	if (this->_tab[a][b].bio.getCave())
 		newB.dig(this->_tab[a][b].bio, x, y);

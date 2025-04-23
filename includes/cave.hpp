@@ -33,17 +33,18 @@ class cave {
 
 		void	afterGPcave();
 		void	dig(int x, int y, int h, int size);
+		void	doIniCave();
 		void	doDig(int x, int y, int h);
 	public:
 		cave();
-		cave(int x, int y, int size, int lenght, int H, int sizeBiome);
+		cave(int sizeBiome, int lenghtMax);
 		~cave();
 		
 		caveDig			**_tab;
 
-		void	doIniCave();
 		int		getLenght();
 		caveGP	getCaveX(int i);
+		void	doNewCave(int xrand, int yrand, int x, int y, int sizeHoleIni, int lenght, int H);
 };
 
 
