@@ -2,8 +2,15 @@
 
 enum BlockType {
     DEFAULT = 0,
-    GRASS = 1,
-    STONE = 2
+    DIRT = 1,
+    STONE = 2,
+	SAND = 3,
+	RSAND = 4,
+	SNOW = 5,
+	ICE = 6,
+	GRAVEL = 7,
+	WATER = 8,
+	GRASS = 9
 };
 
 enum FacesType {
