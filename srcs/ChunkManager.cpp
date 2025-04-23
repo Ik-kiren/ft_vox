@@ -71,9 +71,9 @@ void ChunkManager::ChunkVisibility() {
         renderList.clear();
         for (std::vector<Chunk *>::iterator it = visibilityList.begin(); it != visibilityList.end(); it++) {
             AABB aabb;
-            aabb.center[0] = (*it)->GetPosition().x + 8;
-            aabb.center[1] = (*it)->GetPosition().y + 8;
-            aabb.center[2] = (*it)->GetPosition().z + 8;
+            aabb.center[0] = (*it)->GetPosition().x + 8.5f;
+            aabb.center[1] = (*it)->GetPosition().y + 8.5f;
+            aabb.center[2] = (*it)->GetPosition().z + 8.5f;
             if (camera->InsideFrustum(aabb)) {
                 renderList.push_back(*it);
             }

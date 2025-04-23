@@ -22,7 +22,7 @@ struct BSphere {
 
 struct AABB {
     float center[3] = {0.0f, 0.0f, 0.0f};
-    float extents[3] = {8.0f, 8.0f, 8.0f};
+    float extents[3] = {8.5f, 8.5f, 8.5f};
 
     bool IsOnOrForwardPlane(Plane &plane) {
         const float r = extents[0] * std::abs(plane.normal[0]) + extents[1] * std::abs(plane.normal[1]) + extents[2] * std::abs(plane.normal[2]);

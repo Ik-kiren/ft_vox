@@ -65,7 +65,7 @@ void main() {
     int posZ = ((vertexData >> 14) & 31);
     int TextX = ((vertexData >> 9) & 31);
     int TextY = ((vertexData >> 4) & 31);
-    int type = (vertexData & 31);
+    int type = (vertexData & 15);
     textureIndice = type;
     vec3 newVertex = vec3(posX, posY, posZ);
     gl_Position = projection * view * model * vec4((newVertex + offset), 1.0);

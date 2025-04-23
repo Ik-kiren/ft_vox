@@ -33,7 +33,7 @@ Chunk::~Chunk() {
 }
 
 
-void Chunk::CreateCube(int &x, int &y, int &z, bool &xPositif, bool &xNegatif, bool &yPositif, bool &yNegatif, bool &zPositif, bool &zNegatif, float type) {
+void Chunk::CreateCube(int &x, int &y, int &z, bool &xPositif, bool &xNegatif, bool &yPositif, bool &yNegatif, bool &zPositif, bool &zNegatif, int type) {
     unsigned int ui1 = 0;
     unsigned int ui2 = 0;
     unsigned int ui3 = 0;

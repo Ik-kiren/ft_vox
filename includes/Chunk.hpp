@@ -28,7 +28,7 @@ public:
     ~Chunk();
 
     Block ***GetBlocksArray();
-    void CreateCube(int &x, int &y, int &z, bool &xPositif, bool &xNegatif, bool &yPositif, bool &yNegatif, bool &zPositif, bool &zNegatif, float type);
+    void CreateCube(int &x, int &y, int &z, bool &xPositif, bool &xNegatif, bool &yPositif, bool &yNegatif, bool &zPositif, bool &zNegatif, int type);
     void CreateMesh();
     void Update();
     void Render();

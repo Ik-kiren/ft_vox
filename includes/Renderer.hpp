@@ -25,6 +25,8 @@ private:
     std::vector<float> normalVertices;
     std::mutex renderMutex;
     unsigned int textureIDs[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+    GLint        textureLocation[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+    std::string  textureName[8] = {"dirtTexture", "stoneTexture", "sandTexture", "redSandTexture", "snowTexture", "iceTexture", "gravelTexture", "oldGrassTexture"};
 public:
     const std::string textureArray[8] = {"./textures/dirt.png", "./textures/stone.png", "./textures/sand.png", "./textures/red_sand.png", "./textures/snow.png",
         "./textures/ice.png", "./textures/gravel.png", "./textures/OldGrass.png"};
@@ -36,8 +38,8 @@ public:
 
     void InitRenderer(Shader *shader, Camera *camera);
     void CreateMesh(unsigned int &meshID);
-    unsigned int AddVertex(unsigned int &meshID, Vector3 &vecs, float type);
-    unsigned int AddVertex(unsigned int &meshID, float x, float y, float z, float type, Vector2 size);
+    unsigned int AddVertex(unsigned int &meshID, Vector3 &vecs, int type);
+    unsigned int AddVertex(unsigned int &meshID, float x, float y, float z, int type, Vector2 size);
     void addIndices(unsigned int &meshID, unsigned int &v1, unsigned int &v2, unsigned int &v3);
     void FinishMesh(unsigned int &meshID);
     void Render();

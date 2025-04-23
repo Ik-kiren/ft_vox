@@ -45,7 +45,7 @@ void main()
 	vec4 tmpTexture = texture(dirtTexture, textureCoords);
 	if (textureIndice == 2) {
 		tmpTexture = texture(stoneTexture, textureCoords);
-	} else if (textureIndice == 3) {
+	} else if (textureIndice >= 3) {
 		tmpTexture = texture(sandTexture, textureCoords);
 	} else if (textureIndice == 4) {
 		tmpTexture = texture(redSandTexture, textureCoords);

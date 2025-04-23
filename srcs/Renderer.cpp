@@ -27,7 +27,7 @@ void Renderer::CreateMesh(unsigned int &meshID) {
     //renderMutex.unlock();
 }
 
-unsigned int Renderer::AddVertex(unsigned int &meshID, Vector3 &vec, float type) {
+unsigned int Renderer::AddVertex(unsigned int &meshID, Vector3 &vec, int type) {
     unsigned int index = this->meshes[meshID]->GetVertexArray().size() / STRIDE_SIZE;
     meshes[meshID]->AddVertex(vec);
     meshes[meshID]->AddVertex(meshes[meshID]->textureVertices[meshes[meshID]->textureIndex]);
@@ -36,8 +36,7 @@ unsigned int Renderer::AddVertex(unsigned int &meshID, Vector3 &vec, float type)
     return index;
 }
 
-unsigned int Renderer::AddVertex(unsigned int &meshID, float x, float y, float z, float type , Vector2 size) {
-
+unsigned int Renderer::AddVertex(unsigned int &meshID, float x, float y, float z, int type , Vector2 size) {
     int tmp = 0;
     unsigned int index = this->meshes[meshID]->GetVertexArray().size();
     tmp = (int)x;
@@ -45,7 +44,7 @@ unsigned int Renderer::AddVertex(unsigned int &meshID, float x, float y, float z
     tmp = (tmp << 5) + (int)z;
     tmp = (tmp << 5) + (int)(meshes[meshID]->textureVertices[meshes[meshID]->textureIndex].x * size.x);
     tmp = (tmp << 5) + (int)(meshes[meshID]->textureVertices[meshes[meshID]->textureIndex].y * size.y);
-    tmp = (tmp << 4) + (int)type;
+    tmp = (tmp << 4) + type;
     //std::cout << x <<  " " << y << " " << z << " " << meshes[meshID]->textureVertices[meshes[meshID]->textureIndex].x * size.x << " " << meshes[meshID]->textureVertices[meshes[meshID]->textureIndex].y * size.y << " " << type << std::endl;
     //std::cout << ((tmp >> 24) & 31) <<  " " << ((tmp >> 19) & 31) <<  " " << ((tmp >> 14) & 31) <<  " " <<  ((tmp >> 9) & 31) <<  " " << ((tmp >> 4) & 31) <<  " " << (tmp & 15) <<  " " << std::endl;
     
@@ -150,18 +149,13 @@ void Renderer::Render(std::vector<Chunk *> &chunks) {
     shader->setBool("activeTexture", true);
     shader->setFloat("timerTextureTransition", 1.0f);
 
-    GLint dirtTexture = shader->GetUniformLocation("dirtTexture");
-    GLint stoneTexture = shader->GetUniformLocation("stoneTexture");
 
-    glUniform1i(dirtTexture, 0);
-    glUniform1i(stoneTexture, 1);
-
-
-    for (int i = 0; i < 6; i++) {
+    for (int i = 0; i < 8; i++) {
+        textureLocation[i] = shader->GetUniformLocation(textureName[i]);
+        glUniform1i(textureLocation[i], i);
         glActiveTexture(GL_TEXTURE0 + i);
         glBindTexture(GL_TEXTURE_2D, textureIDs[i]);
     }
-    
 
     for (size_t i = 8; i < chunks.size(); i++) {
         shader->setVector3("offset", meshes[chunks[i]->meshID]->GetPosition());

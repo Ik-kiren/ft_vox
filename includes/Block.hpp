@@ -27,7 +27,7 @@ private:
     bool active;
 public:
     bool visited[6] = {false, false, false, false, false, false};
-    BlockType type = DEFAULT;
+    int type = DEFAULT;
     constexpr static float BLOCK_SIZE = 1.0f;
     Block(/* args */);
     ~Block();
