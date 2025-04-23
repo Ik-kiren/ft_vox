@@ -44,8 +44,6 @@ class biome {
 		std::array<unsigned char, sizeH>	fillArray(int h, int texture);
 		int		heightFtoI(float heightF);
 		void	afterGP();
-		// void	dig(int x, int y, int h, int size);
-		// void	doCave(int x, int y);
 		void	iniBiome1(biome &biSup, int x, int y);
 	public:
 		biome();

@@ -152,6 +152,3 @@ chunk	*mapGP::chunkToRet(int x, int y) {
 	}
 	return ret;
 }
-
-// texture
-// cave moche
