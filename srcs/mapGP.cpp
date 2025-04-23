@@ -142,11 +142,11 @@ chunk	*mapGP::chunkToRet(int x, int y) {
 	chunk	*ret = new chunk[16];
 	biome newB(this->_tab[a][b].bio, x, y);
 	newB.doGPlvl1();
-	if (!this->_tab[a][b].bio.getCave()) {
-		this->_tab[a][b].bio.setCave(this->_tab[a][b].sq.NE.x, this->_tab[a][b].sq.NE.y, 3, 300, this->_tab[a][b].bio.getHeightF(8, 8));
-	}
-	if (this->_tab[a][b].bio.getCave())
-		newB.dig(this->_tab[a][b].bio, x, y);
+	// if (!this->_tab[a][b].bio.getCave()) {
+	// 	this->_tab[a][b].bio.setCave(this->_tab[a][b].sq.NE.x, this->_tab[a][b].sq.NE.y, 3, 300, this->_tab[a][b].bio.getHeightF(8, 8));
+	// }
+	// if (this->_tab[a][b].bio.getCave())
+	// 	newB.dig(this->_tab[a][b].bio, x, y);
 	for (int k = 0; k < 16; k++) {
 		ret[k] = newB.voxelToChunk(k);
 	}

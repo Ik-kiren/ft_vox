@@ -73,8 +73,8 @@ int main(void) {
 
 	struct timeval tp0;
 	gettimeofday(&tp0, NULL);
-    // mapGP tab(65, 16);
-    mapGP tab(33, 32);
+    mapGP tab(65, 16);
+    // mapGP tab(33, 32);
 	struct timeval tp1;
 	gettimeofday(&tp1, NULL);
 	std::cout << tp1.tv_sec - tp0.tv_sec << " sec " << tp1.tv_usec - tp0.tv_usec << " ms\n";
