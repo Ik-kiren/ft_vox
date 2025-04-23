@@ -13,17 +13,15 @@ mapGP::mapGP(int size, int sizeBiome) {
 	for (int i = -this->_sizeH / 2; i < this->_sizeH / 2; i++) {
 		std::vector<biomeGP>	tmp;
 		for (int j = -this->_sizeL / 2; j < this->_sizeL / 2; j++) {
-	// for (int i = 0; i < this->_sizeH; i++) {
-	// 	std::vector<biomeGP>	tmp;
-	// 	for (int j = 0; j < this->_sizeL; j++) {
-			biomeGP	tmpS;	
-			tmpS.sq.NE = gene2D(i, j);
-			tmpS.sq.NO = gene2D(i, j + 1);
-			tmpS.sq.SE = gene2D(i + 1, j);
-			tmpS.sq.SO = gene2D(i + 1, j + 1);
-			tmpS.bio = biome(this->_sizeBiome, tmpS.sq);
-			tmpS.GP = 0;
-			tmp.push_back(tmpS);
+			biomeGP	*tmpS = new biomeGP();
+			tmpS->sq.NE = gene2D(i, j);
+			tmpS->sq.NO = gene2D(i, j + 1);
+			tmpS->sq.SE = gene2D(i + 1, j);
+			tmpS->sq.SO = gene2D(i + 1, j + 1);
+			tmpS->bio = biome(this->_sizeBiome, tmpS->sq);
+			tmpS->GP = 0;
+			tmp.push_back(*tmpS);
+			delete tmpS;
 		}
 		this->_tab.push_back(tmp);
 	}
@@ -33,8 +31,8 @@ mapGP::mapGP(int size, int sizeBiome) {
 mapGP::~mapGP() {}
 
 void	mapGP::printGP() {
-	for (int i = 0; i < this->_sizeH; i++) {
-		for (int j = 0; j < this->_sizeL; j++) {
+	for (int i = 1; i < this->_sizeH - 1; i++) {
+		for (int j = 1; j < this->_sizeL - 1; j++) {
 			if (this->_tab[i][j].GP == 0)
 				printf("\033[1;31m");
 			else
@@ -138,16 +136,22 @@ void	mapGP::checkAround(int x, int y) {
 }
 
 chunk	*mapGP::chunkToRet(int x, int y) {
-	int	a = (x + signeN(x)) / 15 + 33 - signeN(x);
-	int	b = (y + signeN(y)) / 15 + 33 - signeN(y);
+	int	a = (x + signeN(x)) / (this->_sizeBiome - 1) + (this->_sizeIni / 2 + 1) - signeN(x);
+	int	b = (y + signeN(y)) / (this->_sizeBiome - 1) + (this->_sizeIni / 2 + 1) - signeN(y);
 
 	chunk	*ret = new chunk[16];
 	biome newB(this->_tab[a][b].bio, x, y);
 	newB.doGPlvl1();
-	// if ((this->_tab[a][b].sq.NE.x == 0 || this->_tab[a][b].sq.NE.x == -1) && (this->_tab[a][b].sq.NE.y == 0 || this->_tab[a][b].sq.NE.y == -1))
-	// 	newB.dig(this->_tab[a][b].bio, a, b);
+	if (!this->_tab[a][b].bio.getCave()) {
+		this->_tab[a][b].bio.setCave(this->_tab[a][b].sq.NE.x, this->_tab[a][b].sq.NE.y, 3, 300, this->_tab[a][b].bio.getHeightF(8, 8));
+	}
+	if (this->_tab[a][b].bio.getCave())
+		newB.dig(this->_tab[a][b].bio, x, y);
 	for (int k = 0; k < 16; k++) {
 		ret[k] = newB.voxelToChunk(k);
 	}
 	return ret;
 }
+
+// texture
+// cave moche

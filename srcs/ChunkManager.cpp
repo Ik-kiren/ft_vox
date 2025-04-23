@@ -6,7 +6,7 @@
 
 using namespace std::chrono_literals;
 
-ChunkManager::ChunkManager(Renderer *renderer, mapGP &tab): renderer(renderer) {
+ChunkManager::ChunkManager(Renderer *renderer, mapGP *tab): renderer(renderer) {
     camera = NULL;
     this->maxPos = Vector3(RENDERSIZE, 15, RENDERSIZE);
     this->minPos = Vector3(-RENDERSIZE, 0, -RENDERSIZE);
@@ -14,7 +14,7 @@ ChunkManager::ChunkManager(Renderer *renderer, mapGP &tab): renderer(renderer) {
 
  	for (int i = this->minPos.x; i <= this->maxPos.x; i++) {
 		for (int j = this->minPos.z; j <= this->maxPos.z; j++) {
-			chunk *monoCx0 = tab.chunkToRet(i, j);
+			chunk *monoCx0 = tab->chunkToRet(i, j);
 			this->loadNewChunk(monoCx0, i, j);
 		}
 	}
@@ -186,10 +186,9 @@ Vector3 ChunkManager::GetMinChunkPos() {
     return tmp.Trunc();
 }
 
-
 void	ChunkManager::loadNewLine(int oldx, int newx, int z) {
 	for (int j = this->minPos.z; j <= this->maxPos.z; j++) {
-		chunk *monoCx1 = this->tab.chunkToRet(oldx + RENDERSIZE * signe((int)(newx) - oldx) + signe((int)(newx) - oldx), z + j);
+		chunk *monoCx1 = this->tab->chunkToRet(oldx + RENDERSIZE * signe((int)(newx) - oldx) + signe((int)(newx) - oldx), z + j);
 		this->loadNewChunk(monoCx1, oldx + RENDERSIZE * signe((int)(newx) - oldx) + signe((int)(newx) - oldx), z + j);
 	}
 	this->UnloadChunkX(oldx - RENDERSIZE * signe((int)(newx) - oldx));
@@ -197,7 +196,7 @@ void	ChunkManager::loadNewLine(int oldx, int newx, int z) {
 
 void	ChunkManager::loadNewColumn(int oldz, int newz, int x) {
 	for (int j = this->minPos.x; j <= this->maxPos.x; j++) {
-		chunk *monoCx2 = this->tab.chunkToRet(x + j, oldz + RENDERSIZE * signe((int)(newz) - oldz) + signe((int)(newz) - oldz));
+		chunk *monoCx2 = this->tab->chunkToRet(x + j, oldz + RENDERSIZE * signe((int)(newz) - oldz) + signe((int)(newz) - oldz));
 		this->loadNewChunk(monoCx2, x + j, oldz + RENDERSIZE * signe((int)(newz) - oldz) + signe((int)(newz) - oldz));
 	}
 	this->UnloadChunkZ(oldz - RENDERSIZE * signe((int)(newz) - oldz));

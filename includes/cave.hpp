@@ -28,6 +28,7 @@ class cave {
 		int	_lenght;
 		int	_nbrGP;
 		int	_sizeModif;
+		int	_sizeBiome;
 		std::vector<caveGP>	_caveX;
 
 		void	afterGPcave();
@@ -35,7 +36,7 @@ class cave {
 		void	doDig(int x, int y, int h);
 	public:
 		cave();
-		cave(int x, int y, int size, int lenght);
+		cave(int x, int y, int size, int lenght, int H, int sizeBiome);
 		~cave();
 		
 		caveDig			**_tab;

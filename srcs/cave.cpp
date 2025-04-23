@@ -5,12 +5,13 @@ cave::cave() {
 	this->_tab = NULL;
 }
 
-cave::cave(int x, int y, int size, int lenght) {
+cave::cave(int x, int y, int sizeHole, int lenght, int H, int sizeBiome) {
 	this->_seed = randSeed(x, y);
-	this->_sizeIni = size;
+	this->_sizeIni = sizeHole;
 	this->_lenght = lenght;
 	this->_nbrGP = 8;
-	this->_sizeModif = 5;
+	this->_sizeModif = 6;
+	this->_sizeBiome = sizeBiome;
 
 	for (int i = 0; i < this->_lenght; i++) {
 		caveGP	tmp;
@@ -38,24 +39,25 @@ cave::cave(int x, int y, int size, int lenght) {
 	this->_caveX[this->_lenght - 1].dirYF = randFloatBetween(1);
 	this->_caveX[this->_lenght - 1].dirZF = randFloatBetween(1);
 
-	caveDig	**ret = new caveDig*[16];
-	for (int i = 0; i < 16; i++) {
-		ret[i] = new caveDig[16];
-		for (int j = 0; j < 16; j++)
+	caveDig	**ret = new caveDig*[this->_sizeBiome - 1];
+	for (int i = 0; i < this->_sizeBiome - 1; i++) {
+		ret[i] = new caveDig[this->_sizeBiome - 1];
+		for (int j = 0; j < this->_sizeBiome - 1; j++)
 			ret[i][j].impact = 0;
 	}
 	this->_tab = ret;
 
 	this->doIniCave();
-	this->doDig(8, 8, 120);
+	this->doDig(8, 8, H + (1 + this->_caveX[this->_lenght - 1].dirZF) * sizeHole);
 }
 
 cave::~cave() {
-	if (this->_tab == NULL)
+	if (!this->_tab)
 		return ;
-	for (int i = 0; i < 16; i++)
+	for (int i = 0; i < this->_sizeBiome - 1; i++)
 		delete [] this->_tab[i];
 	delete [] this->_tab;
+	this->_tab = NULL;
 }
 
 void	cave::doIniCave() {
@@ -76,8 +78,8 @@ void	cave::doIniCave() {
 				L = j;
 			}
 		}
-		H1 /= 2;
-		H2 /= 2;
+		H1 /= 1.5;
+		H2 /= 1.5;
 	}
 	afterGPcave();
 }
@@ -85,16 +87,16 @@ void	cave::doIniCave() {
 void	cave::afterGPcave() {
 	for (int i = 0; i < this->_lenght; i++) {
 		this->_caveX[i].sizeI = std::max(this->_sizeIni + (int)(this->_caveX[i].sizeF * this->_sizeModif), 1);
-		this->_caveX[i].dirXI = (int)(this->_caveX[i].dirXF * 2.0f);
-		this->_caveX[i].dirYI = (int)(this->_caveX[i].dirYF * 2.0f);
+		this->_caveX[i].dirXI = (int)(this->_caveX[i].dirXF * 3.0f);
+		this->_caveX[i].dirYI = (int)(this->_caveX[i].dirYF * 3.0f);
 		this->_caveX[i].dirZI = (int)(this->_caveX[i].dirZF + 1);
 	}
 }
 
 void	cave::dig(int x, int y, int h, int size) {
-	for (int i = std::max(x - size, 0); i < std::min(x + size, 255); i++) {
-		for (int j = std::max(y - size, 0); j < std::min(y + size, 255); j++) {
-			for (int l = std::max(h - size, 0); l < std::min(h + size, 255); l++) {
+	for (int i = std::max(x - size - randIntBetween(size / 2) * signeN(x), 0); i < std::min(x + size + randIntBetween(size / 2) * signeP(x), 16 * (this->_sizeBiome - 1)); i++) {
+		for (int j = std::max(y - size - randIntBetween(size / 2) * signeN(y), 0); j < std::min(y + size + randIntBetween(size / 2) * signeP(y), 16 * (this->_sizeBiome - 1)); j++) {
+			for (int l = std::max(h - size - randIntBetween(size / 4), 1); l < std::min(h + size + randIntBetween(size / 2), 255); l++) {
 				this->_tab[i / 16][j / 16].impact = 1;
 				this->_tab[i / 16][j / 16].toDel.push_back(gene3D(i % 16, j % 16, l));
 			}	

@@ -28,10 +28,11 @@ struct chunk {
 	unsigned char	***voxel;
 };
 
-square	squarelvl1(square sq, int x, int y, int size);
+square	squarelvl1(square sq, int x, int y);
 coord2d	gene2D(int x, int y);
 coord3d	gene3D(int x, int y, int k);
 float	randFloatBetween(float h);
+int		randIntBetween(int h);
 float	roundPreci(float x, int preci);
 void	newSeed(int x, int y);
 int		randSeed(int x, int y);
