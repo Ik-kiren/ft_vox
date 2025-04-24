@@ -139,10 +139,7 @@ int main(void) {
             font.RenderText(fontShader, lastFps, 0.5, 1100, 2, Vector3(1, 0.2, 0.2));
             
             //cubeObj.drawMeshInstance(window, camera, objects, compute);
-			test.LoadChunk();
-            test.ChunkSetup();
-			
-            test.ChunkVisibility();
+			test.ChunkManagerLoop();
             //Vector3 camPos = camera.GetPosition() / 16;
             //std::cout << camPos << std::endl;
             camera.RegisterKeyboardInput(window);

@@ -13,9 +13,9 @@
 class ChunkManager
 {
 private:
-    std::vector<Chunk *> chunkList;
     std::vector<Chunk *> loadList;
     std::vector<Chunk *> setupList;
+    std::vector<Chunk *> unloadList;
     std::vector<Chunk *> visibilityList;
     std::vector<Chunk *> renderList;
     Renderer *renderer;
@@ -38,9 +38,11 @@ public:
     void LoadChunk();
     Chunk *LoadThread(Chunk *chunk);
     void ChunkSetup();
+    void ChunkUnload();
     void ChunkVisibility();
     void UnloadChunkX(int x);
     void UnloadChunkZ(int z);
+    void ChunkManagerLoop();
 	void loadNewChunk(chunk ***toLoad, int xdiff, int zdiff);
 
     Vector3 GetMaxChunkPos();

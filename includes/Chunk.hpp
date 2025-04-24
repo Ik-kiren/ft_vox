@@ -13,10 +13,10 @@ private:
     Vector3 position;
     ChunkManager *chunkManager;
 public:
-    std::vector<Chunk *> *chunkList;
     bool activated;
     bool loaded;
     bool meshed;
+    bool unload;
     Renderer *renderer;
     unsigned int meshID;
     static const int CHUNK_SIZE_X = 16;

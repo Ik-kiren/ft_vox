@@ -21,10 +21,22 @@ ChunkManager::ChunkManager(Renderer *renderer, mapGP *tab): renderer(renderer) {
 }
 
 ChunkManager::~ChunkManager() {
-    for (size_t i = 0; i < chunkList.size(); i++)
-    {
-        delete chunkList[i];
+    for (std::vector<Chunk *>::iterator it = loadList.begin(); it != loadList.end();) {
+        delete *it;
+        it = loadList.erase(it);
     }
+    for (std::vector<Chunk *>::iterator it = visibilityList.begin(); it != visibilityList.end();) {
+        delete *it;
+        it = visibilityList.erase(it);
+    }
+    for (std::vector<Chunk *>::iterator it = setupList.begin(); it != setupList.end();) {
+        delete *it;
+        it = setupList.erase(it);
+    }
+    for (std::unordered_map<Vector3, Chunk*>::iterator it = chunkMap.begin(); it != chunkMap.end();) {
+        it = chunkMap.erase(it);
+    }
+    ChunkUnload();
 }
 
 void ChunkManager::Init() {
@@ -41,6 +53,11 @@ Chunk *ChunkManager::LoadThread(Chunk *chunk) {
 void ChunkManager::LoadChunk() {
     int tmp = 0;
     for (std::vector<Chunk *>::iterator it = loadList.begin(); it != loadList.end();) {
+        if ((*it)->unload) {
+            unloadList.push_back(*it);
+            it = loadList.erase(it);
+            continue;
+        }
         if ((*it)->loaded == false) {	
             (*it)->CreateMesh();
             setupList.push_back(*it);
@@ -56,6 +73,11 @@ void ChunkManager::LoadChunk() {
 
 void ChunkManager::ChunkSetup() {
     for (std::vector<Chunk *>::iterator it = setupList.begin(); it != setupList.end(); it++) {
+        if ((*it)->unload) {
+            unloadList.push_back(*it);
+            it = setupList.erase(it);
+            continue;
+        }
         if (!(*it)->meshed) {
             renderer->FinishMesh((*it)->meshID);
             (*it)->meshed = true;
@@ -66,10 +88,22 @@ void ChunkManager::ChunkSetup() {
     }
 }
 
+void ChunkManager::ChunkUnload() {
+    for (std::vector<Chunk *>::iterator it = unloadList.begin(); it != unloadList.end();) {
+        delete *it;
+        it = unloadList.erase(it);
+    }
+}
+
 void ChunkManager::ChunkVisibility() {
     if (lastCamPos != camera->GetPosition() || lastCamDirection != camera->GetFront()) {
         renderList.clear();
         for (std::vector<Chunk *>::iterator it = visibilityList.begin(); it != visibilityList.end(); it++) {
+            if ((*it)->unload) {
+                unloadList.push_back(*it);
+                it = visibilityList.erase(it);
+                continue;
+            }
             AABB aabb;
             aabb.center[0] = (*it)->GetPosition().x + 8.5f;
             aabb.center[1] = (*it)->GetPosition().y + 8.5f;
@@ -86,74 +120,43 @@ void ChunkManager::ChunkVisibility() {
 }
 
 void ChunkManager::UnloadChunkX(int x) {
-    for (std::vector<Chunk *>::iterator it = loadList.begin(); it != loadList.end();) {
-        if ((*it)->GetNormalizedPos().x == x) {
-            it = loadList.erase(it);
-        }
-        else {
-            it++;
-        }
-    }
-    for (std::vector<Chunk *>::iterator it = visibilityList.begin(); it != visibilityList.end();) {
-        if ((*it)->GetNormalizedPos().x == x) {
-            it = visibilityList.erase(it);
-        }
-        else {
-            it++;
-        }
-    }
     for (int i = GetMinChunkPos().y; i <= GetMaxChunkPos().y; i++) {
-        for (int j = GetMinChunkPos().z; j <= GetMaxChunkPos().z; j++) {
-			// delete chunkMap[Vector3(x, i, j)];
-            chunkMap.erase(Vector3(x, i , j));
+        for (int j = GetMinChunkPos().z - 3; j <= GetMaxChunkPos().z + 3; j++) {
+            if (chunkMap.find(Vector3(x, i , j)) != chunkMap.end()) {
+                chunkMap[Vector3(x, i, j)]->unload = true;
+                chunkMap.erase(Vector3(x, i , j));
+            }
         }
     }
 }
 
 void ChunkManager::UnloadChunkZ(int z) {
-	for (std::vector<Chunk *>::iterator it = loadList.begin(); it != loadList.end();) {
-		if ((*it)->GetNormalizedPos().z == z) {
-			it = loadList.erase(it);
-		}
-		else {
-			it++;
-		}
-	}
-    for (std::vector<Chunk *>::iterator it = visibilityList.begin(); it != visibilityList.end();) {
-        if ((*it)->GetNormalizedPos().z == z) {
-            it = visibilityList.erase(it);
-        }
-        else {
-            it++;
-        }
-    }
-    for (int i = GetMinChunkPos().x; i <= GetMaxChunkPos().x; i++) {
+    for (int i = GetMinChunkPos().x - 3; i <= GetMaxChunkPos().x + 3; i++) {
         for (int j = GetMinChunkPos().y; j <= GetMaxChunkPos().y; j++) {
-			// delete chunkMap[Vector3(i, j, z)];
-            chunkMap.erase(Vector3(i, j , z));
+			if (chunkMap.find(Vector3(i, j , z)) != chunkMap.end()) {
+                chunkMap[Vector3(i, j, z)]->unload = true;
+                chunkMap.erase(Vector3(i, j , z));
+            }
         }
     }
 }
 
 void	ChunkManager::loadNewChunk(chunk *toLoad, int xdiff, int zdiff) {
-	// if (xdiff >= 0 && this->maxPos.x < xdiff)
-	// 	this->maxPos = Vector3(xdiff, 15, this->maxPos.z);
-	// if (zdiff >= 0 && this->maxPos.z < zdiff)
-	// 	this->maxPos = Vector3(this->maxPos.x, 15, zdiff);
-	// if (xdiff < 0 && this->minPos.x > xdiff)
-	// 	this->minPos = Vector3(xdiff, 0, this->minPos.z);
-	// if (zdiff < 0 && this->minPos.z > zdiff)
-	// 	this->minPos = Vector3(this->minPos.x, 0, zdiff);
 
 	for (int k = 0; k < 16; k++) {
 		Chunk *newChunk = new Chunk(this->renderer, this, toLoad[k].voxel);
 		newChunk->Translation(Vector3(xdiff * Chunk::CHUNK_SIZE_X, k * Chunk::CHUNK_SIZE_Y, zdiff * Chunk::CHUNK_SIZE_Z));
-		newChunk->chunkList = &(this->chunkList);
 		loadList.push_back(newChunk);
-		chunkList.push_back(newChunk);
 		chunkMap.insert({newChunk->GetNormalizedPos(), newChunk});
 	}
     freeChunks(toLoad);
+}
+
+void ChunkManager::ChunkManagerLoop() {
+    LoadChunk();
+    ChunkSetup();
+    ChunkUnload();
+    ChunkVisibility();
 }
 
 Vector3 ChunkManager::GetMaxChunkPos() {
