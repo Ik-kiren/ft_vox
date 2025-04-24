@@ -15,6 +15,7 @@ struct heightGP {
 	float		heightF3;
 	float		heightF;
 	float		tempF;
+	float		waterF;
 	int			heightI;
 	int			texture;
 	std::array<unsigned char, sizeH>	arrayH;
@@ -60,7 +61,7 @@ class biome {
 		void	doGPlvl1();
 		square	getSquare();	
 		cave	*getCave();
-		void	setCave(int x, int y, int size, int lenght, float H);
+		void	setCaves(int xrand, int yrand, biome &biSup);
 		float	getHeightF(int x, int y);
 		void	dig(biome &biSup, int x, int y);
 };

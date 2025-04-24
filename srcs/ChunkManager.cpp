@@ -6,7 +6,7 @@
 
 using namespace std::chrono_literals;
 
-ChunkManager::ChunkManager(Renderer *renderer, mapGP *tab): renderer(renderer) {
+ChunkManager::ChunkManager(Renderer *renderer, mapGP *tab, Player *player): renderer(renderer) {
     camera = NULL;
     this->maxPos = Vector3(RENDERSIZE, 15, RENDERSIZE);
     this->minPos = Vector3(-RENDERSIZE, 0, -RENDERSIZE);
@@ -14,8 +14,10 @@ ChunkManager::ChunkManager(Renderer *renderer, mapGP *tab): renderer(renderer) {
 
  	for (int i = this->minPos.x; i <= this->maxPos.x; i++) {
 		for (int j = this->minPos.z; j <= this->maxPos.z; j++) {
-			chunk *monoCx0 = tab->chunkToRet(i, j);
-			this->loadNewChunk(monoCx0, i, j);
+			chunk *monoCx0 = tab->chunkToRet(i + player->getPos().x / 16, j + player->getPos().z / 16);
+			if (i == 0 && j == 0)
+				player->setYfromChunk(monoCx0);
+			this->loadNewChunk(monoCx0, i + player->getPos().x / 16, j + player->getPos().z / 16);
 		}
 	}
 }

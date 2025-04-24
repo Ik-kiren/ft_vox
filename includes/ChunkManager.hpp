@@ -7,6 +7,7 @@
 #include "./Chunk.hpp"
 #include "./mapGP.hpp"
 #include "./utils.hpp"
+#include "./Player.hpp"
 #include "../includes/Vector3i.hpp"
 #include <unordered_map>
 
@@ -31,7 +32,7 @@ public:
     std::unordered_map<Vector3, Chunk *> chunkMap;
     Vector3 maxPos;
     Vector3 minPos;
-    ChunkManager(Renderer *renderer, mapGP *tab);
+    ChunkManager(Renderer *renderer, mapGP *tab, Player *player);
     ~ChunkManager();
 
     void Init();

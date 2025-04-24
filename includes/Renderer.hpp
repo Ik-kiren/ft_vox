@@ -24,12 +24,14 @@ private:
 
     std::vector<float> normalVertices;
     std::mutex renderMutex;
-    unsigned int textureIDs[8] = {0, 0, 0, 0, 0, 0, 0, 0};
-    GLint        textureLocation[8] = {0, 0, 0, 0, 0, 0, 0, 0};
-    std::string  textureName[8] = {"dirtTexture", "stoneTexture", "sandTexture", "redSandTexture", "snowTexture", "iceTexture", "gravelTexture", "oldGrassTexture"};
+	const int static	nbr = 9;
+    unsigned int	textureIDs[nbr] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
+    GLint			textureLocation[nbr] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
+    std::string		textureName[nbr] = {"dirtTexture", "stoneTexture", "sandTexture", "redSandTexture",
+		"snowTexture", "iceTexture", "gravelTexture", "oldGrassTexture", "waterTexture"};
 public:
-    const std::string textureArray[8] = {"./textures/dirt.png", "./textures/stone.png", "./textures/sand.png", "./textures/red_sand.png", "./textures/snow.png",
-        "./textures/ice.png", "./textures/gravel.png", "./textures/OldGrass.png"};
+    const std::string textureArray[nbr] = {"./textures/dirt.png", "./textures/stone.png", "./textures/sand.png", "./textures/red_sand.png", "./textures/snow.png",
+        "./textures/ice.png", "./textures/gravel.png", "./textures/grass_carried.png", "./textures/water.png"};
     
     const int STRIDE_SIZE = 6;
     std::vector<NewMesh *> meshes;

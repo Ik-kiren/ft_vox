@@ -79,7 +79,9 @@ int main(void) {
 	gettimeofday(&tp1, NULL);
 	std::cout << tp1.tv_sec - tp0.tv_sec << " sec " << tp1.tv_usec - tp0.tv_usec << " ms\n";
 
-    ChunkManager test(&renderer, &tab);
+	Player	player(207, 0, 812);
+
+    ChunkManager test(&renderer, &tab, &player);
 	test.Init();
 
     GLFWwindow *window;
@@ -93,7 +95,7 @@ int main(void) {
 
     //Mesh cubeMesh = Mesh("./objects/DirtCube.obj");  
 
-    Camera camera = Camera(Vector3(0, 92, 0), Vector3(0, 1, 0));
+    Camera camera = Camera(Vector3(player.getPos().x + 0.5, player.getPos().y, player.getPos().z + 0.5), Vector3(0, 1, 0));
     test.SetCamera(&camera);
 
     //Object cubeObj = Object(cubeShader, &cubeMesh, Vector4(1, 1, 1, 1));

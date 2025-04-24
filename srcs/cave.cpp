@@ -5,10 +5,10 @@ cave::cave() {
 	this->_tab = NULL;
 }
 
-cave::cave(int x, int y, int sizeHole, int lenght, int H, int sizeBiome) {
-	this->_seed = randSeed(x, y);
-	this->_sizeIni = sizeHole;
-	this->_lenght = lenght;
+cave::cave(int sizeBiome, int lenghtMax) {
+	this->_seed = randSeed(1, 1);
+	this->_sizeIni = 3;
+	this->_lenght = lenghtMax;
 	this->_nbrGP = 8;
 	this->_sizeModif = 6;
 	this->_sizeBiome = sizeBiome;
@@ -27,17 +27,6 @@ cave::cave(int x, int y, int sizeHole, int lenght, int H, int sizeBiome) {
 
 		this->_caveX.push_back(tmp);
 	}
-	this->_caveX[0].GP = 1;
-	this->_caveX[0].sizeF = 0;
-	this->_caveX[0].dirXF = randFloatBetween(1);
-	this->_caveX[0].dirYF = randFloatBetween(1);
-	this->_caveX[0].dirZF = 0;
-
-	this->_caveX[this->_lenght - 1].GP = 1;
-	this->_caveX[this->_lenght - 1].sizeF = randFloatBetween(1);
-	this->_caveX[this->_lenght - 1].dirXF = randFloatBetween(1);
-	this->_caveX[this->_lenght - 1].dirYF = randFloatBetween(1);
-	this->_caveX[this->_lenght - 1].dirZF = randFloatBetween(1);
 
 	caveDig	**ret = new caveDig*[this->_sizeBiome - 1];
 	for (int i = 0; i < this->_sizeBiome - 1; i++) {
@@ -46,9 +35,6 @@ cave::cave(int x, int y, int sizeHole, int lenght, int H, int sizeBiome) {
 			ret[i][j].impact = 0;
 	}
 	this->_tab = ret;
-
-	this->doIniCave();
-	this->doDig(8, 8, H + (1 + this->_caveX[this->_lenght - 1].dirZF) * sizeHole);
 }
 
 cave::~cave() {
@@ -86,10 +72,10 @@ void	cave::doIniCave() {
 
 void	cave::afterGPcave() {
 	for (int i = 0; i < this->_lenght; i++) {
-		this->_caveX[i].sizeI = std::max(this->_sizeIni + (int)(this->_caveX[i].sizeF * this->_sizeModif), 1);
 		this->_caveX[i].dirXI = (int)(this->_caveX[i].dirXF * 3.0f);
-		this->_caveX[i].dirYI = (int)(this->_caveX[i].dirYF * 3.0f);
+		this->_caveX[i].dirYI = (int)(this->_caveX[i].dirYF * 3.0f);	
 		this->_caveX[i].dirZI = (int)(this->_caveX[i].dirZF + 1);
+		this->_caveX[i].sizeI = std::max(std::max(std::max(std::max(this->_sizeIni + (int)(this->_caveX[i].sizeF * this->_sizeModif), 1), this->_caveX[i].dirXI), this->_caveX[i].dirYI), this->_caveX[i].dirZI);
 	}
 }
 
@@ -112,6 +98,7 @@ void	cave::doDig(int x, int y, int h) {
 		x += this->_caveX[i].dirXI;
 		y += this->_caveX[i].dirYI;
 		this->dig(x, y, h, this->_caveX[i].sizeI);
+		this->_caveX[i].GP = 0;
 	}
 }
 
@@ -122,4 +109,26 @@ int		cave::getLenght() {
 
 caveGP	cave::getCaveX(int i) {
 	return this->_caveX[i];
+}
+
+
+void	cave::doNewCave(int xrand, int yrand, int x, int y, int sizeHoleIni, int lenght, int H) {
+	this->_seed = randSeed(xrand + x, yrand + y);
+	this->_sizeIni = sizeHoleIni;
+	this->_lenght = lenght;
+
+	this->_caveX[0].GP = 1;
+	this->_caveX[0].sizeF = 0;
+	this->_caveX[0].dirXF = randFloatBetween(1);
+	this->_caveX[0].dirYF = randFloatBetween(1);
+	this->_caveX[0].dirZF = 0;
+
+	this->_caveX[this->_lenght - 1].GP = 1;
+	this->_caveX[this->_lenght - 1].sizeF = randFloatBetween(1);
+	this->_caveX[this->_lenght - 1].dirXF = randFloatBetween(1);
+	this->_caveX[this->_lenght - 1].dirYF = randFloatBetween(1);
+	this->_caveX[this->_lenght - 1].dirZF = randFloatBetween(1);
+
+	this->doIniCave();
+	this->doDig(x, y, H + (1 + this->_caveX[this->_lenght - 1].dirZF) * this->_sizeIni);
 }
