@@ -7,6 +7,7 @@
 #include "./Chunk.hpp"
 #include <string>
 #include <mutex>
+#include <unordered_map>
 
 class Renderer
 {
@@ -34,7 +35,8 @@ public:
         "./textures/ice.png", "./textures/gravel.png", "./textures/grass_carried.png", "./textures/water.png"};
     
     const int STRIDE_SIZE = 6;
-    std::vector<NewMesh *> meshes;
+    std::unordered_map<unsigned int, NewMesh *> meshes;
+    
     Renderer();
     ~Renderer();
 
@@ -44,6 +46,7 @@ public:
     unsigned int AddVertex(unsigned int &meshID, float x, float y, float z, int type, Vector2 size);
     void addIndices(unsigned int &meshID, unsigned int &v1, unsigned int &v2, unsigned int &v3);
     void FinishMesh(unsigned int &meshID);
+    void EraseMesh(unsigned int &meshID);
     void Render();
     void Render(unsigned int &meshID);
     void Render(std::vector<Chunk *> &chunks);

@@ -10,6 +10,7 @@ private:
     Vector3 position;
     
 public:
+    static unsigned int meshID;
     std::vector<int> vertexArray;
     Vector2 textureVertices[4] = {Vector2(0, 0), Vector2(1, 0), Vector2(1, 1), Vector2(0, 1)};
     unsigned int    textureIndex;

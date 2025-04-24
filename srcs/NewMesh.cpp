@@ -1,8 +1,11 @@
 #include "../includes/NewMesh.hpp"
 #include <iostream>
 
+unsigned int NewMesh::meshID = 0;
+
 NewMesh::NewMesh() {
     this->textureIndex = 0;
+    NewMesh::meshID += 1;
 }
 
 NewMesh::~NewMesh() {}

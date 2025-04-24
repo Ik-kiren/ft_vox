@@ -22,8 +22,8 @@ void Renderer::InitRenderer(Shader *shader, Camera *camera) {
 void Renderer::CreateMesh(unsigned int &meshID) {
     NewMesh *newMesh = new NewMesh;
     //renderMutex.lock();
-    meshID = this->meshes.size();
-    this->meshes.push_back(newMesh);
+    meshID = NewMesh::meshID - 1;
+    this->meshes.insert({NewMesh::meshID - 1, newMesh});
     //renderMutex.unlock();
 }
 
@@ -84,6 +84,11 @@ void Renderer::FinishMesh(unsigned int &meshID) {
     glVertexAttribIPointer(0, 1, GL_INT, 0, (void*)0);
     glEnableVertexAttribArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+void Renderer::EraseMesh(unsigned int &meshID) {
+    delete meshes[meshID];
+    meshes.erase(meshID);
 }
 
 void Renderer::Render() {
@@ -158,6 +163,8 @@ void Renderer::Render(std::vector<Chunk *> &chunks) {
     }
 
     for (size_t i = 0; i < chunks.size(); i++) {
+        if (chunks[i]->unload)
+            continue;
         shader->setVector3("offset", meshes[chunks[i]->meshID]->GetPosition());
         glBindVertexArray(meshes[chunks[i]->meshID]->VAO);
         //glDrawArrays(GL_TRIANGLES, 0, meshes[chunks[i]->meshID]->GetIndicesArray().size());
