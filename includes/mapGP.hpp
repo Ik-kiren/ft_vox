@@ -23,6 +23,7 @@ class mapGP {
 		int			_sizeZ;
 		int			_sizeBiome;
 		std::vector<std::vector<biomeGP>>		_tab;
+		biome		_voidBiome;
 
 		void	doGPIniBiome();
 		coord2d	findCoord(int x, int y);

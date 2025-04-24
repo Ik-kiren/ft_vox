@@ -25,6 +25,7 @@ mapGP::mapGP(int size, int sizeBiome) {
 		}
 		this->_tab.push_back(tmp);
 	}
+	this->_voidBiome = biome(this->_sizeBiome, squarelvl1(0, 0));
 	doGPIniBiome();
 }
 
@@ -54,8 +55,8 @@ void	mapGP::printCave(int x, int y, int a, int b) {
 }
 
 void	mapGP::doGPIniBiome() {
-	for (int i = 1; i < this->_sizeH - 1; i++) {
-		for (int j = 1; j < this->_sizeL - 1; j++) {
+	for (int i = 0; i < this->_sizeH; i++) {
+		for (int j = 0; j < this->_sizeL; j++) {
 			if (this->_tab[i][j].GP == 0) {
 				this->_tab[i][j].bio.doGP();
 				this->_tab[i][j].GP = 1;
@@ -139,15 +140,21 @@ chunk	*mapGP::chunkToRet(int x, int y) {
 	int	a = (x + signeN(x)) / (this->_sizeBiome - 1) + (this->_sizeIni / 2 + 1) - signeN(x);
 	int	b = (y + signeN(y)) / (this->_sizeBiome - 1) + (this->_sizeIni / 2 + 1) - signeN(y);
 
-	chunk	*ret = new chunk[16];
-	biome newB(this->_tab[a][b].bio, x, y);
-	newB.doGPlvl1();
-	if (!this->_tab[a][b].bio.getCave()) {
-		// this->_tab[a][b].bio.setCave(this->_tab[a][b].sq.NE.x, this->_tab[a][b].sq.NE.y, 4, 4, 3, 300, this->_tab[a][b].bio);
-		this->_tab[a][b].bio.setCaves(this->_tab[a][b].sq.NE.x, this->_tab[a][b].sq.NE.y, this->_tab[a][b].bio);
+	biome newB;
+	if (a >= this->_sizeH || b >= this->_sizeL || a < 0 || b < 0) {
+		newB = biome(this->_voidBiome, x, y);
+		newB.doGPlvl1();
+	} else {
+		newB = biome(this->_tab[a][b].bio, x, y);
+		newB.doGPlvl1();
+		if (!this->_tab[a][b].bio.getCave()) {
+			this->_tab[a][b].bio.setCaves(this->_tab[a][b].sq.NE.x, this->_tab[a][b].sq.NE.y, this->_tab[a][b].bio);
+		}
+		if (this->_tab[a][b].bio.getCave())
+			newB.dig(this->_tab[a][b].bio, x, y);
 	}
-	if (this->_tab[a][b].bio.getCave())
-		newB.dig(this->_tab[a][b].bio, x, y);
+
+	chunk	*ret = new chunk[16];
 	for (int k = 0; k < 16; k++) {
 		ret[k] = newB.voxelToChunk(k);
 	}
