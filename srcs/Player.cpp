@@ -20,7 +20,7 @@ void	Player::setPos(Vector3 vec) {
 
 void	Player::setYfromChunk(chunk *ch) {
 	for (int k = 255; k >= 0; k--) {
-		if (ch[k / 16].voxel[(int)this->getPos().x % 16][(int)this->getPos().z % 16][k % 16] != 0) {
+		if (ch[k / 16].voxel[std::abs((int)this->getPos().x % 16)][std::abs((int)this->getPos().z % 16)][k % 16] != 0) {
 			this->setPos(Vector3(this->getPos().x, k + 2, this->getPos().z));
 			return ;
 		}

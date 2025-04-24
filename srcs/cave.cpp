@@ -6,7 +6,7 @@ cave::cave() {
 }
 
 cave::cave(int sizeBiome, int lenghtMax) {
-	this->_seed = randSeed(1, 1);
+	this->_seed = 0;
 	this->_sizeIni = 3;
 	this->_lenght = lenghtMax;
 	this->_nbrGP = 8;
@@ -80,8 +80,10 @@ void	cave::afterGPcave() {
 }
 
 void	cave::dig(int x, int y, int h, int size) {
-	for (int i = std::max(x - size - randIntBetween(size / 2) * signeN(x), 0); i < std::min(x + size + randIntBetween(size / 2) * signeP(x), 16 * (this->_sizeBiome - 1)); i++) {
-		for (int j = std::max(y - size - randIntBetween(size / 2) * signeN(y), 0); j < std::min(y + size + randIntBetween(size / 2) * signeP(y), 16 * (this->_sizeBiome - 1)); j++) {
+	// for (int i = std::max(x - size - randIntBetween(size / 2) * signeN(x), 0); i < std::min(x + size + randIntBetween(size / 2) * signeP(x), 16 * (this->_sizeBiome - 1)); i++) {
+	// 	for (int j = std::max(y - size - randIntBetween(size / 2) * signeN(y), 0); j < std::min(y + size + randIntBetween(size / 2) * signeP(y), 16 * (this->_sizeBiome - 1)); j++) {
+	for (int i = std::max(x - size - randIntBetween(size / 2), 0); i < std::min(x + size + randIntBetween(size / 2), 16 * (this->_sizeBiome - 1)); i++) {
+		for (int j = std::max(y - size - randIntBetween(size / 2), 0); j < std::min(y + size + randIntBetween(size / 2), 16 * (this->_sizeBiome - 1)); j++) {
 			for (int l = std::max(h - size - randIntBetween(size / 4), 1); l < std::min(h + size + randIntBetween(size / 2), 255); l++) {
 				this->_tab[i / 16][j / 16].impact = 1;
 				this->_tab[i / 16][j / 16].toDel.push_back(gene3D(i % 16, j % 16, l));

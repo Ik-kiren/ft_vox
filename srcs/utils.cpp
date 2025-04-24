@@ -1,6 +1,6 @@
 #include "../includes/utils.hpp"
 
-square	squarelvl1(square sq, int x, int y) {
+square	squarelvl1(int x, int y) {
 	square	ret;
 
 	ret.NE = gene2D(x, y);

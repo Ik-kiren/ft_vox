@@ -43,7 +43,7 @@ class biome {
 		void	doGPColumn(int j, coord2d cd);
 		int		whatTexture(int x, int y);
 		std::array<unsigned char, sizeH>	fillArray(int h, int texture);
-		int		heightFtoI(float heightF);
+		int		heightFtoI(float heightF, float denivele);
 		void	afterGP();
 		void	iniBiome1(biome &biSup, int x, int y);
 	public:

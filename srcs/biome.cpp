@@ -6,10 +6,9 @@ biome::biome(int size, square sq) {
 	this->_size = size;
 	this->_nbr = size;
 	this->_sizeZ = 256;
+	this->_sq = sq;
 	this->_heightMin = 32;
 	this->_heightMax = 224;
-	// this->_heightMin = 120;
-	// this->_heightMax = 130;
 	this->_heightDiff = this->_heightMax - this->_heightMin;
 	this->_sq = sq;
 	this->_nbrGP = 8;
@@ -20,8 +19,7 @@ biome::biome(int size, square sq) {
 	for (int i = 0; i < this->_size; i++) {
 		std::vector<heightGP>	tmp;
 		for (int j = 0; j < this->_size; j++) {
-			heightGP*	tmpS = new heightGP();	//new to force heap, maybe not necessary ?
-			// heightGP*	tmpS;
+			heightGP*	tmpS = new heightGP();
 			tmpS->GP = 0;
 			tmpS->heightF1 = 0;
 			tmpS->heightF2 = 0;
@@ -44,7 +42,7 @@ biome::biome(biome &biSup, int x, int y) {
 	this->_heightMin = biSup._heightMin;
 	this->_heightMax = biSup._heightMax;
 	this->_heightDiff = this->_heightMax - this->_heightMin;
-	this->_sq = squarelvl1(biSup._sq, x, y);
+	this->_sq = squarelvl1(x, y);
 	this->_nbrGP = 8;
 	this->_Hb = biSup._Hb * 6;
 	this->_level = 1;
@@ -309,50 +307,45 @@ void	biome::doGP() {
 }
 
 int	biome::whatTexture(int x, int y) {
-	if (this->_tab[x][y].tempF < -0.4) {
-		if (this->_tab[x][y].waterF < 0)
+	if (this->_tab[x][y].heightI < 120 + randIntBetween(1)) {
+		if (this->_tab[x][y].tempF < -0.15)
 			return 6;
-		return 5;
-	} else if (this->_tab[x][y].tempF > 0.4) {
-		if (this->_tab[x][y].waterF < 0)
+		else if (this->_tab[x][y].tempF > 0.15)
 			return 3;
+	} else if (this->_tab[x][y].heightI > 200 + randIntBetween(1)) {
+		if (this->_tab[x][y].tempF < -0.15)
+			return 5;
+		else if (this->_tab[x][y].tempF > 0.15)
+			return 4;
+	}
+
+	if (this->_tab[x][y].tempF < -0.6)
+		return 5;
+	else if (this->_tab[x][y].tempF > 0.6) {
 		return 4;
 	} else {
-		if (this->_tab[x][y].waterF < -0.4)
-			return 1;
-		else if (this->_tab[x][y].waterF > 0.4)
+		if (this->_tab[x][y].waterF > 0.65)
 			return 7;
+		else if (this->_tab[x][y].waterF < -0.65)
+			return 1;
 		return 8;
 	}
 
-	// if (this->_tab[x][y].tempF < -0.5) {
-	// 	if (this->_tab[x][y].heightI < 140)
-	// 		return 5;
-	// 	return 6;
-	// } else if (this->_tab[x][y].tempF < -0.25) {	
-	// 	return 7;
-	// } else if (this->_tab[x][y].tempF < 0) {
-	// 	return 1;
-	// } else if (this->_tab[x][y].tempF > 0.7) {
-	// 	return 4;
-	// } else if (this->_tab[x][y].tempF > 0.4) {
-	// 	return 3;
-	// } else
-	// 	return 8;
-	
 	// if (this->_tab[x][y].tempF < -0.4) {
-	// 	if (this->_tab[x][y].heightI > 120 && this->_tab[x][y].heightI < 136)
+	// 	if (this->_tab[x][y].heightI < 115)
 	// 		return 6;
 	// 	return 5;
 	// } else if (this->_tab[x][y].tempF > 0.4) {
-	// 	if (this->_tab[x][y].heightI > 120 && this->_tab[x][y].heightI < 136)
-	// 		return 4;
-	// 	return 3;
+	// 	if (this->_tab[x][y].heightI < 120)
+	// 		return 3;
+	// 	return 4;
 	// } else {
 	// 	if (this->_tab[x][y].heightI < 120)
-	// 		return 1;
-	// 	else if (this->_tab[x][y].heightI > 136)
 	// 		return 7;
+	// 	else if (this->_tab[x][y].waterF > 0.65)
+	// 		return 1;
+	// 	else if (this->_tab[x][y].waterF < -0.65)
+	// 		return 1;
 	// 	return 8;
 	// }
 }
@@ -374,15 +367,15 @@ std::array<unsigned char, sizeH>	biome::fillArray(int h, int texture) {
 	return ret;
 }
 
-int		biome::heightFtoI(float heightF) {
-	return ((heightF * std::abs(heightF)) + 1) / 2 * this->_heightDiff + this->_heightMin;
+int		biome::heightFtoI(float heightF, float denivele) {
+	return ((heightF * std::abs(heightF)) + 1) / 2 * this->_heightDiff * (1 + denivele / 5) + this->_heightMin;
 }
 
 void	biome::afterGP() {
 	for (int i = 0; i < this->_size; i++) {
 		for (int j = 0; j < this->_size; j++) {
 			this->_tab[i][j].heightF = (this->_tab[i][j].heightF1 + this->_tab[i][j].heightF2 / 2 + this->_tab[i][j].heightF3 / 4) / 1.75;
-			this->_tab[i][j].heightI = this->heightFtoI(this->_tab[i][j].heightF);
+			this->_tab[i][j].heightI = this->heightFtoI(this->_tab[i][j].heightF, this->_tab[i][j].waterF);
 			this->_tab[i][j].texture = whatTexture(i, j);
 			this->_tab[i][j].arrayH = fillArray(this->_tab[i][j].heightI, this->_tab[i][j].texture);	
 		}
@@ -510,24 +503,15 @@ cave	*biome::getCave() {
 
 void	biome::setCaves(int xrand, int yrand, biome &biSup) {
 	this->_cave = new cave(this->_nbr, 300);
-	int	x = 2;
-	int	y = 2;
-	int Hint = this->heightFtoI(biSup.getHeightF(x, y));
-	int	size = 3;
-	int	lenght = 200;
-	this->_cave->doNewCave(xrand, yrand, x, y, size, lenght, Hint);
-	x = 2;
-	y = 4;
-	Hint = this->heightFtoI(biSup.getHeightF(x, y));
-	this->_cave->doNewCave(xrand, yrand, x, y, size, lenght, Hint);
-	x = 4;
-	y = 4;
-	Hint = this->heightFtoI(biSup.getHeightF(x, y));
-	this->_cave->doNewCave(xrand, yrand, x, y, size, lenght, Hint);
-	x = 4;
-	y = 2;
-	Hint = this->heightFtoI(biSup.getHeightF(x, y));
-	this->_cave->doNewCave(xrand, yrand, x, y, size, lenght, Hint);
+	randSeed(xrand, yrand);
+	int nbr = randIntBetween(3) + 7;
+	for (int i = 0; i < nbr; i++) {
+		int	x = randIntBetween(this->_nbr / 2 - 2) + this->_nbr / 2;
+		int	y = randIntBetween(this->_nbr / 2 - 2) + this->_nbr / 2;
+		int Hint = this->heightFtoI(biSup.getHeightF(x, y), 0);
+		int	lenght = randIntBetween(100) + 200;
+		this->_cave->doNewCave(xrand, yrand, x, y, 3, lenght, Hint);
+	}
 }
 
 float	biome::getHeightF(int x, int y) {
@@ -552,6 +536,7 @@ void	biome::dig(biome &biSup, int a, int b) {
 		i = biSup._cave->_tab[x][y].toDel[l].x;
 		j = biSup._cave->_tab[x][y].toDel[l].y;
 		k = biSup._cave->_tab[x][y].toDel[l].z;
-		this->_tab[i][j].arrayH[k] = 0;
+		if (this->_tab[i][j].arrayH[k] != 9)
+			this->_tab[i][j].arrayH[k] = 0;
 	}
 }
