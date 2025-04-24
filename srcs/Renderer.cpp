@@ -157,7 +157,7 @@ void Renderer::Render(std::vector<Chunk *> &chunks) {
         glBindTexture(GL_TEXTURE_2D, textureIDs[i]);
     }
 
-    for (size_t i = 8; i < chunks.size(); i++) {
+    for (size_t i = 0; i < chunks.size(); i++) {
         shader->setVector3("offset", meshes[chunks[i]->meshID]->GetPosition());
         glBindVertexArray(meshes[chunks[i]->meshID]->VAO);
         //glDrawArrays(GL_TRIANGLES, 0, meshes[chunks[i]->meshID]->GetIndicesArray().size());
