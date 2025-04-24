@@ -163,6 +163,7 @@ int main(void) {
 			if ((glfwGetKey(window, GLFW_KEY_F ) == GLFW_PRESS))
 				std::cout << cameraCx << " " << cameraCz << " " << camera.GetPosition().x << " " << camera.GetPosition().z << '\n';
     }
+    glfwDestroyWindow(window);
     glfwTerminate();
     return 0;
 }

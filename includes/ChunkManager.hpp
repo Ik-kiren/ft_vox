@@ -21,6 +21,7 @@ private:
     std::vector<Chunk *> renderList;
     Renderer *renderer;
     Camera *camera;
+    Player *player;
     
     Vector3 lastCamPos;
     Vector3 lastCamDirection;

@@ -8,6 +8,7 @@ using namespace std::chrono_literals;
 
 ChunkManager::ChunkManager(Renderer *renderer, mapGP *tab, Player *player): renderer(renderer) {
     camera = NULL;
+    this->player = player;
     this->maxPos = Vector3(RENDERSIZE, 15, RENDERSIZE);
     this->minPos = Vector3(-RENDERSIZE, 0, -RENDERSIZE);
 	this->tab = tab;
@@ -24,21 +25,28 @@ ChunkManager::ChunkManager(Renderer *renderer, mapGP *tab, Player *player): rend
 
 ChunkManager::~ChunkManager() {
     for (std::vector<Chunk *>::iterator it = loadList.begin(); it != loadList.end();) {
+        if (chunkMap.find((*it)->GetNormalizedPos()) != chunkMap.end())
+            chunkMap.erase(chunkMap.find((*it)->GetNormalizedPos()));
         delete *it;
         it = loadList.erase(it);
     }
     for (std::vector<Chunk *>::iterator it = visibilityList.begin(); it != visibilityList.end();) {
+        if (chunkMap.find((*it)->GetNormalizedPos()) != chunkMap.end())
+            chunkMap.erase(chunkMap.find((*it)->GetNormalizedPos()));
         delete *it;
         it = visibilityList.erase(it);
     }
     for (std::vector<Chunk *>::iterator it = setupList.begin(); it != setupList.end();) {
+        if (chunkMap.find((*it)->GetNormalizedPos()) != chunkMap.end())
+            chunkMap.erase(chunkMap.find((*it)->GetNormalizedPos()));
         delete *it;
         it = setupList.erase(it);
     }
+    ChunkUnload();
     for (std::unordered_map<Vector3, Chunk*>::iterator it = chunkMap.begin(); it != chunkMap.end();) {
+        delete it->second;
         it = chunkMap.erase(it);
     }
-    ChunkUnload();
 }
 
 void ChunkManager::Init() {
@@ -92,6 +100,8 @@ void ChunkManager::ChunkSetup() {
 
 void ChunkManager::ChunkUnload() {
     for (std::vector<Chunk *>::iterator it = unloadList.begin(); it != unloadList.end();) {
+        if (chunkMap.find((*it)->GetNormalizedPos()) != chunkMap.end())
+            chunkMap.erase(chunkMap.find((*it)->GetNormalizedPos()));
         delete *it;
         it = unloadList.erase(it);
     }
@@ -166,7 +176,7 @@ Vector3 ChunkManager::GetMaxChunkPos() {
     if (camera != NULL) {
         tmp = camera->GetPosition();
     } else {
-        tmp = Vector3(0, 128, 0);
+        tmp = player->getPos();
     }
     if (tmp.x < 0)
         tmp.x -= 16;
@@ -181,7 +191,7 @@ Vector3 ChunkManager::GetMinChunkPos() {
     if (camera != NULL) {
         tmp = camera->GetPosition();
     } else {
-        tmp = Vector3(0, 128, 0);
+        tmp = player->getPos();
     }
     if (tmp.x < 0)
         tmp.x -= 16;
