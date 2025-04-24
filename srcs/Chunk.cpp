@@ -24,6 +24,7 @@ Chunk::Chunk(Renderer *renderer, ChunkManager *chunkManager, unsigned char ***te
 }
 
 Chunk::~Chunk() {
+    renderer->EraseMesh(meshID);
     for (int i = 0; i < CHUNK_SIZE_X; i++) {
         for (int j = 0; j < CHUNK_SIZE_Y; j++) {
             delete[] this->blocksArray[i][j]; 
