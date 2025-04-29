@@ -82,7 +82,7 @@ void ChunkManager::LoadChunk() {
 }
 
 void ChunkManager::ChunkSetup() {
-    for (std::vector<Chunk *>::iterator it = setupList.begin(); it != setupList.end(); it++) {
+    for (std::vector<Chunk *>::iterator it = setupList.begin(); it != setupList.end();) {
         if ((*it)->unload) {
             unloadList.push_back(*it);
             it = setupList.erase(it);
@@ -93,8 +93,7 @@ void ChunkManager::ChunkSetup() {
             (*it)->meshed = true;
         }
         visibilityList.push_back((*it));
-        if (setupList.erase(it) == setupList.end())
-            break;
+        it = setupList.erase(it);
     }
 }
 

@@ -72,10 +72,10 @@ void Chunk::CreateCube(int &x, int &y, int &z, bool &xPositif, bool &xNegatif, b
             }
         }
         //std::cout << "size = " << x << " " << y << " " << z << " " << size << std::endl;
-        ui5 = renderer->AddVertex(meshID, x                             , y + Block::BLOCK_SIZE, z                          , type, Vector2(1, 1));
-        ui1 = renderer->AddVertex(meshID, x + (Block::BLOCK_SIZE * size.x), y + Block::BLOCK_SIZE, z                        , type, Vector2(size.x, 1));
-        ui3 = renderer->AddVertex(meshID, x + (Block::BLOCK_SIZE * size.x), y + Block::BLOCK_SIZE, z + (Block::BLOCK_SIZE * size.z), type, Vector2(size.x, size.z));
-        ui7 = renderer->AddVertex(meshID, x                             , y + Block::BLOCK_SIZE, z + (Block::BLOCK_SIZE * size.z), type, Vector2(1, size.z));
+        ui5 = renderer->AddVertex(meshID, x                             , y + Block::BLOCK_SIZE, z                          , type, Vector2(1, 1), YPOSITIF);
+        ui1 = renderer->AddVertex(meshID, x + (Block::BLOCK_SIZE * size.x), y + Block::BLOCK_SIZE, z                        , type, Vector2(size.x, 1), YPOSITIF);
+        ui3 = renderer->AddVertex(meshID, x + (Block::BLOCK_SIZE * size.x), y + Block::BLOCK_SIZE, z + (Block::BLOCK_SIZE * size.z), type, Vector2(size.x, size.z), YPOSITIF);
+        ui7 = renderer->AddVertex(meshID, x                             , y + Block::BLOCK_SIZE, z + (Block::BLOCK_SIZE * size.z), type, Vector2(1, size.z), YPOSITIF);
         renderer->addIndices(meshID, ui1, ui5, ui7);
         renderer->addIndices(meshID, ui1, ui7, ui3);
     }
@@ -105,10 +105,10 @@ void Chunk::CreateCube(int &x, int &y, int &z, bool &xPositif, bool &xNegatif, b
                 break;
             }
         }
-        ui8 = renderer->AddVertex(meshID, x                               , y                               , z + Block::BLOCK_SIZE, type, Vector2(1, 1));
-        ui4 = renderer->AddVertex(meshID, x + (Block::BLOCK_SIZE * size.x), y                               , z + Block::BLOCK_SIZE, type, Vector2(size.x, 1));
-        ui3 = renderer->AddVertex(meshID, x + (Block::BLOCK_SIZE * size.x), y + (Block::BLOCK_SIZE * size.y), z + Block::BLOCK_SIZE, type, Vector2(size.x, size.y));
-        ui7 = renderer->AddVertex(meshID, x                               , y + (Block::BLOCK_SIZE * size.y), z + Block::BLOCK_SIZE, type, Vector2(1, size.y));
+        ui8 = renderer->AddVertex(meshID, x                               , y                               , z + Block::BLOCK_SIZE, type, Vector2(1, 1), ZPOSITIF);
+        ui4 = renderer->AddVertex(meshID, x + (Block::BLOCK_SIZE * size.x), y                               , z + Block::BLOCK_SIZE, type, Vector2(size.x, 1), ZPOSITIF);
+        ui3 = renderer->AddVertex(meshID, x + (Block::BLOCK_SIZE * size.x), y + (Block::BLOCK_SIZE * size.y), z + Block::BLOCK_SIZE, type, Vector2(size.x, size.y), ZPOSITIF);
+        ui7 = renderer->AddVertex(meshID, x                               , y + (Block::BLOCK_SIZE * size.y), z + Block::BLOCK_SIZE, type, Vector2(1, size.y), ZPOSITIF);
         
         renderer->addIndices(meshID, ui4, ui3, ui7);
         renderer->addIndices(meshID, ui4, ui7, ui8);
@@ -140,10 +140,10 @@ void Chunk::CreateCube(int &x, int &y, int &z, bool &xPositif, bool &xNegatif, b
             }
         }
 
-        ui6 = renderer->AddVertex(meshID, x                     , y                                 , z                               , type, Vector2(1, 1));
-        ui5 = renderer->AddVertex(meshID, x                     , y + (Block::BLOCK_SIZE * size.y)  , z                               , type, Vector2(size.y, 1));
-        ui7 = renderer->AddVertex(meshID, x                     , y + (Block::BLOCK_SIZE * size.y)  , z + (Block::BLOCK_SIZE * size.z), type, Vector2(size.y, size.z));
-        ui8 = renderer->AddVertex(meshID, x                     , y                                 , z + (Block::BLOCK_SIZE * size.z), type, Vector2(1, size.z));
+        ui6 = renderer->AddVertex(meshID, x                     , y                                 , z                               , type, Vector2(1, 1), XNEGATIF);
+        ui5 = renderer->AddVertex(meshID, x                     , y + (Block::BLOCK_SIZE * size.y)  , z                               , type, Vector2(size.y, 1), XNEGATIF);
+        ui7 = renderer->AddVertex(meshID, x                     , y + (Block::BLOCK_SIZE * size.y)  , z + (Block::BLOCK_SIZE * size.z), type, Vector2(size.y, size.z), XNEGATIF);
+        ui8 = renderer->AddVertex(meshID, x                     , y                                 , z + (Block::BLOCK_SIZE * size.z), type, Vector2(1, size.z), XNEGATIF);
         renderer->addIndices(meshID, ui8, ui7, ui5);
         renderer->addIndices(meshID, ui8, ui5, ui6);
     }
@@ -174,10 +174,10 @@ void Chunk::CreateCube(int &x, int &y, int &z, bool &xPositif, bool &xNegatif, b
             }
         }
 
-        ui6 = renderer->AddVertex(meshID, x                               , y                     , z                               , type, Vector2(1, 1));
-        ui2 = renderer->AddVertex(meshID, x + (Block::BLOCK_SIZE * size.x), y                     , z                               , type, Vector2(size.x, 1));
-        ui4 = renderer->AddVertex(meshID, x + (Block::BLOCK_SIZE * size.x), y                     , z + (Block::BLOCK_SIZE * size.z), type, Vector2(size.x, size.z));
-        ui8 = renderer->AddVertex(meshID, x                               , y                     , z + (Block::BLOCK_SIZE * size.z), type, Vector2(1, size.z));
+        ui6 = renderer->AddVertex(meshID, x                               , y                     , z                               , type, Vector2(1, 1), YNEGATIF);
+        ui2 = renderer->AddVertex(meshID, x + (Block::BLOCK_SIZE * size.x), y                     , z                               , type, Vector2(size.x, 1), YNEGATIF);
+        ui4 = renderer->AddVertex(meshID, x + (Block::BLOCK_SIZE * size.x), y                     , z + (Block::BLOCK_SIZE * size.z), type, Vector2(size.x, size.z), YNEGATIF);
+        ui8 = renderer->AddVertex(meshID, x                               , y                     , z + (Block::BLOCK_SIZE * size.z), type, Vector2(1, size.z), YNEGATIF);
         renderer->addIndices(meshID, ui6, ui2, ui4);
         renderer->addIndices(meshID, ui6, ui4, ui8);
     }
@@ -207,10 +207,10 @@ void Chunk::CreateCube(int &x, int &y, int &z, bool &xPositif, bool &xNegatif, b
                 break;
             }
         }
-        ui2 = renderer->AddVertex(meshID, x + Block::BLOCK_SIZE, y                               , z                                , type, Vector2(1, 1));
-        ui1 = renderer->AddVertex(meshID, x + Block::BLOCK_SIZE, y + (Block::BLOCK_SIZE * size.y), z                                , type, Vector2(size.y, 1));
-        ui3 = renderer->AddVertex(meshID, x + Block::BLOCK_SIZE, y + (Block::BLOCK_SIZE * size.y), z + (Block::BLOCK_SIZE * size.z), type, Vector2(size.y, size.z));
-        ui4 = renderer->AddVertex(meshID, x + Block::BLOCK_SIZE, y                               , z + (Block::BLOCK_SIZE * size.z), type, Vector2(1, size.z));
+        ui2 = renderer->AddVertex(meshID, x + Block::BLOCK_SIZE, y                               , z                                , type, Vector2(1, 1), XPOSITIF);
+        ui1 = renderer->AddVertex(meshID, x + Block::BLOCK_SIZE, y + (Block::BLOCK_SIZE * size.y), z                                , type, Vector2(size.y, 1), XPOSITIF);
+        ui3 = renderer->AddVertex(meshID, x + Block::BLOCK_SIZE, y + (Block::BLOCK_SIZE * size.y), z + (Block::BLOCK_SIZE * size.z), type, Vector2(size.y, size.z), XPOSITIF);
+        ui4 = renderer->AddVertex(meshID, x + Block::BLOCK_SIZE, y                               , z + (Block::BLOCK_SIZE * size.z), type, Vector2(1, size.z), XPOSITIF);
         renderer->addIndices(meshID, ui2, ui1, ui3);
         renderer->addIndices(meshID, ui2, ui3, ui4);
     }
@@ -240,10 +240,10 @@ void Chunk::CreateCube(int &x, int &y, int &z, bool &xPositif, bool &xNegatif, b
                 break;
             }
         }
-        ui6 = renderer->AddVertex(meshID, x                               , y                               , z                     , type, Vector2(1, 1));
-        ui2 = renderer->AddVertex(meshID, x + (Block::BLOCK_SIZE * size.x), y                               , z                     , type, Vector2(size.x, 1));
-        ui1 = renderer->AddVertex(meshID, x + (Block::BLOCK_SIZE * size.x), y + (Block::BLOCK_SIZE * size.y), z                     , type, Vector2(size.x, size.y));
-        ui5 = renderer->AddVertex(meshID, x                               , y + (Block::BLOCK_SIZE * size.y), z                     , type, Vector2(1, size.y));
+        ui6 = renderer->AddVertex(meshID, x                               , y                               , z                     , type, Vector2(1, 1), ZNEGATIF);
+        ui2 = renderer->AddVertex(meshID, x + (Block::BLOCK_SIZE * size.x), y                               , z                     , type, Vector2(size.x, 1), ZNEGATIF);
+        ui1 = renderer->AddVertex(meshID, x + (Block::BLOCK_SIZE * size.x), y + (Block::BLOCK_SIZE * size.y), z                     , type, Vector2(size.x, size.y), ZNEGATIF);
+        ui5 = renderer->AddVertex(meshID, x                               , y + (Block::BLOCK_SIZE * size.y), z                     , type, Vector2(1, size.y), ZNEGATIF);
 
         renderer->addIndices(meshID, ui6, ui5, ui1);
         renderer->addIndices(meshID, ui6, ui1, ui2);

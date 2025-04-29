@@ -36,9 +36,9 @@ unsigned int Renderer::AddVertex(unsigned int &meshID, Vector3 &vec, int type) {
     return index;
 }
 
-unsigned int Renderer::AddVertex(unsigned int &meshID, float x, float y, float z, int type , Vector2 size) {
+unsigned int Renderer::AddVertex(unsigned int &meshID, float x, float y, float z, int type , Vector2 size, int faceType) {
     int tmp = 0;
-    unsigned int index = this->meshes[meshID]->GetVertexArray().size();
+    unsigned int index = this->meshes[meshID]->GetVertexArray().size() / 2;
     tmp = (int)x;
     tmp = (tmp << 5) + (int)y;
     tmp = (tmp << 5) + (int)z;
@@ -49,17 +49,8 @@ unsigned int Renderer::AddVertex(unsigned int &meshID, float x, float y, float z
     //std::cout << ((tmp >> 24) & 31) <<  " " << ((tmp >> 19) & 31) <<  " " << ((tmp >> 14) & 31) <<  " " <<  ((tmp >> 9) & 31) <<  " " << ((tmp >> 4) & 31) <<  " " << (tmp & 15) <<  " " << std::endl;
     
     meshes[meshID]->AddInt(tmp);
-    /*meshes[meshID]->AddVertex(x, y, z);
-    meshes[meshID]->AddVertex(meshes[meshID]->textureVertices[meshes[meshID]->textureIndex]);
-    meshes[meshID]->AddFloat(type);*/
-    /*meshes[meshID]->vertexArray.insert(meshes[meshID]->vertexArray.end(), {
-        x,
-        y,
-        z,
-        meshes[meshID]->textureVertices[meshes[meshID]->textureIndex].x * size.x,
-        meshes[meshID]->textureVertices[meshes[meshID]->textureIndex].y * size.y,
-        type
-    });*/
+    meshes[meshID]->AddInt(faceType);
+
     meshes[meshID]->textureIndex = (meshes[meshID]->textureIndex + 1) % 4; // look to change that
     return index;
 }
@@ -81,8 +72,10 @@ void Renderer::FinishMesh(unsigned int &meshID) {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->meshes[meshID]->EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(*this->meshes[meshID]->GetIndicesArray().data()) * this->meshes[meshID]->GetIndicesArray().size(), this->meshes[meshID]->GetIndicesArray().data(), GL_STATIC_DRAW);
 
-    glVertexAttribIPointer(0, 1, GL_INT, 0, (void*)0);
+    glVertexAttribIPointer(0, 1, GL_INT, sizeof(int) * 2, (void*)0);
     glEnableVertexAttribArray(0);
+    glVertexAttribIPointer(1, 1, GL_INT, sizeof(int) * 2, (void*)(sizeof(int) * 1));
+    glEnableVertexAttribArray(1);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
@@ -150,6 +143,7 @@ void Renderer::Render(std::vector<Chunk *> &chunks) {
     shader->setMatrix4("view", camera->GetViewMatrix());
     shader->setMatrix4("projection", camera->GetProjectionMat());
     shader->setVector3("cameraPos", camera->GetPosition());
+    shader->setVector3("lightPos", Vector3(0, 150, 0));
     shader->setFloat("timeValue", sin(glfwGetTime()) / 0.3f);
     shader->setBool("activeTexture", true);
     shader->setFloat("timerTextureTransition", 1.0f);
