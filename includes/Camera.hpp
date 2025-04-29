@@ -23,6 +23,7 @@ class Camera {
     float yaw;
     float pitch;
     float speed;
+	float speedFps;
     float sensitivity;
 
     float aspect;
@@ -46,9 +47,12 @@ class Camera {
     Matrix4 GetViewMatrix();
     Matrix4 GetViewMatrix(Vector3 lookatpos);
     Matrix4 GetProjectionMat();
+	void	SetSpeedFps(float speed);
 
     void RegisterMouseInput(GLFWwindow *window);
     void RegisterKeyboardInput(GLFWwindow *window);
+    void RegisterKeyboardInput(GLFWwindow *window, double deltaTime);
+    void RegisterKeyboardInput(GLFWwindow *window, int fps);
     void UpdateFrustum();
 
     Vector3 GetChunkPos();
