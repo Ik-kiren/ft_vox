@@ -113,10 +113,16 @@ int main(void) {
     int windowHeigth = 0;
     float fpsTimer = 0;
     int fps = 0;
+    int	lastFpsInt = 60;
     std::string lastFps = "0";
 
 	int	cameraCx = camera.GetPosition().x / 16;
 	int	cameraCz = camera.GetPosition().z / 16;
+	float	oldx = camera.GetPosition().x;
+	float	oldy = camera.GetPosition().y;
+	float	oldz = camera.GetPosition().z;
+	float	speed = 0;
+	std::string	lastSpeed;
 
     while ((glfwGetKey(window, GLFW_KEY_ESCAPE ) != GLFW_PRESS &&
         glfwWindowShouldClose(window) == 0)) {
@@ -133,18 +139,29 @@ int main(void) {
             fpsTimer += deltaTime;
             fps++;
             if (fpsTimer >= 1) {
+				speed = std::sqrt((std::pow(oldz - camera.GetPosition().z, 2) + std::pow(oldy - camera.GetPosition().y, 2) + std::pow(oldx - camera.GetPosition().x, 2))) / fpsTimer;
+				lastSpeed = std::to_string(speed);
+				lastSpeed.resize(4);
+				oldx = camera.GetPosition().x;
+				oldy = camera.GetPosition().y;
+				oldz = camera.GetPosition().z;
+
                 fpsTimer = 0;
                 lastFps = std::to_string(fps);
+				lastFpsInt = fps;
                 fps = 0;
             }
             camera.UpdateFrustum();
             font.RenderText(fontShader, lastFps, 0.5, 1100, 2, Vector3(1, 0.2, 0.2));
+			font.RenderText(fontShader, lastSpeed, 0.5, 1000, 2, Vector3(1, 0.2, 0.2));
             
             //cubeObj.drawMeshInstance(window, camera, objects, compute);
 			test.ChunkManagerLoop();
             //Vector3 camPos = camera.GetPosition() / 16;
             //std::cout << camPos << std::endl;
-            camera.RegisterKeyboardInput(window);
+            // camera.RegisterKeyboardInput(window);
+            // camera.RegisterKeyboardInput(window, deltaTime);
+            camera.RegisterKeyboardInput(window, lastFpsInt);
             camera.RegisterMouseInput(window);
             
             glfwSwapBuffers(window);
@@ -161,7 +178,11 @@ int main(void) {
 			}
 
 			if ((glfwGetKey(window, GLFW_KEY_F ) == GLFW_PRESS))
-				std::cout << cameraCx << " " << cameraCz << " " << camera.GetPosition().x << " " << camera.GetPosition().z << '\n';
+				std::cout << cameraCx << " " << cameraCz << " " << camera.GetPosition().x << " " << camera.GetPosition().z << " " << camera.GetPosition().y << '\n';
+			if ((glfwGetKey(window, GLFW_KEY_UP ) == GLFW_PRESS))
+				camera.SetSpeedFps(20);
+			if ((glfwGetKey(window, GLFW_KEY_DOWN ) == GLFW_PRESS))
+				camera.SetSpeedFps(1);
     }
     glfwDestroyWindow(window);
     glfwTerminate();

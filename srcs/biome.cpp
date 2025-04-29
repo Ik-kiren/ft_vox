@@ -361,8 +361,12 @@ std::array<unsigned char, sizeH>	biome::fillArray(int h, int texture) {
 				ret[i] = 9;
 			else
 				ret[i] = 0;
-		} else
-			ret[i] = texture;
+		} else {
+			if (i < 110)
+				ret[i] = 9;
+			else
+				ret[i] = texture;
+		}
 	}
 	return ret;
 }
