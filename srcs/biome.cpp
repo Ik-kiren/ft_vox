@@ -306,13 +306,13 @@ void	biome::doGP() {
 	}
 }
 
-int	biome::whatTexture(int x, int y) {
-	if (this->_tab[x][y].heightI < 120 + randIntBetween(1)) {
+int	biome::whatTexture(int x, int y, float denivele) {
+	if (this->_tab[x][y].heightI < 120 + ((int)(denivele * 100) % 3)) {
 		if (this->_tab[x][y].tempF < -0.15)
 			return 6;
 		else if (this->_tab[x][y].tempF > 0.15)
 			return 3;
-	} else if (this->_tab[x][y].heightI > 200 + randIntBetween(1)) {
+	} else if (this->_tab[x][y].heightI > 165 - ((int)(denivele * 100) % 4)) {
 		if (this->_tab[x][y].tempF < -0.15)
 			return 5;
 		else if (this->_tab[x][y].tempF > 0.15)
@@ -330,24 +330,6 @@ int	biome::whatTexture(int x, int y) {
 			return 1;
 		return 8;
 	}
-
-	// if (this->_tab[x][y].tempF < -0.4) {
-	// 	if (this->_tab[x][y].heightI < 115)
-	// 		return 6;
-	// 	return 5;
-	// } else if (this->_tab[x][y].tempF > 0.4) {
-	// 	if (this->_tab[x][y].heightI < 120)
-	// 		return 3;
-	// 	return 4;
-	// } else {
-	// 	if (this->_tab[x][y].heightI < 120)
-	// 		return 7;
-	// 	else if (this->_tab[x][y].waterF > 0.65)
-	// 		return 1;
-	// 	else if (this->_tab[x][y].waterF < -0.65)
-	// 		return 1;
-	// 	return 8;
-	// }
 }
 
 std::array<unsigned char, sizeH>	biome::fillArray(int h, int texture) {
@@ -362,7 +344,7 @@ std::array<unsigned char, sizeH>	biome::fillArray(int h, int texture) {
 			else
 				ret[i] = 0;
 		} else {
-			if (i < 110)
+			if (i == 109 && h == 109)
 				ret[i] = 9;
 			else
 				ret[i] = texture;
@@ -380,7 +362,7 @@ void	biome::afterGP() {
 		for (int j = 0; j < this->_size; j++) {
 			this->_tab[i][j].heightF = (this->_tab[i][j].heightF1 + this->_tab[i][j].heightF2 / 2 + this->_tab[i][j].heightF3 / 4) / 1.75;
 			this->_tab[i][j].heightI = this->heightFtoI(this->_tab[i][j].heightF, this->_tab[i][j].waterF);
-			this->_tab[i][j].texture = whatTexture(i, j);
+			this->_tab[i][j].texture = whatTexture(i, j, this->_tab[i][j].waterF);
 			this->_tab[i][j].arrayH = fillArray(this->_tab[i][j].heightI, this->_tab[i][j].texture);	
 		}
 	}

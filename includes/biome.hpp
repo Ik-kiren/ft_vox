@@ -41,7 +41,7 @@ class biome {
 		void	doGPCalculColumn(int i, int j, int mid, int l, float H1, float H2, float H3);
 		void	doGPLine(int i, coord2d cd);
 		void	doGPColumn(int j, coord2d cd);
-		int		whatTexture(int x, int y);
+		int		whatTexture(int x, int y, float denivele);
 		std::array<unsigned char, sizeH>	fillArray(int h, int texture);
 		int		heightFtoI(float heightF, float denivele);
 		void	afterGP();
