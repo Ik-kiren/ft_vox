@@ -1,4 +1,4 @@
-#version 460 core
+#version 420 core
 
 struct Plane {
     vec3 normal; 
@@ -27,7 +27,7 @@ struct Instance {
 
 // Input vertex data, different for all executions of this shader.
 layout(location = 0) in int vertexData;
-layout(location = 1) in vec2 textureVertex;
+layout(location = 1) in int face;
 layout(location = 2) in float textureLocation;
 layout(location = 3) in vec3 colorVertex;
 layout(location = 4) in vec3 translation;
@@ -45,19 +45,7 @@ uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
 
-layout (std430, binding = 0) buffer bufferData {
-    vec2 textureVertices[36];
-};
-
-layout (std430, binding = 1) buffer bufferAtomic {
-    uint atomicCounter;
-};
-
-/*layout (std430, binding = 1) buffer bufferData {
-    Frustum frustum;
-    uint atomicData[8];
-    Instance instance[27000];
-};*/
+vec3 facesNormal[6] = vec3[6](vec3(1, 0, 0), vec3(0, 1, 0), vec3(0, 0, 1), vec3(-1, 0, 0), vec3(0, -1, 0), vec3(0, 0, -1));
 
 void main() {
     int posX = ((vertexData >> 24) & 31);
@@ -71,8 +59,7 @@ void main() {
     gl_Position = projection * view * model * vec4((newVertex + offset), 1.0);
     vertexPos = newVertex.xyz;
     fragpos = vec3(model * vec4(newVertex, 1.0));
-    normal = mat3(transpose(inverse(model))) * vec3(0, 0, 0);
+    normal = mat3(transpose(inverse(model))) * facesNormal[face];
     textureCoords = vec2(TextX, TextY);
     color = colorVertex;
-    atomicAdd(atomicCounter, 1);
 }

@@ -91,7 +91,6 @@ int main(void) {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     Shader cubeShader = Shader("./shaders/VertexShader.shader", "./shaders/FragmentShader2.shader");
     Shader fontShader = Shader("./shaders/fontVS.shader", "./shaders/fontFS.shader");
-    ComputeShader compute = ComputeShader("./shaders/compute.shader");
 
     //Mesh cubeMesh = Mesh("./objects/DirtCube.obj");  
 
@@ -139,8 +138,6 @@ int main(void) {
             }
             camera.UpdateFrustum();
             font.RenderText(fontShader, lastFps, 0.5, 1100, 2, Vector3(1, 0.2, 0.2));
-            
-            //cubeObj.drawMeshInstance(window, camera, objects, compute);
 			test.ChunkManagerLoop();
             //Vector3 camPos = camera.GetPosition() / 16;
             //std::cout << camPos << std::endl;

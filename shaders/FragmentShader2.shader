@@ -1,4 +1,4 @@
-#version 460 core
+#version 420 core
 
 out vec4 fragText;
 in vec3 vertexPos;
@@ -41,7 +41,7 @@ void main()
 	float spec = pow(max(dot(viewDir, reflectDir), 0.0), 64);
 	vec3 specular = specularStrength * spec * lightColor;
 
-	vec3 result = (ambient + diffuse + specular) * vec3(0.8, 0.8, 0.1);
+	vec3 result = ambient + diffuse + specular;
 	vec4 tmpTexture = texture(dirtTexture, textureCoords);
 	if (textureIndice == 2) {
 		tmpTexture = texture(stoneTexture, textureCoords);
@@ -60,5 +60,5 @@ void main()
 	} else if (textureIndice == 9) {
 		tmpTexture = texture(waterTexture, textureCoords);
 	}
-	fragText = tmpTexture;
+	fragText = tmpTexture * vec4(result, 1);
 }
