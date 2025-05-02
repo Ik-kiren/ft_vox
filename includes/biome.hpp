@@ -21,6 +21,11 @@ struct heightGP {
 	std::array<unsigned char, sizeH>	arrayH;
 };
 
+struct playerDig {
+	bool					impact;
+	std::vector<coord3d>	toDel;
+};
+
 class biome {
 	private:
 		int			_size;
@@ -35,13 +40,14 @@ class biome {
 		int			_level;
 		std::vector<std::vector<heightGP>>	_tab;
 		cave		*_cave;
+		playerDig	**_deleted;
 
 		void	iniBiome();
 		void	doGPCalculLine(int i, int j, int mid, int L, float H1, float H2, float H3);
 		void	doGPCalculColumn(int i, int j, int mid, int l, float H1, float H2, float H3);
 		void	doGPLine(int i, coord2d cd);
 		void	doGPColumn(int j, coord2d cd);
-		int		whatTexture(int x, int y, float denivele);
+		int		whatTexture(int x, int y);
 		std::array<unsigned char, sizeH>	fillArray(int h, int texture);
 		int		heightFtoI(float heightF, float denivele);
 		void	afterGP();
@@ -52,7 +58,6 @@ class biome {
 		biome(biome &biSup, int x, int y);
 		~biome();
 
-
 		void	printTab(int mode);
 		void	printCave(int x, int y);
 		void	doGP();
@@ -62,8 +67,10 @@ class biome {
 		square	getSquare();	
 		cave	*getCave();
 		void	setCaves(int xrand, int yrand, biome &biSup);
+		void	setDeleted();
 		float	getHeightF(int x, int y);
 		void	dig(biome &biSup, int x, int y);
+		void	deleteCube(int a, int b, int c, int d, int z);
 };
 
 #endif

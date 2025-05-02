@@ -2,27 +2,61 @@
 
 Player::Player() {
 	this->_pos = Vector3(0, 128, 0);
+	this->_ch = NULL;
 }
 
 Player::Player(float x, float y, float z) {
 	this->_pos = Vector3(x, y, z);
+	this->_ch = NULL;
 }
 
-Player::~Player() {}
+Player::~Player() {
+	if (this->_ch)
+		freeChunks(this->_ch);
+}
 
 Vector3	Player::getPos() {
 	return this->_pos;
 }
 
-void	Player::setPos(Vector3 vec) {
+void	Player::setPos(Vector3 const &vec) {
 	this->_pos = vec;
+}
+
+void	Player::setChunk(chunk *ch) {
+	if (this->_ch)
+		freeChunks(this->_ch);
+	this->_ch = ch;
 }
 
 void	Player::setYfromChunk(chunk *ch) {
 	for (int k = 255; k >= 0; k--) {
 		if (ch[k / 16].voxel[std::abs((int)this->getPos().x % 16)][std::abs((int)this->getPos().z % 16)][k % 16] != 0) {
-			this->setPos(Vector3(this->getPos().x, k + 2, this->getPos().z));
+			this->setPos(Vector3(this->getPos().x, k + 3, this->getPos().z));
 			return ;
 		}
+	}
+}
+
+void	Player::setYfromOwnChunk(Vector3 const &camera) {
+	int	x = (int)(camera.x) % 16;
+	int	y = (int)(this->getPos().y);
+	int	z = (int)(camera.z) % 16;
+
+	if (camera.x < 0)
+		x = 15 + x;
+	if (camera.z < 0)
+		z = 15 + z;
+
+	if (this->_ch[(y - 1) / 16].voxel[x][z][(y - 1) % 16] == 0) {
+		this->setPos(Vector3(camera.x, this->getPos().y - 0.4f, camera.z));
+	} else if (this->_ch[y / 16].voxel[x][z][y % 16] == 0) {
+		this->setPos(Vector3(camera.x, this->getPos().y, camera.z));
+	} else if (this->_ch[(y + 1) / 16].voxel[x][z][(y + 1) % 16] == 0) {
+		this->setPos(Vector3(camera.x, this->getPos().y + 1, camera.z));
+	} else if (this->_ch[(y + 2) / 16].voxel[x][z][(y + 2) % 16] == 0) {
+		this->setPos(Vector3(camera.x, this->getPos().y + 2, camera.z));
+	} else if (this->_ch[(y + 3) / 16].voxel[x][z][(y + 3) % 16] == 0) {
+		this->setPos(Vector3(camera.x, this->getPos().y + 3, camera.z));
 	}
 }

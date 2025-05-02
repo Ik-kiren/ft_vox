@@ -9,7 +9,7 @@ Camera::Camera(Vector3 cameraPos, Vector3 up) : position(cameraPos), worldUp(up)
     yaw = -90.0f;
     pitch = 0.0f;
     speed = 0.3f;
-	speedFps = 1.0f;
+	speedFps = 20.0f;
     sensitivity = 0.0001f;
     setCameraVectors();
     lastPosX = cameraPos.x;
@@ -54,7 +54,16 @@ Matrix4 Camera::GetProjectionMat() {
 }
 
 void	Camera::SetSpeedFps(float speed) {
-	speedFps = speed;
+	speedFps += speed;
+	if (speedFps > 25)
+		speedFps = 25;
+	if (speedFps < 1)
+		speedFps = 1;
+}
+
+void	Camera::setYfromPlayer(Player &player) {
+	// this->position = Vector3(this->position.x, player.getPos().y + 3, this->position.z);
+	this->position = Vector3(player.getPos().x, player.getPos().y + 3, player.getPos().z);
 }
 
 void Camera::CreateFrustum(float aspect, float fovY, float zNear, float zFar) {

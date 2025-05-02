@@ -18,7 +18,7 @@ mapGP::mapGP(int size, int sizeBiome) {
 			tmpS->sq.NO = gene2D(i, j + 1);
 			tmpS->sq.SE = gene2D(i + 1, j);
 			tmpS->sq.SO = gene2D(i + 1, j + 1);
-			tmpS->bio = biome(this->_sizeBiome, tmpS->sq);
+			tmpS->bio = new biome(this->_sizeBiome, tmpS->sq);
 			tmpS->GP = 0;
 			tmp.push_back(*tmpS);
 			delete tmpS;
@@ -29,7 +29,12 @@ mapGP::mapGP(int size, int sizeBiome) {
 	doGPIniBiome();
 }
 
-mapGP::~mapGP() {}
+mapGP::~mapGP() {
+	for (int i = 0; i < this->_tab.size(); i++) {
+		for (int j = 0; j < this->_tab[i].size(); j++)
+			delete this->_tab[i][j].bio;
+	}
+}
 
 void	mapGP::printGP() {
 	for (int i = 1; i < this->_sizeH - 1; i++) {
@@ -47,18 +52,18 @@ void	mapGP::printGP() {
 }
 
 void	mapGP::printSquareGP(int x, int y, int mode) {
-	this->_tab[x][y].bio.printTab(mode);
+	this->_tab[x][y].bio->printTab(mode);
 }
 
 void	mapGP::printCave(int x, int y, int a, int b) {
-	this->_tab[x][y].bio.printCave(a, b);
+	this->_tab[x][y].bio->printCave(a, b);
 }
 
 void	mapGP::doGPIniBiome() {
 	for (int i = 0; i < this->_sizeH; i++) {
 		for (int j = 0; j < this->_sizeL; j++) {
 			if (this->_tab[i][j].GP == 0) {
-				this->_tab[i][j].bio.doGP();
+				this->_tab[i][j].bio->doGP();
 				this->_tab[i][j].GP = 1;
 			}
 		}
@@ -86,56 +91,6 @@ biomeGP	mapGP::createEmpty(int x, int y) {
 	return ret;
 }
 
-void	mapGP::checkAround(int x, int y) {
-	coord2d tmp = findCoord(x, y);
-	x = tmp.x;
-	y = tmp.y;
-
-	for (int i = x - 1; i <= x + 1; i++) {
-		for (int j = y - 1; j <= y + 1; j++) {
-			if (this->_tab[i][j].GP == 0) {
-				this->_tab[i][j].bio = biome(this->_sizeBiome, this->_tab[i][j].sq);
-				this->_tab[i][j].bio.doGP();
-				this->_tab[i][j].GP = 1;
-
-				if (j == this->_sizeL - 1) {
-					for (int k = 0; k < this->_sizeH; k++) {
-						this->_tab[k].push_back(createEmpty(this->_tab[k][j].sq.NE.x, this->_tab[k][j].sq.NE.y + 1));
-					}
-					this->_sizeL += 1;
-				}
-
-				if (j == 0) {
-					for (int k = 0; k < this->_sizeH; k++) {
-						this->_tab[k].insert(this->_tab[k].begin(), createEmpty(this->_tab[k][j].sq.NE.x, this->_tab[k][j].sq.NE.y - 1));
-					}
-					this->_sizeL += 1;
-					y += 1;
-				}
-
-				if (i == this->_sizeH - 1) {
-					std::vector<biomeGP>	tmp;
-					for (int k = 0; k < this->_sizeL; k++) {
-						tmp.push_back(createEmpty(this->_tab[i][k].sq.NE.x + 1, this->_tab[i][k].sq.NE.y));
-					}
-					this->_tab.push_back(tmp);
-					this->_sizeH += 1;
-				}
-
-				if (i == 0) {
-					std::vector<biomeGP>	tmp;
-					for (int k = 0; k < this->_sizeL; k++) {
-						tmp.push_back(createEmpty(this->_tab[i][k].sq.NE.x - 1, this->_tab[i][k].sq.NE.y));
-					}
-					this->_tab.insert(this->_tab.begin(), tmp);
-					this->_sizeH += 1;
-					i += 1;
-				}
-			}
-		}
-	}
-}
-
 chunk	*mapGP::chunkToRet(int x, int y) {
 	int	a = (x + signeN(x)) / (this->_sizeBiome - 1) + (this->_sizeIni / 2 + 1) - signeN(x);
 	int	b = (y + signeN(y)) / (this->_sizeBiome - 1) + (this->_sizeIni / 2 + 1) - signeN(y);
@@ -145,13 +100,13 @@ chunk	*mapGP::chunkToRet(int x, int y) {
 		newB = biome(this->_voidBiome, x, y);
 		newB.doGPlvl1();
 	} else {
-		newB = biome(this->_tab[a][b].bio, x, y);
+		newB = biome(*this->_tab[a][b].bio, x, y);
 		newB.doGPlvl1();
-		if (!this->_tab[a][b].bio.getCave()) {
-			this->_tab[a][b].bio.setCaves(this->_tab[a][b].sq.NE.x, this->_tab[a][b].sq.NE.y, this->_tab[a][b].bio);
+		if (!this->_tab[a][b].bio->getCave()) {
+			this->_tab[a][b].bio->setCaves(this->_tab[a][b].sq.NE.x, this->_tab[a][b].sq.NE.y, *this->_tab[a][b].bio);
+			this->_tab[a][b].bio->setDeleted();
 		}
-		if (this->_tab[a][b].bio.getCave())
-			newB.dig(this->_tab[a][b].bio, x, y);
+		newB.dig(*this->_tab[a][b].bio, x, y);
 	}
 
 	chunk	*ret = new chunk[16];
@@ -159,4 +114,28 @@ chunk	*mapGP::chunkToRet(int x, int y) {
 		ret[k] = newB.voxelToChunk(k);
 	}
 	return ret;
+}
+
+void	mapGP::deleteCube(int x, int y, int z) {
+	int xBiome = (x / 16 + signeN(x)) / (this->_sizeBiome - 1) + (this->_sizeIni / 2 + 1) - signeN(x);
+	int yBiome = (y / 16 + signeN(y)) / (this->_sizeBiome - 1) + (this->_sizeIni / 2 + 1) - signeN(y);
+
+	if (xBiome >= this->_sizeH || yBiome >= this->_sizeL || xBiome < 0 || yBiome < 0)
+		return ;
+
+	int	xChunk = (x / 16) % (this->_sizeBiome - 1);
+	int	yChunk = (y / 16) % (this->_sizeBiome - 1);
+
+	int xCube = (x % ((this->_sizeBiome - 1) * (this->_sizeBiome - 1))) % 16;
+	int yCube = (y % ((this->_sizeBiome - 1) * (this->_sizeBiome - 1))) % 16;
+
+	if (x < 0) {
+		xChunk = (this->_sizeBiome - 2) + xChunk;
+		xCube = 15 + xCube;
+	}
+	if (y < 0) {		
+		yChunk = (this->_sizeBiome - 2) + yChunk;
+		yCube = 15 + yCube;
+	}
+	this->_tab[xBiome][yBiome].bio->deleteCube(xChunk, yChunk, xCube, yCube, z);
 }

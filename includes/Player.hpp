@@ -7,14 +7,17 @@
 class Player {
 	private:
 		Vector3	_pos;
+		chunk	*_ch;
 	public:
 		Player();
 		Player(float x, float y, float z);
 		~Player();
 
 		Vector3	getPos();
-		void 	setPos(Vector3 vec);
+		void 	setPos(Vector3 const &vec);
+		void	setChunk(chunk *ch);
 		void	setYfromChunk(chunk *ch);
+		void	setYfromOwnChunk(Vector3 const &camera);
 };
 
 #endif

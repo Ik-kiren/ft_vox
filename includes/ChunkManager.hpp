@@ -50,8 +50,9 @@ public:
     Vector3 GetMaxChunkPos();
     Vector3 GetMinChunkPos();
 	void loadNewChunk(chunk *toLoad, int xdiff, int zdiff);
-	void loadNewLine(int oldx, int newx, int z);
-	void loadNewColumn(int oldz, int newz, int x);
+	void loadNewLine(int oldx, int newx, int z, Player *player);
+	void loadNewColumn(int oldz, int newz, int x, Player *player);
 
     void SetCamera(Camera *camera);
+	void deleteCube(Camera &camera);
 };
