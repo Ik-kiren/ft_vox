@@ -12,7 +12,7 @@ extern int seed;
 struct biomeGP {
 	bool	GP;
 	square	sq;
-	biome	bio;
+	biome	*bio;
 };
 
 class mapGP {
@@ -36,8 +36,8 @@ class mapGP {
 		void	printGP();
 		void	printSquareGP(int x, int y, int mode);
 		void	printCave(int x, int y, int a, int b);
-		void	checkAround(int x, int y);
 		chunk	*chunkToRet(int x, int y);
+		void	deleteCube(int x, int y, int z);
 };
 
 #endif

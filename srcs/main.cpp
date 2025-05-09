@@ -81,6 +81,9 @@ int main(void) {
 
 	Player	player(0, 0, 0);
 
+	chunk *pos = tab.chunkToRet(player.getPos().x, player.getPos().y);
+	player.setChunk(pos);
+
     ChunkManager test(&renderer, &tab, &player);
 	test.Init();
 
@@ -122,6 +125,7 @@ int main(void) {
 	float	oldz = camera.GetPosition().z;
 	float	speed = 0;
 	std::string	lastSpeed;
+	int		gravity = 0;
 
     while ((glfwGetKey(window, GLFW_KEY_ESCAPE ) != GLFW_PRESS &&
         glfwWindowShouldClose(window) == 0)) {
@@ -165,21 +169,34 @@ int main(void) {
             test.ChunkManagerLoop();
 
 			if (cameraCx != (int)(camera.GetPosition().x / 16 - signeN(camera.GetPosition().x))) {
-				test.loadNewLine(cameraCx, camera.GetPosition().x / 16 - signeN(camera.GetPosition().x), cameraCz);
+				test.loadNewLine(cameraCx, camera.GetPosition().x / 16 - signeN(camera.GetPosition().x), cameraCz, &player);
 				cameraCx = camera.GetPosition().x / 16 - signeN(camera.GetPosition().x);
 			}
 			
 			if (cameraCz != (int)(camera.GetPosition().z / 16 - signeN(camera.GetPosition().z))) {
-				test.loadNewColumn(cameraCz, camera.GetPosition().z / 16 - signeN(camera.GetPosition().z), cameraCx);
+				test.loadNewColumn(cameraCz, camera.GetPosition().z / 16 - signeN(camera.GetPosition().z), cameraCx, &player);
 				cameraCz = camera.GetPosition().z / 16 - signeN(camera.GetPosition().z);
 			}
 
-			if ((glfwGetKey(window, GLFW_KEY_F ) == GLFW_PRESS))
+			if ((glfwGetKey(window, GLFW_KEY_F ) == GLFW_PRESS)) {
 				std::cout << cameraCx << " " << cameraCz << " " << camera.GetPosition().x << " " << camera.GetPosition().z << " " << camera.GetPosition().y << '\n';
+				std::cout << player.getPos().x << " " << player.getPos().z << '\n';
+			}
 			if ((glfwGetKey(window, GLFW_KEY_UP ) == GLFW_PRESS))
-				camera.SetSpeedFps(20);
-			if ((glfwGetKey(window, GLFW_KEY_DOWN ) == GLFW_PRESS))
 				camera.SetSpeedFps(1);
+			if ((glfwGetKey(window, GLFW_KEY_DOWN ) == GLFW_PRESS))
+				camera.SetSpeedFps(-1);
+			if ((glfwGetKey(window, GLFW_KEY_C ) == GLFW_PRESS))
+				test.deleteCube(camera);
+
+			if ((glfwGetKey(window, GLFW_KEY_G ) == GLFW_PRESS) && fps == 0)
+				gravity = std::abs(gravity - 1);
+			if (gravity == 1) {
+				player.setYfromOwnChunk(camera.GetPosition());
+				camera.setYfromPlayer(player);
+			} else
+				player.setPos(camera.GetPosition());
+
         glfwSwapBuffers(window);
         glfwPollEvents();
     }

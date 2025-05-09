@@ -153,7 +153,7 @@ void ChunkManager::ChunkVisibility() {
 void ChunkManager::UnloadChunkX(int x) {
     for (int i = this->minPos.y; i <= this->maxPos.y; i++) {
         for (int j = GetMinChunkPos().z - 3; j <= GetMaxChunkPos().z + 3; j++) {
-            if (chunkMap.find(Vector3(x, i , j)) != chunkMap.end()) {
+            if (chunkMap.find(Vector3(x, i, j)) != chunkMap.end()) {
                 chunkMap[Vector3(x, i, j)]->unload = true;
             }
         }
@@ -226,10 +226,10 @@ void    ChunkManager::UpdateChunk(int xdiff, int zdiff) {
 }
 
 void ChunkManager::ChunkManagerLoop() {
+    ChunkVisibility();
     LoadChunk();
     ChunkSetup();
     ChunkUnload();
-    ChunkVisibility();
 }
 
 Vector3 ChunkManager::GetMaxChunkPos() {
@@ -310,7 +310,7 @@ void ChunkManager::deactivateChunkZ(int zdiff) {
     }
 }
 
-void	ChunkManager::loadNewLine(int oldx, int newx, int z) {
+void	ChunkManager::loadNewLine(int oldx, int newx, int z, Player *player) {
 	for (int j = this->minPos.z; j <= this->maxPos.z; j++) {
 		chunk *monoCx1 = this->tab->chunkToRet(oldx + RENDERSIZE * signe((int)(newx) - oldx) + signe((int)(newx) - oldx), z + j);
         if (j != this->minPos.z && j != this->maxPos.z)
@@ -319,10 +319,12 @@ void	ChunkManager::loadNewLine(int oldx, int newx, int z) {
 		//this->loadNewChunk(monoCx1, oldx + RENDERSIZE * signe((int)(newx) - oldx) + signe((int)(newx) - oldx), z + j);
 	}
     this->deactivateChunkX(oldx - (RENDERSIZE - 1) * signe((int)(newx) - oldx));
+	chunk *pos = this->tab->chunkToRet(newx, z);
+	player->setChunk(pos);
     this->UnloadChunkX(oldx - RENDERSIZE * signe((int)(newx) - oldx));
 }
 
-void	ChunkManager::loadNewColumn(int oldz, int newz, int x) {
+void	ChunkManager::loadNewColumn(int oldz, int newz, int x, Player *player) {
 	for (int j = this->minPos.x; j <= this->maxPos.x; j++) {
 		chunk *monoCx2 = this->tab->chunkToRet(x + j, oldz + RENDERSIZE * signe((int)(newz) - oldz) + signe((int)(newz) - oldz));
         if (j != this->minPos.x && j != this->maxPos.x)
@@ -331,9 +333,29 @@ void	ChunkManager::loadNewColumn(int oldz, int newz, int x) {
 		//this->loadNewChunk(monoCx2, x + j, oldz + RENDERSIZE * signe((int)(newz) - oldz) + signe((int)(newz) - oldz));
 	}
     this->deactivateChunkZ(oldz - (RENDERSIZE - 1) * signe((int)(newz) - oldz));
+	chunk *pos = this->tab->chunkToRet(x, newz);
+	player->setChunk(pos);
     this->UnloadChunkZ(oldz - RENDERSIZE * signe((int)(newz) - oldz));
 }
 
-void ChunkManager::SetCamera(Camera *camera) {
+void	ChunkManager::SetCamera(Camera *camera) {
     this->camera = camera;
+}
+
+void	ChunkManager::deleteCube(Camera &camera) {
+	int i = camera.GetPosition().x / 16 - signeN(camera.GetPosition().x);
+	int y = camera.GetPosition().y;
+	int z = camera.GetPosition().z / 16 - signeN(camera.GetPosition().z);
+
+	for (int j = 0; j < 16; j++) {
+		if (chunkMap.find(Vector3(i, j, z)) != chunkMap.end()) {
+			chunkMap[Vector3(i, j, z)]->unload = true;
+			chunkMap.erase(Vector3(i, j, z));
+		}
+	}
+
+	this->tab->deleteCube(camera.GetPosition().x, camera.GetPosition().z, y);
+
+	chunk *monoC = this->tab->chunkToRet(i, z);
+	this->loadNewChunk(monoC, i, z);
 }

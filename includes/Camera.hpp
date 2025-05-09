@@ -5,6 +5,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include "./BSphere.hpp"
+#include "Player.hpp"
 
 class Camera {
  private:
@@ -39,15 +40,16 @@ class Camera {
     Camera(Vector3 cameraPos, Vector3 up);
     ~Camera();
 
-    Vector3 GetPosition() ;
-    Vector3 GetDirection() ;
-    Vector3 GetUp() ;
-    Vector3 GetFront() ;
-    Vector3 GetRight() ;
+    Vector3 GetPosition();
+    Vector3 GetDirection();
+    Vector3 GetUp();
+    Vector3 GetFront();
+    Vector3 GetRight();
     Matrix4 GetViewMatrix();
     Matrix4 GetViewMatrix(Vector3 lookatpos);
     Matrix4 GetProjectionMat();
 	void	SetSpeedFps(float speed);
+	void	setYfromPlayer(Player &player);
 
     void RegisterMouseInput(GLFWwindow *window);
     void RegisterKeyboardInput(GLFWwindow *window);
