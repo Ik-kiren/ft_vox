@@ -1,7 +1,7 @@
 #include "../includes/NewMesh.hpp"
 #include <iostream>
 
-unsigned long int NewMesh::meshID = 0;
+unsigned long int NewMesh::meshID = 1;
 
 NewMesh::NewMesh() {
     this->textureIndex = 0;

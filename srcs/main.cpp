@@ -197,8 +197,8 @@ int main(void) {
 			} else
 				player.setPos(camera.GetPosition());
 
-        glfwSwapBuffers(window);
-        glfwPollEvents();
+			glfwSwapBuffers(window);
+			glfwPollEvents();
     }
     glfwDestroyWindow(window);
     glfwTerminate();

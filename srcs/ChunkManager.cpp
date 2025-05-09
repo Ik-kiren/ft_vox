@@ -154,7 +154,9 @@ void ChunkManager::UnloadChunkX(int x) {
     for (int i = this->minPos.y; i <= this->maxPos.y; i++) {
         for (int j = GetMinChunkPos().z - 3; j <= GetMaxChunkPos().z + 3; j++) {
             if (chunkMap.find(Vector3(x, i, j)) != chunkMap.end()) {
-                chunkMap[Vector3(x, i, j)]->unload = true;
+                // chunkMap[Vector3(x, i, j)]->unload = true;
+				delete chunkMap[Vector3(x, i, j)];
+				chunkMap.erase(Vector3(x, i, j));
             }
         }
     }
@@ -164,7 +166,9 @@ void ChunkManager::UnloadChunkZ(int z) {
     for (int i = GetMinChunkPos().x - 3; i <= GetMaxChunkPos().x + 3; i++) {
         for (int j = this->minPos.y; j <= this->maxPos.y; j++) {
 			if (chunkMap.find(Vector3(i, j , z)) != chunkMap.end()) {
-                chunkMap[Vector3(i, j, z)]->unload = true;
+                // chunkMap[Vector3(i, j, z)]->unload = true;
+				delete chunkMap[Vector3(i, j, z)];
+				chunkMap.erase(Vector3(i, j, z));
             }
         }
     }
@@ -200,12 +204,12 @@ void ChunkManager::GetLimitChunk(int xdiff, int zdiff) {
 void	ChunkManager::loadNewChunk(chunk *toLoad, int xdiff, int zdiff) {
 	for (int k = 0; k < 16; k++) {
         Vector3 pos = Vector3(xdiff, k, zdiff);
-        if (chunkMap.find(pos) != chunkMap.end()) {
-            chunkMap[pos]->update = true;
-            chunkMap[pos]->unload = false;
-            loadList.push_back(chunkMap[pos]);
-            continue;
-        }
+        // if (chunkMap.find(pos) != chunkMap.end()) {
+        //     chunkMap[pos]->update = true;
+        //     chunkMap[pos]->unload = false;
+        //     loadList.push_back(chunkMap[pos]);
+        //     continue;
+        // }
 		Chunk *newChunk = new Chunk(this->renderer, this, toLoad[k].voxel);
 		newChunk->Translation(Vector3(xdiff * Chunk::CHUNK_SIZE_X, k * Chunk::CHUNK_SIZE_Y, zdiff * Chunk::CHUNK_SIZE_Z));
 		loadList.push_back(newChunk);

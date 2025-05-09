@@ -271,7 +271,7 @@ void Chunk::CreateMesh() {
                 if (!this->blocksArray[x][y][z].IsActive()) {
                     continue;
                 }
-                this->blocksArray[x][y][z].ClearFaces();
+                // this->blocksArray[x][y][z].ClearFaces();
                 bool xPositif = false;
                 if (!blocksArray[x][y][z].visited[XPOSITIF]) {
                     if (x == CHUNK_SIZE_X - 1 && normalizedPos.x == chunkManager->GetMaxChunkPos().x)

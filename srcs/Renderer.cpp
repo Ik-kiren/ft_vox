@@ -131,6 +131,9 @@ void Renderer::Render(std::vector<Chunk *> &chunks) {
     for (size_t i = 0; i < chunks.size(); i++) {
         if (chunks[i]->unload)
             continue;
+		// std::cout << meshes[0] << '\n';
+		// if (meshes.find(0) == meshes.end())
+		// 	std::cout << meshes[0] << "\n";
         shader->setVector3("offset", meshes[chunks[i]->meshID]->GetPosition());
         glBindVertexArray(meshes[chunks[i]->meshID]->VAO);
         //glDrawArrays(GL_TRIANGLES, 0, meshes[chunks[i]->meshID]->GetIndicesArray().size());
