@@ -16,7 +16,7 @@ class ChunkManager
 private:
     std::vector<Chunk *> loadList;
     std::vector<Chunk *> setupList;
-    std::vector<Chunk *> unloadList;
+    std::unordered_map<Vector3, Chunk *> unloadMap;
     std::vector<Chunk *> visibilityList;
     std::vector<Chunk *> renderList;
     Renderer *renderer;
@@ -45,7 +45,12 @@ public:
     void UnloadChunkX(int x);
     void UnloadChunkZ(int z);
     void ChunkManagerLoop();
-	void loadNewChunk(chunk ***toLoad, int xdiff, int zdiff);
+    void deactivateChunkX(int xdiff);
+    void deactivateChunkZ(int zdiff);
+    void AddTrailChunk(chunk *toLoad, int xdiff, int zdiff);
+    void UpdateChunk(int xdiff, int zdiff);
+    void GetLimitChunk(int xdiff, int zdiff);
+
 
     Vector3 GetMaxChunkPos();
     Vector3 GetMinChunkPos();

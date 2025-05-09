@@ -10,7 +10,7 @@ private:
     Vector3 position;
     
 public:
-    static unsigned int meshID;
+    static unsigned long int meshID;
     std::vector<int> vertexArray;
     Vector2 textureVertices[4] = {Vector2(0, 0), Vector2(1, 0), Vector2(1, 1), Vector2(0, 1)};
     unsigned int    textureIndex;
@@ -25,6 +25,7 @@ public:
     std::vector<int> GetVertexArray();
     std::vector<unsigned int> GetIndicesArray();
 
+    void CleanMeshData();
     void AddVertex(Vector3 &vec);
     void AddVertex(Vector2 vec);
     void AddVertex(float f1, float f2);

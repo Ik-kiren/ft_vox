@@ -35,4 +35,5 @@ public:
     
     bool IsActive();
     void SetActive(bool active);
+    void ClearFaces();
 };

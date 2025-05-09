@@ -17,6 +17,7 @@ public:
     bool loaded;
     bool meshed;
     bool unload;
+    bool update;
     Renderer *renderer;
     unsigned int meshID;
     static const int CHUNK_SIZE_X = 16;
@@ -30,6 +31,7 @@ public:
     Block ***GetBlocksArray();
     void CreateCube(int &x, int &y, int &z, bool &xPositif, bool &xNegatif, bool &yPositif, bool &yNegatif, bool &zPositif, bool &zNegatif, int type);
     void CreateMesh();
+    void UpdateMesh();
     void Update();
     void Render();
     void Translation(Vector3 vec);

@@ -14,11 +14,14 @@ ChunkManager::ChunkManager(Renderer *renderer, mapGP *tab, Player *player): rend
 	this->tab = tab;
 
  	for (int i = this->minPos.x; i <= this->maxPos.x; i++) {
-		for (int j = this->minPos.z; j <= this->maxPos.z; j++) {
+		for (int j = this->minPos.z ; j <= this->maxPos.z; j++) {
 			chunk *monoCx0 = tab->chunkToRet(i + player->getPos().x / 16, j + player->getPos().z / 16);
 			if (i == 0 && j == 0)
 				player->setYfromChunk(monoCx0);
-			this->loadNewChunk(monoCx0, i + player->getPos().x / 16, j + player->getPos().z / 16);
+            if (i == this->maxPos.x || j == this->maxPos.z || i == this->minPos.x || j == this->minPos.z)
+                this->AddTrailChunk(monoCx0, i + player->getPos().x / 16, j + player->getPos().z / 16);
+            else
+			    this->loadNewChunk(monoCx0, i + player->getPos().x / 16, j + player->getPos().z / 16);
 		}
 	}
 }
@@ -64,7 +67,8 @@ void ChunkManager::LoadChunk() {
     int tmp = 0;
     for (std::vector<Chunk *>::iterator it = loadList.begin(); it != loadList.end();) {
         if ((*it)->unload) {
-            unloadList.push_back(*it);
+            if (unloadMap.find((*it)->GetNormalizedPos()) == unloadMap.end())
+                unloadMap.insert({(*it)->GetNormalizedPos(), (*it)});
             it = loadList.erase(it);
             continue;
         }
@@ -75,6 +79,10 @@ void ChunkManager::LoadChunk() {
 			tmp++;
 			if (tmp == 8)
 				break;
+        } else if ((*it)->update) {
+            (*it)->UpdateMesh();
+            setupList.push_back(*it);
+            it = loadList.erase(it);
         } else {
             it++;
         }
@@ -84,13 +92,19 @@ void ChunkManager::LoadChunk() {
 void ChunkManager::ChunkSetup() {
     for (std::vector<Chunk *>::iterator it = setupList.begin(); it != setupList.end();) {
         if ((*it)->unload) {
-            unloadList.push_back(*it);
+            if (unloadMap.find((*it)->GetNormalizedPos()) == unloadMap.end())
+                unloadMap.insert({(*it)->GetNormalizedPos(), (*it)});
             it = setupList.erase(it);
             continue;
         }
         if (!(*it)->meshed) {
             renderer->FinishMesh((*it)->meshID);
             (*it)->meshed = true;
+        } else if ((*it)->update) {
+            renderer->UpdateMesh((*it)->meshID);
+            (*it)->update = false;
+            it = setupList.erase(it);
+            continue;
         }
         visibilityList.push_back((*it));
         it = setupList.erase(it);
@@ -98,20 +112,25 @@ void ChunkManager::ChunkSetup() {
 }
 
 void ChunkManager::ChunkUnload() {
-    for (std::vector<Chunk *>::iterator it = unloadList.begin(); it != unloadList.end();) {
-        if (chunkMap.find((*it)->GetNormalizedPos()) != chunkMap.end())
-            chunkMap.erase(chunkMap.find((*it)->GetNormalizedPos()));
-        delete *it;
-        it = unloadList.erase(it);
+    for (std::unordered_map<Vector3, Chunk *>::iterator it = unloadMap.begin(); it != unloadMap.end();) {
+        if (!it->second->unload) {
+            it = unloadMap.erase(it);
+            continue;
+        }
+        if (chunkMap.find(it->first) != chunkMap.end())
+            chunkMap.erase(chunkMap.find(it->first));
+        delete it->second;
+        it = unloadMap.erase(it);
     }
 }
 
 void ChunkManager::ChunkVisibility() {
     if (lastCamPos != camera->GetPosition() || lastCamDirection != camera->GetFront()) {
         renderList.clear();
-        for (std::vector<Chunk *>::iterator it = visibilityList.begin(); it != visibilityList.end(); it++) {
+        for (std::vector<Chunk *>::iterator it = visibilityList.begin(); it != visibilityList.end();) {
             if ((*it)->unload) {
-                unloadList.push_back(*it);
+                if (unloadMap.find((*it)->GetNormalizedPos()) == unloadMap.end())
+                    unloadMap.insert({(*it)->GetNormalizedPos(), (*it)});
                 it = visibilityList.erase(it);
                 continue;
             }
@@ -122,6 +141,7 @@ void ChunkManager::ChunkVisibility() {
             if (camera->InsideFrustum(aabb)) {
                 renderList.push_back(*it);
             }
+            it++;
         }
     }
     if (renderList.size() > 0)
@@ -131,11 +151,11 @@ void ChunkManager::ChunkVisibility() {
 }
 
 void ChunkManager::UnloadChunkX(int x) {
-    for (int i = GetMinChunkPos().y; i <= GetMaxChunkPos().y; i++) {
+    std::cout << "UnloadChunkX = " << x << std::endl;
+    for (int i = this->minPos.y; i <= this->maxPos.y; i++) {
         for (int j = GetMinChunkPos().z - 3; j <= GetMaxChunkPos().z + 3; j++) {
             if (chunkMap.find(Vector3(x, i , j)) != chunkMap.end()) {
                 chunkMap[Vector3(x, i, j)]->unload = true;
-                chunkMap.erase(Vector3(x, i , j));
             }
         }
     }
@@ -143,24 +163,70 @@ void ChunkManager::UnloadChunkX(int x) {
 
 void ChunkManager::UnloadChunkZ(int z) {
     for (int i = GetMinChunkPos().x - 3; i <= GetMaxChunkPos().x + 3; i++) {
-        for (int j = GetMinChunkPos().y; j <= GetMaxChunkPos().y; j++) {
+        for (int j = this->minPos.y; j <= this->maxPos.y; j++) {
 			if (chunkMap.find(Vector3(i, j , z)) != chunkMap.end()) {
                 chunkMap[Vector3(i, j, z)]->unload = true;
-                chunkMap.erase(Vector3(i, j , z));
             }
         }
     }
 }
 
-void	ChunkManager::loadNewChunk(chunk *toLoad, int xdiff, int zdiff) {
+void ChunkManager::AddTrailChunk(chunk *toLoad, int xdiff, int zdiff) {
+    std::cout << "AddTrailChunk = " << xdiff << " " << zdiff << std::endl;
+    for (int i = 0; i < 16; i++) {
+        Chunk *newChunk = new Chunk(this->renderer, this, toLoad[i].voxel);
+		newChunk->Translation(Vector3(xdiff * Chunk::CHUNK_SIZE_X, i * Chunk::CHUNK_SIZE_Y, zdiff * Chunk::CHUNK_SIZE_Z));
+		chunkMap.insert({newChunk->GetNormalizedPos(), newChunk});
+    }
+    freeChunks(toLoad);
+}
 
+void ChunkManager::GetLimitChunk(int xdiff, int zdiff) {
+    std::cout << "getlimitchunk = " << xdiff << " " << zdiff << std::endl;
+    for (int i = 0; i < 16; i++) {
+        if (chunkMap.find(Vector3(xdiff, i, zdiff)) != chunkMap.end()) {
+            if (chunkMap[Vector3(xdiff, i, zdiff)]->loaded) {
+                chunkMap[Vector3(xdiff, i, zdiff)]->unload = false;
+                Vector3 vec = Vector3(xdiff, i, zdiff);
+                /*for (std::vector<Chunk *>::iterator it = visibilityList.begin(); it != visibilityList.end(); it++) {
+                    if ((*it)->GetNormalizedPos().x == vec.x && (*it)->GetNormalizedPos().z == vec.z) {
+                        std::cout << "yes = " << vec << std::endl;
+                    }
+                }*/
+                visibilityList.push_back(chunkMap[Vector3(xdiff, i, zdiff)]);
+            }
+        } else {
+            std::cout << "Error: limit chunk not found in chunkMap" << std::endl;
+        }
+    }
+}
+
+void	ChunkManager::loadNewChunk(chunk *toLoad, int xdiff, int zdiff) {
 	for (int k = 0; k < 16; k++) {
+        Vector3 pos = Vector3(xdiff, k, zdiff);
+        if (chunkMap.find(pos) != chunkMap.end()) {
+            chunkMap[pos]->update = true;
+            chunkMap[pos]->unload = false;
+            loadList.push_back(chunkMap[pos]);
+            continue;
+        }
 		Chunk *newChunk = new Chunk(this->renderer, this, toLoad[k].voxel);
 		newChunk->Translation(Vector3(xdiff * Chunk::CHUNK_SIZE_X, k * Chunk::CHUNK_SIZE_Y, zdiff * Chunk::CHUNK_SIZE_Z));
 		loadList.push_back(newChunk);
 		chunkMap.insert({newChunk->GetNormalizedPos(), newChunk});
 	}
     freeChunks(toLoad);
+}
+
+void    ChunkManager::UpdateChunk(int xdiff, int zdiff) {
+    for (int k = 0; k < 16; k++) {
+        Vector3 pos = Vector3(xdiff, k, zdiff);
+        if (chunkMap.find(pos) != chunkMap.end()) {
+            chunkMap[pos]->update = true;
+            chunkMap[pos]->unload = false;
+            loadList.push_back(chunkMap[pos]);
+        }
+	}
 }
 
 void ChunkManager::ChunkManagerLoop() {
@@ -200,20 +266,61 @@ Vector3 ChunkManager::GetMinChunkPos() {
     return tmp.Trunc();
 }
 
+void ChunkManager::deactivateChunkX(int xdiff) {
+    std::cout << "deactivateChunkX = " << xdiff << std::endl;
+    for (std::vector<Chunk *>::iterator it = visibilityList.begin(); it != visibilityList.end();) {
+        if ((*it)->GetNormalizedPos().x == xdiff) {
+            it = visibilityList.erase(it);
+        } else {
+            it++;
+        }
+    }
+    for (std::vector<Chunk *>::iterator it = loadList.begin(); it != loadList.end();) {
+        if ((*it)->GetNormalizedPos().x == xdiff) {
+            it = loadList.erase(it);
+        } else {
+            it++;
+        }
+    }
+}
+
+void ChunkManager::deactivateChunkZ(int zdiff) {
+    for (std::vector<Chunk *>::iterator it = visibilityList.begin(); it != visibilityList.end();) {
+        if ((*it)->GetNormalizedPos().z == zdiff) {
+            it = visibilityList.erase(it);
+        } else {
+            it++;
+        }
+    }
+    for (std::vector<Chunk *>::iterator it = loadList.begin(); it != loadList.end();) {
+        if ((*it)->GetNormalizedPos().z == zdiff) {
+            it = loadList.erase(it);
+        } else {
+            it++;
+        }
+    }
+}
+
 void	ChunkManager::loadNewLine(int oldx, int newx, int z) {
 	for (int j = this->minPos.z; j <= this->maxPos.z; j++) {
 		chunk *monoCx1 = this->tab->chunkToRet(oldx + RENDERSIZE * signe((int)(newx) - oldx) + signe((int)(newx) - oldx), z + j);
-		this->loadNewChunk(monoCx1, oldx + RENDERSIZE * signe((int)(newx) - oldx) + signe((int)(newx) - oldx), z + j);
+        this->GetLimitChunk(oldx + (RENDERSIZE - 1) * signe((int)(newx) - oldx) + signe((int)(newx) - oldx), z + j);
+        this->AddTrailChunk(monoCx1, oldx + RENDERSIZE * signe((int)(newx) - oldx) + signe((int)(newx) - oldx), z + j);
+		//this->loadNewChunk(monoCx1, oldx + RENDERSIZE * signe((int)(newx) - oldx) + signe((int)(newx) - oldx), z + j);
 	}
-	this->UnloadChunkX(oldx - RENDERSIZE * signe((int)(newx) - oldx));
+    this->deactivateChunkX(oldx - (RENDERSIZE - 1) * signe((int)(newx) - oldx));
+    this->UnloadChunkX(oldx - RENDERSIZE * signe((int)(newx) - oldx));
 }
 
 void	ChunkManager::loadNewColumn(int oldz, int newz, int x) {
 	for (int j = this->minPos.x; j <= this->maxPos.x; j++) {
 		chunk *monoCx2 = this->tab->chunkToRet(x + j, oldz + RENDERSIZE * signe((int)(newz) - oldz) + signe((int)(newz) - oldz));
-		this->loadNewChunk(monoCx2, x + j, oldz + RENDERSIZE * signe((int)(newz) - oldz) + signe((int)(newz) - oldz));
+        this->GetLimitChunk(x + j, oldz + (RENDERSIZE - 1) * signe((int)(newz) - oldz) + signe((int)(newz) - oldz));
+        this->AddTrailChunk(monoCx2, x + j, oldz + RENDERSIZE * signe((int)(newz) - oldz) + signe((int)(newz) - oldz));
+		//this->loadNewChunk(monoCx2, x + j, oldz + RENDERSIZE * signe((int)(newz) - oldz) + signe((int)(newz) - oldz));
 	}
-	this->UnloadChunkZ(oldz - RENDERSIZE * signe((int)(newz) - oldz));
+    this->deactivateChunkZ(oldz - (RENDERSIZE - 1) * signe((int)(newz) - oldz));
+    this->UnloadChunkZ(oldz - RENDERSIZE * signe((int)(newz) - oldz));
 }
 
 void ChunkManager::SetCamera(Camera *camera) {

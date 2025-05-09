@@ -9,6 +9,7 @@ Chunk::Chunk(Renderer *renderer, ChunkManager *chunkManager, unsigned char ***te
     this->activated = true;
     this->meshed = false;
     this->unload = false;
+    this->update = false;
     this->meshID = 0;
     this->blocksArray = new Block**[CHUNK_SIZE_X];
     for (int i = 0; i < CHUNK_SIZE_X; i++) {
@@ -71,7 +72,6 @@ void Chunk::CreateCube(int &x, int &y, int &z, bool &xPositif, bool &xNegatif, b
                 break;
             }
         }
-        //std::cout << "size = " << x << " " << y << " " << z << " " << size << std::endl;
         ui5 = renderer->AddVertex(meshID, x                             , y + Block::BLOCK_SIZE, z                          , type, Vector2(1, 1), YPOSITIF);
         ui1 = renderer->AddVertex(meshID, x + (Block::BLOCK_SIZE * size.x), y + Block::BLOCK_SIZE, z                        , type, Vector2(size.x, 1), YPOSITIF);
         ui3 = renderer->AddVertex(meshID, x + (Block::BLOCK_SIZE * size.x), y + Block::BLOCK_SIZE, z + (Block::BLOCK_SIZE * size.z), type, Vector2(size.x, size.z), YPOSITIF);
@@ -261,18 +261,17 @@ bool Chunk::CheckXPositifIsVisible(int x, int y, int z) {
 }
 
 void Chunk::CreateMesh() {
-    /*if (position.x == 15 * 16 && position.z == 15 * 16)
-        std::cout << position.y / 16 << std::endl;*/
-    //auto t1 = std::chrono::high_resolution_clock::now();
     Vector3 normalizedPos = GetNormalizedPos();
-    renderer->CreateMesh(meshID);
+    if (!this->loaded) {
+        renderer->CreateMesh(meshID);
+    }
     for (int x = 0; x < CHUNK_SIZE_X; x++) {
         for (int y = 0; y < CHUNK_SIZE_Y; y++) {
             for (int z = 0; z < CHUNK_SIZE_Z; z++) {
                 if (!this->blocksArray[x][y][z].IsActive()) {
                     continue;
                 }
-
+                this->blocksArray[x][y][z].ClearFaces();
                 bool xPositif = false;
                 if (!blocksArray[x][y][z].visited[XPOSITIF]) {
                     if (x == CHUNK_SIZE_X - 1 && normalizedPos.x == chunkManager->GetMaxChunkPos().x)
@@ -351,13 +350,14 @@ void Chunk::CreateMesh() {
             }
         }
     }
-    //renderer->FinishMesh(meshID);
     renderer->meshes[meshID]->SetPosition(position);
     this->loaded = true;
-    /*auto t2 = std::chrono::high_resolution_clock::now();
-    auto ms_int = std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1);
-    std::chrono::duration<double, std::milli> ms_double = t2 - t1;*/
-    //std::cout << "double = " << ms_double.count() << std::endl;
+}
+
+void Chunk::UpdateMesh() {
+    renderer->CleanMesh(meshID);
+
+    CreateMesh();
 }
 
 void Chunk::Render() {

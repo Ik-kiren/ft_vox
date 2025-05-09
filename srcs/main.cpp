@@ -155,16 +155,14 @@ int main(void) {
 			font.RenderText(fontShader, lastSpeed, 0.5, 1000, 2, Vector3(1, 0.2, 0.2));
             
             //cubeObj.drawMeshInstance(window, camera, objects, compute);
-			test.ChunkManagerLoop();
+			
             //Vector3 camPos = camera.GetPosition() / 16;
             //std::cout << camPos << std::endl;
             // camera.RegisterKeyboardInput(window);
             // camera.RegisterKeyboardInput(window, deltaTime);
             camera.RegisterKeyboardInput(window, lastFpsInt);
             camera.RegisterMouseInput(window);
-            
-            glfwSwapBuffers(window);
-            glfwPollEvents();
+            test.ChunkManagerLoop();
 
 			if (cameraCx != (int)(camera.GetPosition().x / 16 - signeN(camera.GetPosition().x))) {
 				test.loadNewLine(cameraCx, camera.GetPosition().x / 16 - signeN(camera.GetPosition().x), cameraCz);
@@ -182,6 +180,8 @@ int main(void) {
 				camera.SetSpeedFps(20);
 			if ((glfwGetKey(window, GLFW_KEY_DOWN ) == GLFW_PRESS))
 				camera.SetSpeedFps(1);
+        glfwSwapBuffers(window);
+        glfwPollEvents();
     }
     glfwDestroyWindow(window);
     glfwTerminate();

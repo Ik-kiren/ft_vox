@@ -1,7 +1,7 @@
 #include "../includes/NewMesh.hpp"
 #include <iostream>
 
-unsigned int NewMesh::meshID = 0;
+unsigned long int NewMesh::meshID = 0;
 
 NewMesh::NewMesh() {
     this->textureIndex = 0;
@@ -18,6 +18,10 @@ std::vector<unsigned int> NewMesh::GetIndicesArray() {
     return this->indicesArray;
 }
 
+void NewMesh::CleanMeshData() {
+    this->indicesArray.clear();
+    this->vertexArray.clear();
+}
 
 void NewMesh::AddVertex(Vector3 &vec) {
     for (int i = 0; i < 3; i++) {

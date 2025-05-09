@@ -21,10 +21,8 @@ void Renderer::InitRenderer(Shader *shader, Camera *camera) {
 
 void Renderer::CreateMesh(unsigned int &meshID) {
     NewMesh *newMesh = new NewMesh;
-    //renderMutex.lock();
     meshID = NewMesh::meshID - 1;
     this->meshes.insert({NewMesh::meshID - 1, newMesh});
-    //renderMutex.unlock();
 }
 
 unsigned int Renderer::AddVertex(unsigned int &meshID, Vector3 &vec, int type) {
@@ -45,8 +43,6 @@ unsigned int Renderer::AddVertex(unsigned int &meshID, float x, float y, float z
     tmp = (tmp << 5) + (int)(meshes[meshID]->textureVertices[meshes[meshID]->textureIndex].x * size.x);
     tmp = (tmp << 5) + (int)(meshes[meshID]->textureVertices[meshes[meshID]->textureIndex].y * size.y);
     tmp = (tmp << 4) + type;
-    //std::cout << x <<  " " << y << " " << z << " " << meshes[meshID]->textureVertices[meshes[meshID]->textureIndex].x * size.x << " " << meshes[meshID]->textureVertices[meshes[meshID]->textureIndex].y * size.y << " " << type << std::endl;
-    //std::cout << ((tmp >> 24) & 31) <<  " " << ((tmp >> 19) & 31) <<  " " << ((tmp >> 14) & 31) <<  " " <<  ((tmp >> 9) & 31) <<  " " << ((tmp >> 4) & 31) <<  " " << (tmp & 15) <<  " " << std::endl;
     
     meshes[meshID]->AddInt(tmp);
     meshes[meshID]->AddInt(faceType);
@@ -67,10 +63,10 @@ void Renderer::FinishMesh(unsigned int &meshID) {
     glBindVertexArray(this->meshes[meshID]->VAO);
 
     glBindBuffer(GL_ARRAY_BUFFER, this->meshes[meshID]->VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(*this->meshes[meshID]->GetVertexArray().data()) * this->meshes[meshID]->GetVertexArray().size(), this->meshes[meshID]->GetVertexArray().data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(*this->meshes[meshID]->GetVertexArray().data()) * this->meshes[meshID]->GetVertexArray().size(), this->meshes[meshID]->GetVertexArray().data(), GL_DYNAMIC_DRAW);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->meshes[meshID]->EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(*this->meshes[meshID]->GetIndicesArray().data()) * this->meshes[meshID]->GetIndicesArray().size(), this->meshes[meshID]->GetIndicesArray().data(), GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(*this->meshes[meshID]->GetIndicesArray().data()) * this->meshes[meshID]->GetIndicesArray().size(), this->meshes[meshID]->GetIndicesArray().data(), GL_DYNAMIC_DRAW);
 
     glVertexAttribIPointer(0, 1, GL_INT, sizeof(int) * 2, (void*)0);
     glEnableVertexAttribArray(0);
@@ -79,41 +75,18 @@ void Renderer::FinishMesh(unsigned int &meshID) {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
+void Renderer::UpdateMesh(unsigned int &meshID) {
+    glNamedBufferData(this->meshes[meshID]->VBO, sizeof(*this->meshes[meshID]->GetVertexArray().data()) * this->meshes[meshID]->GetVertexArray().size(), this->meshes[meshID]->GetVertexArray().data(), GL_DYNAMIC_DRAW);
+    glNamedBufferData(this->meshes[meshID]->EBO, sizeof(*this->meshes[meshID]->GetIndicesArray().data()) * this->meshes[meshID]->GetIndicesArray().size(), this->meshes[meshID]->GetIndicesArray().data(), GL_DYNAMIC_DRAW);
+}
+
 void Renderer::EraseMesh(unsigned int &meshID) {
     delete meshes[meshID];
     meshes.erase(meshID);
 }
 
-void Renderer::Render() {
-    shader->use();
-
-    shader->setVector4("newColor", Vector3(0.2, 0.5, 0.8));
-    shader->setMatrix4("model", model);
-    shader->setMatrix4("view", camera->GetViewMatrix());
-    shader->setMatrix4("projection", camera->GetProjectionMat());
-    shader->setVector3("cameraPos", camera->GetPosition());
-    shader->setFloat("timeValue", sin(glfwGetTime()) / 0.3f);
-    shader->setBool("activeTexture", true);
-    shader->setFloat("timerTextureTransition", 1.0f);
-
-    GLint dirtTexture = shader->GetUniformLocation("dirtTexture");
-    GLint stoneTexture = shader->GetUniformLocation("stoneTexture");
-
-    glUniform1i(dirtTexture, 0);
-    glUniform1i(stoneTexture, 1);
-
-    glActiveTexture(GL_TEXTURE0 + 0);
-    glBindTexture(GL_TEXTURE_2D, textureID);
-    glActiveTexture(GL_TEXTURE0 + 1);
-    glBindTexture(GL_TEXTURE_2D, textureID2);
-
-    for (size_t i = 0; i < meshes.size(); i++) {
-        shader->setVector3("offset", meshes[i]->GetPosition());
-        glBindVertexArray(meshes[i]->VAO);
-        //glDrawArrays(GL_TRIANGLES, 0, meshes[0].GetVertexArray().size());
-        glDrawElements(GL_TRIANGLES, meshes[i]->GetIndicesArray().size(), GL_UNSIGNED_INT, 0);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-    }
+void Renderer::CleanMesh(unsigned int &meshID) {
+    meshes[meshID]->CleanMeshData();
 }
 
 void Renderer::Render(unsigned int &meshID) {
@@ -130,7 +103,6 @@ void Renderer::Render(unsigned int &meshID) {
     shader->setVector3("offset", meshes[meshID]->GetPosition());
 
     glBindVertexArray(meshes[meshID]->VAO);
-    //glDrawArrays(GL_TRIANGLES, 0, meshes[0].GetVertexArray().size());
     glDrawElements(GL_TRIANGLES, meshes[meshID]->GetIndicesArray().size(), GL_UNSIGNED_INT, 0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
@@ -149,7 +121,7 @@ void Renderer::Render(std::vector<Chunk *> &chunks) {
     shader->setFloat("timerTextureTransition", 1.0f);
 
 
-    for (int i = 0; i < nbr; i++) {
+    for (int i = 0; i < TEXTURE_COUNT; i++) {
         textureLocation[i] = shader->GetUniformLocation(textureName[i]);
         glUniform1i(textureLocation[i], i);
         glActiveTexture(GL_TEXTURE0 + i);
@@ -167,7 +139,7 @@ void Renderer::Render(std::vector<Chunk *> &chunks) {
 }
 
 void Renderer::InitTexture() {
-    for (int i = 0; i < nbr; i++) {
+    for (int i = 0; i < TEXTURE_COUNT; i++) {
         glGenTextures(1, &textureIDs[i]);
         glBindTexture(GL_TEXTURE_2D, textureIDs[i]);
 
@@ -192,10 +164,5 @@ Renderer &Renderer::operator=(const Renderer &rhs) {
     this->shader = rhs.shader;
     this->camera = rhs.camera;
     this->model = rhs.model;
-    this->atomicID = rhs.atomicID;
-    this->atomicCounter = rhs.atomicCounter;
-    this->textureID = rhs.textureID;
-    this->textureSSBO = rhs.textureSSBO;
-    this->normalVertices = rhs.normalVertices;
     return *this;
 }
