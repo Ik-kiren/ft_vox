@@ -8,6 +8,7 @@ class Player {
 	private:
 		Vector3	_pos;
 		chunk	*_ch;
+		int		_timeFall;
 	public:
 		Player();
 		Player(float x, float y, float z);

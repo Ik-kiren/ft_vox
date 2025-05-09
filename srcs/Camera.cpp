@@ -9,7 +9,7 @@ Camera::Camera(Vector3 cameraPos, Vector3 up) : position(cameraPos), worldUp(up)
     yaw = -90.0f;
     pitch = 0.0f;
     speed = 0.3f;
-	speedFps = 20.0f;
+	speedFps = 6.0f;
     sensitivity = 0.0001f;
     setCameraVectors();
     lastPosX = cameraPos.x;
@@ -55,8 +55,8 @@ Matrix4 Camera::GetProjectionMat() {
 
 void	Camera::SetSpeedFps(float speed) {
 	speedFps += speed;
-	if (speedFps > 25)
-		speedFps = 25;
+	if (speedFps > 20)
+		speedFps = 20;
 	if (speedFps < 1)
 		speedFps = 1;
 }
@@ -158,17 +158,17 @@ void Camera::RegisterKeyboardInput(GLFWwindow *window, double deltaTime) {
 	Vector3 dir;
 
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        dir = dir + normalized(cross(front, Vector3(1, 0, 0)));
+        dir = dir + normalized(cross(front, Vector3(0, 1, 0)));
     else if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        dir = dir + normalized(cross(front, Vector3(-1, 0, 0)));
+        dir = dir - normalized(cross(front, Vector3(0, 1, 0)));
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-		dir = dir + normalized(cross(front, Vector3(0, 0, -1)));
+		dir = dir + front;
     else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-		dir = dir + normalized(cross(front, Vector3(0, 0, 1)));
+		dir = dir - front;
     if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
-		dir = dir + normalized(cross(front, Vector3(0, 1, 0)));
+		dir = dir + up;
     else if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-		dir = dir + normalized(cross(front, Vector3(0, -1, 0)));
+		dir = dir - up;
 	dir = normalized(dir);
 	position = position + dir * speed;
 }

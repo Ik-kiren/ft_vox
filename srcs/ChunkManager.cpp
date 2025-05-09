@@ -109,7 +109,7 @@ void ChunkManager::ChunkUnload() {
 void ChunkManager::ChunkVisibility() {
     if (lastCamPos != camera->GetPosition() || lastCamDirection != camera->GetFront()) {
         renderList.clear();
-        for (std::vector<Chunk *>::iterator it = visibilityList.begin(); it != visibilityList.end(); it++) {
+        for (std::vector<Chunk *>::iterator it = visibilityList.begin(); it != visibilityList.end();) {
             if ((*it)->unload) {
                 unloadList.push_back(*it);
                 it = visibilityList.erase(it);
@@ -122,6 +122,7 @@ void ChunkManager::ChunkVisibility() {
             if (camera->InsideFrustum(aabb)) {
                 renderList.push_back(*it);
             }
+			it++;
         }
     }
     if (renderList.size() > 0)
@@ -131,7 +132,7 @@ void ChunkManager::ChunkVisibility() {
 }
 
 void ChunkManager::UnloadChunkX(int x) {
-    for (int i = GetMinChunkPos().y; i <= GetMaxChunkPos().y; i++) {
+    for (int i = this->minPos.y; i <= this->maxPos.y; i++) {
         for (int j = GetMinChunkPos().z - 3; j <= GetMaxChunkPos().z + 3; j++) {
             if (chunkMap.find(Vector3(x, i, j)) != chunkMap.end()) {
                 chunkMap[Vector3(x, i, j)]->unload = true;
@@ -143,7 +144,7 @@ void ChunkManager::UnloadChunkX(int x) {
 
 void ChunkManager::UnloadChunkZ(int z) {
     for (int i = GetMinChunkPos().x - 3; i <= GetMaxChunkPos().x + 3; i++) {
-        for (int j = GetMinChunkPos().y; j <= GetMaxChunkPos().y; j++) {
+        for (int j = this->minPos.y; j <= this->maxPos.y; j++) {
 			if (chunkMap.find(Vector3(i, j, z)) != chunkMap.end()) {
                 chunkMap[Vector3(i, j, z)]->unload = true;
                 chunkMap.erase(Vector3(i, j, z));
@@ -153,7 +154,6 @@ void ChunkManager::UnloadChunkZ(int z) {
 }
 
 void	ChunkManager::loadNewChunk(chunk *toLoad, int xdiff, int zdiff) {
-
 	for (int k = 0; k < 16; k++) {
 		Chunk *newChunk = new Chunk(this->renderer, this, toLoad[k].voxel);
 		newChunk->Translation(Vector3(xdiff * Chunk::CHUNK_SIZE_X, k * Chunk::CHUNK_SIZE_Y, zdiff * Chunk::CHUNK_SIZE_Z));
@@ -164,10 +164,10 @@ void	ChunkManager::loadNewChunk(chunk *toLoad, int xdiff, int zdiff) {
 }
 
 void ChunkManager::ChunkManagerLoop() {
+    ChunkVisibility();
     LoadChunk();
     ChunkSetup();
     ChunkUnload();
-    ChunkVisibility();
 }
 
 Vector3 ChunkManager::GetMaxChunkPos() {
@@ -229,7 +229,7 @@ void	ChunkManager::deleteCube(Camera &camera) {
 	int y = camera.GetPosition().y;
 	int z = camera.GetPosition().z / 16 - signeN(camera.GetPosition().z);
 
-	for (int j = 0; j <= 16; j++) {
+	for (int j = 0; j < 16; j++) {
 		if (chunkMap.find(Vector3(i, j, z)) != chunkMap.end()) {
 			chunkMap[Vector3(i, j, z)]->unload = true;
 			chunkMap.erase(Vector3(i, j, z));
