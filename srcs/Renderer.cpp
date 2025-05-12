@@ -10,6 +10,7 @@ Renderer::~Renderer() {
     {
         delete meshes[i];
     }
+    delete skyBox;
 }
 
 void Renderer::InitRenderer(Shader *shader, Camera *camera) {
@@ -17,6 +18,7 @@ void Renderer::InitRenderer(Shader *shader, Camera *camera) {
     this->camera = camera;
     model = Matrix4(1);
     this->InitTexture();
+    this->skyBox = new SkyBox();
 }
 
 void Renderer::CreateMesh(unsigned int &meshID) {
@@ -108,8 +110,16 @@ void Renderer::Render(unsigned int &meshID) {
 }
 
 void Renderer::Render(std::vector<Chunk *> &chunks) {
-    shader->use();
+    glDepthMask(GL_FALSE);
+    skyBox->SkyBoxShader.use();
+    skyBox->SkyBoxShader.setMatrix4("view", camera->GetViewMatrix());
+    skyBox->SkyBoxShader.setMatrix4("projection", camera->GetProjectionMat());
+    glBindVertexArray(skyBox->skyBoxMeshVAO);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, skyBox->skyBoxID);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+    glDepthMask(GL_TRUE);
 
+    shader->use();
     shader->setVector4("newColor", Vector3(0.2, 0.5, 0.8));
     shader->setMatrix4("model", model);
     shader->setMatrix4("view", camera->GetViewMatrix());
@@ -127,6 +137,7 @@ void Renderer::Render(std::vector<Chunk *> &chunks) {
         glActiveTexture(GL_TEXTURE0 + i);
         glBindTexture(GL_TEXTURE_2D, textureIDs[i]);
     }
+
 
     for (size_t i = 0; i < chunks.size(); i++) {
         if (chunks[i]->unload)

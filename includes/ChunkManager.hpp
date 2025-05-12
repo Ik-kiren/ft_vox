@@ -1,14 +1,10 @@
 #pragma once
 #include <vector>
-#include <thread>
-#include <future>
-#include <mutex>
-#include <chrono>
 #include "./Chunk.hpp"
 #include "./mapGP.hpp"
 #include "./utils.hpp"
 #include "./Player.hpp"
-#include "../includes/Vector3i.hpp"
+#include "./Vector3i.hpp"
 #include <unordered_map>
 
 class ChunkManager

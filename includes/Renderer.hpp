@@ -5,8 +5,8 @@
 #include "./Shader.hpp"
 #include "./Camera.hpp"
 #include "./Chunk.hpp"
+#include "./SkyBox.hpp"
 #include <string>
-#include <mutex>
 #include <unordered_map>
 
 class Renderer
@@ -22,6 +22,7 @@ private:
     std::string		textureName[TEXTURE_COUNT] = {"dirtTexture", "stoneTexture", "sandTexture", "redSandTexture",
 		"snowTexture", "iceTexture", "gravelTexture", "oldGrassTexture", "waterTexture"};
 public:
+    SkyBox *skyBox;
     const std::string textureArray[TEXTURE_COUNT] = {"./textures/dirt.png", "./textures/stone.png", "./textures/sand.png", "./textures/red_sand.png", "./textures/snow.png",
         "./textures/ice.png", "./textures/gravel.png", "./textures/grass_carried.png", "./textures/water.png"};
     
@@ -43,6 +44,7 @@ public:
     void Render(unsigned int &meshID);
     void Render(std::vector<Chunk *> &chunks);
     void InitTexture();
+    void InitSkyBox();
 
     Renderer &operator=(const Renderer &rhs);
 };
