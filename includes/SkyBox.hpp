@@ -7,7 +7,7 @@
 class SkyBox
 {
 private:
-    const std::string skyBoxTextureArray[6] = {"./textures/SkyBox/SkyBoxForwardFace.png", "./textures/SkyBox/SkyBoxLeftFace.png", "./textures/SkyBox/SkyBoxUpFace.png", "./textures/SkyBox/SkyBoxUpFace.png", "./textures/SkyBox/SkyBoxRightFace.png", "./textures/SkyBox/SkyBoxBackwardFace.png"};
+    const std::string skyBoxTextureArray[6] = {"./textures/SkyBox/SkyBoxForwardFace.png", "./textures/SkyBox/SkyBoxLeftFace.png", "./textures/SkyBox/SkyBoxUpFace.png", "./textures/SkyBox/SkyBoxDownFace.png", "./textures/SkyBox/SkyBoxRightFace.png", "./textures/SkyBox/SkyBoxBackwardFace.png"};
 
     float skyboxVertices[108] = {
     // positions          
