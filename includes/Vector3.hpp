@@ -1,5 +1,6 @@
 #pragma once
 #include <ostream>
+#include "./Vector3i.hpp"
 
 class Vector4;
 
@@ -29,6 +30,7 @@ class Vector3 {
     Vector3 operator/(Vector3 rhs);
     Vector3 operator-(Vector3 rhs);
     Vector3 operator+(Vector3 rhs);
+    Vector3 operator+(Vector3i rhs);
     Vector3 &operator=(Vector3 const &rhs);
     bool operator==(const Vector3 &other) const;
 };

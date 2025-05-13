@@ -44,10 +44,15 @@ void Chunk::MeshCulling(Vector3i pos, Vector3i direction, Vector3i upVec, FacesT
         up = upVec.y;
     else
         up = upVec.z;
+    Vector3 nextChunkVec;
+    if (face == YPOSITIF)
+        nextChunkVec = Vector3(pos.x, 0, 1);
+    else if (face == YNEGATIF)
+        nextChunkVec = Vector3(pos.x, 15, 1);
     for (int i = 0; i < 16; i++) {
         Block &nextBlock = blocksArray[pos.x + direction.x * i][pos.y + direction.y * i][pos.z + direction.z * i];
         Block &upNextBlock = blocksArray[pos.x + upVec.x + direction.x * i][pos.y + upVec.y + direction.y * i][pos.z + upVec.z + direction.z * i];
-        if (nextBlock.type != block.type || !nextBlock.IsActive() || nextBlock.visited[face] || (up + 1 < 16 && (upNextBlock.IsActive() && upNextBlock.type != ICE)) || this->chunkManager->chunkMap.find(GetNormalizedPos() + upVec) != this->chunkManager->chunkMap.end() && up == 15 && (this->chunkManager->chunkMap[GetNormalizedPos() + upVec]->GetBlocksArray))
+        if (nextBlock.type != block.type || !nextBlock.IsActive() || nextBlock.visited[face] || (up + 1 < 16 && (upNextBlock.IsActive() && upNextBlock.type != ICE)) || this->chunkManager->chunkMap.find(GetNormalizedPos() + upVec) != this->chunkManager->chunkMap.end() && up == 15 && (this->chunkManager->chunkMap[GetNormalizedPos() + upVec]->GetBlocksArray[nextChunkVec.x][nextChunkVec.y][nextChunkVec.z + i].IsActive() && this->chunkManager->chunkMap[GetNormalizedPos() + upVec]->GetBlocksArray[nextChunkVec.x][nextChunkVec.y][nextChunkVec.z + i].type != ICE))
     }
     
 

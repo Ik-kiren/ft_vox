@@ -25,7 +25,7 @@ private:
 	mapGP	*tab;
 
 public:
-    const int RENDERSIZE = 16;
+    const int RENDERSIZE = 12;
     std::unordered_map<Vector3, Chunk *> chunkMap;
     Vector3 maxPos;
     Vector3 minPos;

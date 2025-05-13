@@ -95,6 +95,10 @@ Vector3 Vector3::operator+(Vector3 rhs) {
     return Vector3(x + rhs.x, y + rhs.y, z + rhs.z);
 }
 
+Vector3 Vector3::operator+(Vector3i rhs) {
+    return Vector3(x + rhs.x, y + rhs.y, z + rhs.z);
+}
+
 Vector3 &Vector3::operator=(Vector3 const &rhs) {
     this->x = rhs.x;
     this->y = rhs.y;
