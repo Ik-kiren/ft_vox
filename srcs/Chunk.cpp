@@ -35,6 +35,24 @@ Chunk::~Chunk() {
     delete[] this->blocksArray;
 }
 
+void Chunk::MeshCulling(Vector3i pos, Vector3i direction, Vector3i upVec, FacesType face) {
+    Block &block = blocksArray[pos.x][pos.y][pos.z];
+    int up = 0;
+    if (upVec.x)
+        up = upVec.x;
+    else if (upVec.y)
+        up = upVec.y;
+    else
+        up = upVec.z;
+    for (int i = 0; i < 16; i++) {
+        Block &nextBlock = blocksArray[pos.x + direction.x * i][pos.y + direction.y * i][pos.z + direction.z * i];
+        Block &upNextBlock = blocksArray[pos.x + upVec.x + direction.x * i][pos.y + upVec.y + direction.y * i][pos.z + upVec.z + direction.z * i];
+        if (nextBlock.type != block.type || !nextBlock.IsActive() || nextBlock.visited[face] || (up + 1 < 16 && (upNextBlock.IsActive() && upNextBlock.type != ICE)) || this->chunkManager->chunkMap.find(GetNormalizedPos() + upVec) != this->chunkManager->chunkMap.end() && up == 15 && (this->chunkManager->chunkMap[GetNormalizedPos() + upVec]->GetBlocksArray))
+    }
+    
+
+}
+
 
 void Chunk::CreateCube(int &x, int &y, int &z, bool &xPositif, bool &xNegatif, bool &yPositif, bool &yNegatif, bool &zPositif, bool &zNegatif, int type) {
     unsigned int ui1 = 0;
@@ -50,7 +68,7 @@ void Chunk::CreateCube(int &x, int &y, int &z, bool &xPositif, bool &xNegatif, b
         size = Vector3(1);
         blocksArray[x][y][z].visited[YPOSITIF] = true;
         for (int j = z; j + 1 < 16; j++) {
-            if (blocksArray[x][y][j + 1].type != blocksArray[x][y][z].type || !blocksArray[x][y][j + 1].IsActive() || blocksArray[x][y][j + 1].visited[YPOSITIF] || (y + 1 < 16 && blocksArray[x][y + 1][j + 1].IsActive()) || (this->chunkManager->chunkMap.find(GetNormalizedPos() + Vector3(0, 1, 0)) != this->chunkManager->chunkMap.end() && y == 15 && this->chunkManager->chunkMap[GetNormalizedPos() + Vector3(0, 1, 0)]->GetBlocksArray()[x][0][j + 1].IsActive()))
+            if (blocksArray[x][y][j + 1].type != blocksArray[x][y][z].type || !blocksArray[x][y][j + 1].IsActive() || blocksArray[x][y][j + 1].visited[YPOSITIF] || (y + 1 < 16 && (blocksArray[x][y + 1][j + 1].IsActive()) && (blocksArray[x][y + 1][j + 1].type != ICE)) || (this->chunkManager->chunkMap.find(GetNormalizedPos() + Vector3(0, 1, 0)) != this->chunkManager->chunkMap.end() && y == 15 && (this->chunkManager->chunkMap[GetNormalizedPos() + Vector3(0, 1, 0)]->GetBlocksArray()[x][0][j + 1].IsActive() && this->chunkManager->chunkMap[GetNormalizedPos() + Vector3(0, 1, 0)]->GetBlocksArray()[x][0][j + 1].type != ICE)))
                 break;
             size.z += 1;
             blocksArray[x][y][j + 1].visited[YPOSITIF] = true;
@@ -58,7 +76,7 @@ void Chunk::CreateCube(int &x, int &y, int &z, bool &xPositif, bool &xNegatif, b
         for (int i = x; i + 1 < 16; i++) {
             bool is_row_good = true;
             for (int k = z; k < z + size.z && k < 16; k++) {
-                if (blocksArray[i + 1][y][k].type != blocksArray[x][y][z].type || !blocksArray[i + 1][y][k].IsActive() || blocksArray[i + 1][y][k].visited[YPOSITIF] || (y + 1 < 16 && blocksArray[i + 1][y + 1][k].IsActive())  || (this->chunkManager->chunkMap.find(GetNormalizedPos() + Vector3(0, 1, 0)) != this->chunkManager->chunkMap.end() && y == 15 && this->chunkManager->chunkMap[GetNormalizedPos() + Vector3(0, 1, 0)]->GetBlocksArray()[i + 1][0][k].IsActive())) {
+                if (blocksArray[i + 1][y][k].type != blocksArray[x][y][z].type || !blocksArray[i + 1][y][k].IsActive() || blocksArray[i + 1][y][k].visited[YPOSITIF] || (y + 1 < 16 && (blocksArray[i + 1][y + 1][k].IsActive() && blocksArray[i + 1][y + 1][k].type != ICE))  || (this->chunkManager->chunkMap.find(GetNormalizedPos() + Vector3(0, 1, 0)) != this->chunkManager->chunkMap.end() && y == 15 && (this->chunkManager->chunkMap[GetNormalizedPos() + Vector3(0, 1, 0)]->GetBlocksArray()[i + 1][0][k].IsActive() && this->chunkManager->chunkMap[GetNormalizedPos() + Vector3(0, 1, 0)]->GetBlocksArray()[i + 1][0][k].type != ICE))) {
                     is_row_good = false;
                     break;
                 }
@@ -83,7 +101,7 @@ void Chunk::CreateCube(int &x, int &y, int &z, bool &xPositif, bool &xNegatif, b
         size = Vector3(1);
         blocksArray[x][y][z].visited[ZPOSITIF] = true;
         for (int j = y; j + 1 < 16; j++) {
-            if (blocksArray[x][j + 1][z].type != blocksArray[x][y][z].type || !blocksArray[x][j + 1][z].IsActive() || blocksArray[x][j + 1][z].visited[ZPOSITIF] || (z + 1 < 16 && blocksArray[x][j + 1][z + 1].IsActive())  || (this->chunkManager->chunkMap.find(GetNormalizedPos() + Vector3(0, 0, 1)) != this->chunkManager->chunkMap.end() && z == 15 && this->chunkManager->chunkMap[GetNormalizedPos() + Vector3(0, 0, 1)]->GetBlocksArray()[x][j + 1][0].IsActive()))
+            if (blocksArray[x][j + 1][z].type != blocksArray[x][y][z].type || !blocksArray[x][j + 1][z].IsActive() || blocksArray[x][j + 1][z].visited[ZPOSITIF] || (z + 1 < 16 && (blocksArray[x][j + 1][z + 1].IsActive() && blocksArray[x][j + 1][z + 1].type != ICE))  || (this->chunkManager->chunkMap.find(GetNormalizedPos() + Vector3(0, 0, 1)) != this->chunkManager->chunkMap.end() && z == 15 && (this->chunkManager->chunkMap[GetNormalizedPos() + Vector3(0, 0, 1)]->GetBlocksArray()[x][j + 1][0].IsActive() && this->chunkManager->chunkMap[GetNormalizedPos() + Vector3(0, 0, 1)]->GetBlocksArray()[x][j + 1][0].type != ICE)))
                 break;
             size.y += 1;
             blocksArray[x][j + 1][z].visited[ZPOSITIF] = true;
@@ -91,7 +109,7 @@ void Chunk::CreateCube(int &x, int &y, int &z, bool &xPositif, bool &xNegatif, b
         for (int i = x; i + 1 < 16; i++) {
             bool is_row_good = true;
             for (int k = y; k < y + size.y && k < 16; k++) {
-                if (blocksArray[i + 1][k][z].type != blocksArray[x][y][z].type || !blocksArray[i + 1][k][z].IsActive() || blocksArray[i + 1][k][z].visited[ZPOSITIF] || (z + 1 < 16 && blocksArray[i + 1][k][z + 1].IsActive())  || (this->chunkManager->chunkMap.find(GetNormalizedPos() + Vector3(0, 0, 1)) != this->chunkManager->chunkMap.end() && z == 15 && this->chunkManager->chunkMap[GetNormalizedPos() + Vector3(0, 0, 1)]->GetBlocksArray()[i + 1][k][0].IsActive())) {
+                if (blocksArray[i + 1][k][z].type != blocksArray[x][y][z].type || !blocksArray[i + 1][k][z].IsActive() || blocksArray[i + 1][k][z].visited[ZPOSITIF] || (z + 1 < 16 && (blocksArray[i + 1][k][z + 1].IsActive() && blocksArray[i + 1][k][z + 1].type != ICE))  || (this->chunkManager->chunkMap.find(GetNormalizedPos() + Vector3(0, 0, 1)) != this->chunkManager->chunkMap.end() && z == 15 && (this->chunkManager->chunkMap[GetNormalizedPos() + Vector3(0, 0, 1)]->GetBlocksArray()[i + 1][k][0].IsActive() && this->chunkManager->chunkMap[GetNormalizedPos() + Vector3(0, 0, 1)]->GetBlocksArray()[i + 1][k][0].type != ICE))) {
                     is_row_good = false;
                     break;
                 }
@@ -117,7 +135,7 @@ void Chunk::CreateCube(int &x, int &y, int &z, bool &xPositif, bool &xNegatif, b
         size = Vector3(1);
         blocksArray[x][y][z].visited[XNEGATIF] = true;
         for (int j = z; j + 1 < 16; j++) {
-            if (blocksArray[x][y][j + 1].type != blocksArray[x][y][z].type || !blocksArray[x][y][j + 1].IsActive() || blocksArray[x][y][j + 1].visited[XNEGATIF] || (x > 0 && blocksArray[x - 1][y][j + 1].IsActive())  || (this->chunkManager->chunkMap.find(GetNormalizedPos() + Vector3(-1, 0, 0)) != this->chunkManager->chunkMap.end() && x == 0 && this->chunkManager->chunkMap[GetNormalizedPos() + Vector3(-1, 0, 0)]->GetBlocksArray()[15][y][j + 1].IsActive()))
+            if (blocksArray[x][y][j + 1].type != blocksArray[x][y][z].type || !blocksArray[x][y][j + 1].IsActive() || blocksArray[x][y][j + 1].visited[XNEGATIF] || (x > 0 && (blocksArray[x - 1][y][j + 1].IsActive() && blocksArray[x - 1][y][j + 1].type != ICE))  || (this->chunkManager->chunkMap.find(GetNormalizedPos() + Vector3(-1, 0, 0)) != this->chunkManager->chunkMap.end() && x == 0 && (this->chunkManager->chunkMap[GetNormalizedPos() + Vector3(-1, 0, 0)]->GetBlocksArray()[15][y][j + 1].IsActive() && this->chunkManager->chunkMap[GetNormalizedPos() + Vector3(-1, 0, 0)]->GetBlocksArray()[15][y][j + 1].type != ICE)))
                 break;
             size.z += 1;
             blocksArray[x][y][j + 1].visited[XNEGATIF] = true;
@@ -125,7 +143,7 @@ void Chunk::CreateCube(int &x, int &y, int &z, bool &xPositif, bool &xNegatif, b
         for (int i = y; i + 1 < 16; i++) {
             bool is_row_good = true;
             for (int k = z; k < z + size.z && k < 16; k++) {
-                if (blocksArray[x][i + 1][k].type != blocksArray[x][y][z].type || !blocksArray[x][i + 1][k].IsActive() || blocksArray[x][i + 1][k].visited[XNEGATIF] || (x > 0 && blocksArray[x - 1][i + 1][k].IsActive())  || (this->chunkManager->chunkMap.find(GetNormalizedPos() + Vector3(-1, 0, 0)) != this->chunkManager->chunkMap.end() && x == 0 && this->chunkManager->chunkMap[GetNormalizedPos() + Vector3(-1, 0, 0)]->GetBlocksArray()[15][i + 1][k].IsActive())) {
+                if (blocksArray[x][i + 1][k].type != blocksArray[x][y][z].type || !blocksArray[x][i + 1][k].IsActive() || blocksArray[x][i + 1][k].visited[XNEGATIF] || (x > 0 && (blocksArray[x - 1][i + 1][k].IsActive() && blocksArray[x - 1][i + 1][k].type != ICE))  || (this->chunkManager->chunkMap.find(GetNormalizedPos() + Vector3(-1, 0, 0)) != this->chunkManager->chunkMap.end() && x == 0 && (this->chunkManager->chunkMap[GetNormalizedPos() + Vector3(-1, 0, 0)]->GetBlocksArray()[15][i + 1][k].IsActive() && this->chunkManager->chunkMap[GetNormalizedPos() + Vector3(-1, 0, 0)]->GetBlocksArray()[15][i + 1][k].type != ICE))) {
                     is_row_good = false;
                     break;
                 }
@@ -151,7 +169,7 @@ void Chunk::CreateCube(int &x, int &y, int &z, bool &xPositif, bool &xNegatif, b
         size = Vector3(1);
         blocksArray[x][y][z].visited[YNEGATIF] = true;
         for (int j = z; j + 1 < 16; j++) {
-            if (blocksArray[x][y][j + 1].type != blocksArray[x][y][z].type || !blocksArray[x][y][j + 1].IsActive() || blocksArray[x][y][j + 1].visited[YNEGATIF] || (y > 0 && blocksArray[x][y - 1][j + 1].IsActive()) || (this->chunkManager->chunkMap.find(GetNormalizedPos() + Vector3(0, -1, 0)) != this->chunkManager->chunkMap.end() && y == 0 && this->chunkManager->chunkMap[GetNormalizedPos() + Vector3(0, -1, 0)]->GetBlocksArray()[x][15][j + 1].IsActive()))
+            if (blocksArray[x][y][j + 1].type != blocksArray[x][y][z].type || !blocksArray[x][y][j + 1].IsActive() || blocksArray[x][y][j + 1].visited[YNEGATIF] || (y > 0 && (blocksArray[x][y - 1][j + 1].IsActive() && blocksArray[x][y - 1][j + 1].type != ICE)) || (this->chunkManager->chunkMap.find(GetNormalizedPos() + Vector3(0, -1, 0)) != this->chunkManager->chunkMap.end() && y == 0 && (this->chunkManager->chunkMap[GetNormalizedPos() + Vector3(0, -1, 0)]->GetBlocksArray()[x][15][j + 1].IsActive() && this->chunkManager->chunkMap[GetNormalizedPos() + Vector3(0, -1, 0)]->GetBlocksArray()[x][15][j + 1].type != ICE)))
                 break;
             size.z += 1;
             blocksArray[x][y][j + 1].visited[YNEGATIF] = true;
@@ -159,7 +177,7 @@ void Chunk::CreateCube(int &x, int &y, int &z, bool &xPositif, bool &xNegatif, b
         for (int i = x; i + 1 < 16; i++) {
             bool is_row_good = true;
             for (int k = z; k < z + size.z && k < 16; k++) {
-                if (blocksArray[i + 1][y][k].type != blocksArray[x][y][z].type || !blocksArray[i + 1][y][k].IsActive() || blocksArray[i + 1][y][k].visited[YNEGATIF] || (y > 0 && blocksArray[i + 1][y - 1][k].IsActive()) || (this->chunkManager->chunkMap.find(GetNormalizedPos() + Vector3(0, -1, 0)) != this->chunkManager->chunkMap.end() && y == 0 && this->chunkManager->chunkMap[GetNormalizedPos() + Vector3(0, -1, 0)]->GetBlocksArray()[i + 1][15][k].IsActive())) {
+                if (blocksArray[i + 1][y][k].type != blocksArray[x][y][z].type || !blocksArray[i + 1][y][k].IsActive() || blocksArray[i + 1][y][k].visited[YNEGATIF] || (y > 0 && (blocksArray[i + 1][y - 1][k].IsActive() && blocksArray[i + 1][y - 1][k].type != ICE)) || (this->chunkManager->chunkMap.find(GetNormalizedPos() + Vector3(0, -1, 0)) != this->chunkManager->chunkMap.end() && y == 0 && (this->chunkManager->chunkMap[GetNormalizedPos() + Vector3(0, -1, 0)]->GetBlocksArray()[i + 1][15][k].IsActive() && this->chunkManager->chunkMap[GetNormalizedPos() + Vector3(0, -1, 0)]->GetBlocksArray()[i + 1][15][k].type != ICE))) {
                     is_row_good = false;
                     break;
                 }
@@ -185,7 +203,7 @@ void Chunk::CreateCube(int &x, int &y, int &z, bool &xPositif, bool &xNegatif, b
         size = Vector3(1);
         blocksArray[x][y][z].visited[XPOSITIF] = true;
         for (int j = z; j + 1 < 16; j++) {
-            if (blocksArray[x][y][j + 1].type != blocksArray[x][y][z].type || !blocksArray[x][y][j + 1].IsActive() || blocksArray[x][y][j + 1].visited[XPOSITIF] || (x + 1 < 16 && blocksArray[x + 1][y][j + 1].IsActive()) || (this->chunkManager->chunkMap.find(GetNormalizedPos() + Vector3(1, 0, 0)) != this->chunkManager->chunkMap.end() && x == 15 && this->chunkManager->chunkMap[GetNormalizedPos() + Vector3(1, 0, 0)]->GetBlocksArray()[0][y][j + 1].IsActive()))
+            if (blocksArray[x][y][j + 1].type != blocksArray[x][y][z].type || !blocksArray[x][y][j + 1].IsActive() || blocksArray[x][y][j + 1].visited[XPOSITIF] || (x + 1 < 16 && (blocksArray[x + 1][y][j + 1].IsActive() && blocksArray[x + 1][y][j + 1].type != ICE)) || (this->chunkManager->chunkMap.find(GetNormalizedPos() + Vector3(1, 0, 0)) != this->chunkManager->chunkMap.end() && x == 15 && (this->chunkManager->chunkMap[GetNormalizedPos() + Vector3(1, 0, 0)]->GetBlocksArray()[0][y][j + 1].IsActive() && this->chunkManager->chunkMap[GetNormalizedPos() + Vector3(1, 0, 0)]->GetBlocksArray()[0][y][j + 1].type != ICE)))
                 break;
             size.z += 1;
             blocksArray[x][y][j + 1].visited[XPOSITIF] = true;
@@ -193,7 +211,7 @@ void Chunk::CreateCube(int &x, int &y, int &z, bool &xPositif, bool &xNegatif, b
         for (int i = y; i + 1 < 16; i++) {
             bool is_row_good = true;
             for (int k = z; k < z + size.z && k < 16; k++) {
-                if (blocksArray[x][i + 1][k].type != blocksArray[x][y][z].type || !blocksArray[x][i + 1][k].IsActive() || blocksArray[x][i + 1][k].visited[XPOSITIF] || (x + 1 < 16 && blocksArray[x + 1][i + 1][k].IsActive()) || (this->chunkManager->chunkMap.find(GetNormalizedPos() + Vector3(1, 0, 0)) != this->chunkManager->chunkMap.end() && x == 15 && this->chunkManager->chunkMap[GetNormalizedPos() + Vector3(1, 0, 0)]->GetBlocksArray()[0][i + 1][k].IsActive())) {
+                if (blocksArray[x][i + 1][k].type != blocksArray[x][y][z].type || !blocksArray[x][i + 1][k].IsActive() || blocksArray[x][i + 1][k].visited[XPOSITIF] || (x + 1 < 16 && (blocksArray[x + 1][i + 1][k].IsActive() && blocksArray[x + 1][i + 1][k].type != ICE)) || (this->chunkManager->chunkMap.find(GetNormalizedPos() + Vector3(1, 0, 0)) != this->chunkManager->chunkMap.end() && x == 15 && (this->chunkManager->chunkMap[GetNormalizedPos() + Vector3(1, 0, 0)]->GetBlocksArray()[0][i + 1][k].IsActive() && this->chunkManager->chunkMap[GetNormalizedPos() + Vector3(1, 0, 0)]->GetBlocksArray()[0][i + 1][k].type != ICE))) {
                     is_row_good = false;
                     break;
                 }
@@ -218,7 +236,7 @@ void Chunk::CreateCube(int &x, int &y, int &z, bool &xPositif, bool &xNegatif, b
         size = Vector3(1);
         blocksArray[x][y][z].visited[ZNEGATIF] = true;
         for (int j = y; j + 1 < 16; j++) {
-            if (blocksArray[x][j + 1][z].type != blocksArray[x][y][z].type || !blocksArray[x][j + 1][z].IsActive() || blocksArray[x][j + 1][z].visited[ZNEGATIF] || (z > 0 && blocksArray[x][j + 1][z - 1].IsActive()) || (this->chunkManager->chunkMap.find(GetNormalizedPos() + Vector3(0, 0, -1)) != this->chunkManager->chunkMap.end() && z == 0 && this->chunkManager->chunkMap[GetNormalizedPos() + Vector3(0, 0, -1)]->GetBlocksArray()[x][j + 1][15].IsActive()))
+            if (blocksArray[x][j + 1][z].type != blocksArray[x][y][z].type || !blocksArray[x][j + 1][z].IsActive() || blocksArray[x][j + 1][z].visited[ZNEGATIF] || (z > 0 && (blocksArray[x][j + 1][z - 1].IsActive() && blocksArray[x][j + 1][z - 1].type != ICE)) || (this->chunkManager->chunkMap.find(GetNormalizedPos() + Vector3(0, 0, -1)) != this->chunkManager->chunkMap.end() && z == 0 && (this->chunkManager->chunkMap[GetNormalizedPos() + Vector3(0, 0, -1)]->GetBlocksArray()[x][j + 1][15].IsActive() && this->chunkManager->chunkMap[GetNormalizedPos() + Vector3(0, 0, -1)]->GetBlocksArray()[x][j + 1][15].type != ICE)))
                 break;
             size.y += 1;
             blocksArray[x][j + 1][z].visited[ZNEGATIF] = true;
@@ -226,7 +244,7 @@ void Chunk::CreateCube(int &x, int &y, int &z, bool &xPositif, bool &xNegatif, b
         for (int i = x; i + 1 < 16; i++) {
             bool is_row_good = true;
             for (int k = y; k < y + size.y && k < 16; k++) {
-                if (blocksArray[i + 1][k][z].type != blocksArray[x][y][z].type || !blocksArray[i + 1][k][z].IsActive() || blocksArray[i + 1][k][z].visited[ZNEGATIF] || (z > 0 && blocksArray[i + 1][k][z - 1].IsActive()) || (this->chunkManager->chunkMap.find(GetNormalizedPos() + Vector3(0, 0, -1)) != this->chunkManager->chunkMap.end() && z == 0 && this->chunkManager->chunkMap[GetNormalizedPos() + Vector3(0, 0, -1)]->GetBlocksArray()[i + 1][k][15].IsActive())) {
+                if (blocksArray[i + 1][k][z].type != blocksArray[x][y][z].type || !blocksArray[i + 1][k][z].IsActive() || blocksArray[i + 1][k][z].visited[ZNEGATIF] || (z > 0 && (blocksArray[i + 1][k][z - 1].IsActive() && blocksArray[i + 1][k][z - 1].type != ICE)) || (this->chunkManager->chunkMap.find(GetNormalizedPos() + Vector3(0, 0, -1)) != this->chunkManager->chunkMap.end() && z == 0 && (this->chunkManager->chunkMap[GetNormalizedPos() + Vector3(0, 0, -1)]->GetBlocksArray()[i + 1][k][15].IsActive() && this->chunkManager->chunkMap[GetNormalizedPos() + Vector3(0, 0, -1)]->GetBlocksArray()[i + 1][k][15].type != ICE))) {
                     is_row_good = false;
                     break;
                 }
@@ -277,9 +295,9 @@ void Chunk::CreateMesh() {
                     if (x == CHUNK_SIZE_X - 1 && normalizedPos.x == chunkManager->GetMaxChunkPos().x)
                         xPositif = true;
                     else if (x < CHUNK_SIZE_X - 1)
-                        xPositif = this->blocksArray[x + 1][y][z].IsActive();
+                        xPositif = this->blocksArray[x + 1][y][z].IsActive() && this->blocksArray[x + 1][y][z].type != ICE;
                     else if (this->chunkManager->chunkMap.find(normalizedPos + Vector3(1, 0, 0)) != this->chunkManager->chunkMap.end() && x == CHUNK_SIZE_X - 1 && normalizedPos.x < chunkManager->GetMaxChunkPos().x)
-                        xPositif = this->chunkManager->chunkMap[normalizedPos + Vector3(1, 0, 0)]->GetBlocksArray()[0][y][z].IsActive();
+                        xPositif = this->chunkManager->chunkMap[normalizedPos + Vector3(1, 0, 0)]->GetBlocksArray()[0][y][z].IsActive() && this->chunkManager->chunkMap[normalizedPos + Vector3(1, 0, 0)]->GetBlocksArray()[0][y][z].type != ICE;
                 } else {
                     xPositif = true;
                 }
@@ -289,9 +307,9 @@ void Chunk::CreateMesh() {
                     if (x == 0 && normalizedPos.x == chunkManager->GetMinChunkPos().x)
                         xNegatif = true;
                     else if (x > 0)
-                        xNegatif = this->blocksArray[x - 1][y][z].IsActive();
+                        xNegatif = this->blocksArray[x - 1][y][z].IsActive() && this->blocksArray[x - 1][y][z].type != ICE;
                     else if (this->chunkManager->chunkMap.find(normalizedPos + Vector3(-1, 0, 0)) != this->chunkManager->chunkMap.end() && x == 0 && normalizedPos.x > chunkManager->GetMinChunkPos().x)
-                        xNegatif = this->chunkManager->chunkMap[normalizedPos + Vector3(-1, 0, 0)]->GetBlocksArray()[15][y][z].IsActive();
+                        xNegatif = this->chunkManager->chunkMap[normalizedPos + Vector3(-1, 0, 0)]->GetBlocksArray()[15][y][z].IsActive() && this->chunkManager->chunkMap[normalizedPos + Vector3(-1, 0, 0)]->GetBlocksArray()[15][y][z].type != ICE;
                 } else {
                     xNegatif = true;
                 }
@@ -301,9 +319,9 @@ void Chunk::CreateMesh() {
                     if (y == CHUNK_SIZE_Y && normalizedPos.y == chunkManager->maxPos.y)
                         yPositif = true;
                     else if (y < CHUNK_SIZE_Y - 1)
-                        yPositif = this->blocksArray[x][y + 1][z].IsActive();
+                        yPositif = this->blocksArray[x][y + 1][z].IsActive() && this->blocksArray[x][y + 1][z].type != ICE;
                     else if (this->chunkManager->chunkMap.find(normalizedPos + Vector3(0, 1, 0)) != this->chunkManager->chunkMap.end() && y == CHUNK_SIZE_Y - 1 && normalizedPos.y < chunkManager->maxPos.y)
-                        yPositif = this->chunkManager->chunkMap[normalizedPos + Vector3(0, 1, 0)]->GetBlocksArray()[x][0][z].IsActive();
+                        yPositif = this->chunkManager->chunkMap[normalizedPos + Vector3(0, 1, 0)]->GetBlocksArray()[x][0][z].IsActive() && this->chunkManager->chunkMap[normalizedPos + Vector3(0, 1, 0)]->GetBlocksArray()[x][0][z].type != ICE;
                 } else {
                     yPositif = true;
                 }
@@ -313,9 +331,9 @@ void Chunk::CreateMesh() {
                     if (y == 0 && normalizedPos.y == chunkManager->minPos.y)
                         yNegatif = true;
                     else if (y > 0)
-                        yNegatif = this->blocksArray[x][y - 1][z].IsActive();
+                        yNegatif = this->blocksArray[x][y - 1][z].IsActive() && this->blocksArray[x][y - 1][z].type != ICE;
                     else if (this->chunkManager->chunkMap.find(normalizedPos + Vector3(0, -1, 0)) != this->chunkManager->chunkMap.end() && y == 0 && normalizedPos.y > chunkManager->minPos.y)
-                        yNegatif = this->chunkManager->chunkMap[normalizedPos + Vector3(0, -1, 0)]->GetBlocksArray()[x][15][z].IsActive();
+                        yNegatif = this->chunkManager->chunkMap[normalizedPos + Vector3(0, -1, 0)]->GetBlocksArray()[x][15][z].IsActive() && this->chunkManager->chunkMap[normalizedPos + Vector3(0, -1, 0)]->GetBlocksArray()[x][15][z].type != ICE;
                 } else {
                     yNegatif = true;
                 }
@@ -325,9 +343,9 @@ void Chunk::CreateMesh() {
                     if (z == CHUNK_SIZE_Z - 1 && normalizedPos.z == chunkManager->GetMaxChunkPos().z)
                         zPositif = true;
                     else if (z < CHUNK_SIZE_Z - 1)
-                        zPositif = this->blocksArray[x][y][z + 1].IsActive();
+                        zPositif = this->blocksArray[x][y][z + 1].IsActive() && this->blocksArray[x][y][z + 1].type != ICE;
                     else if (this->chunkManager->chunkMap.find(normalizedPos + Vector3(0, 0, 1)) != this->chunkManager->chunkMap.end() && z == CHUNK_SIZE_Z - 1 && normalizedPos.z < chunkManager->GetMaxChunkPos().z)
-                        zPositif = this->chunkManager->chunkMap[normalizedPos + Vector3(0, 0, 1)]->GetBlocksArray()[x][y][0].IsActive();
+                        zPositif = this->chunkManager->chunkMap[normalizedPos + Vector3(0, 0, 1)]->GetBlocksArray()[x][y][0].IsActive() && this->chunkManager->chunkMap[normalizedPos + Vector3(0, 0, 1)]->GetBlocksArray()[x][y][0].type != ICE;
                 } else {
                     zPositif = true;
                 }
@@ -337,9 +355,9 @@ void Chunk::CreateMesh() {
                     if (z == 0 && normalizedPos.z == chunkManager->GetMinChunkPos().z)
                         zNegatif = true;
                     else if (z > 0)
-                        zNegatif = this->blocksArray[x][y][z - 1].IsActive();
+                        zNegatif = this->blocksArray[x][y][z - 1].IsActive() && this->blocksArray[x][y][z - 1].type != ICE;
                     else if (this->chunkManager->chunkMap.find(normalizedPos + Vector3(0, 0, -1)) != this->chunkManager->chunkMap.end() && z == 0 && normalizedPos.z > chunkManager->GetMinChunkPos().z)
-                        zNegatif = this->chunkManager->chunkMap[normalizedPos + Vector3(0, 0, -1)]->GetBlocksArray()[x][y][15].IsActive();
+                        zNegatif = this->chunkManager->chunkMap[normalizedPos + Vector3(0, 0, -1)]->GetBlocksArray()[x][y][15].IsActive() && this->chunkManager->chunkMap[normalizedPos + Vector3(0, 0, -1)]->GetBlocksArray()[x][y][15].type != ICE;
                 } else {
                     zNegatif = true;
                 }

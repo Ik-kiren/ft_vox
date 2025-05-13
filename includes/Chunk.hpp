@@ -38,5 +38,6 @@ public:
     Vector3 GetNormalizedPos();
     bool CheckXPositifIsVisible(int x, int y, int z);
     Vector3 GetPosition();
+    void MeshCulling(Vector3i pos, Vector3i direction, Vector3i upVec, FacesType face);
 };
 
