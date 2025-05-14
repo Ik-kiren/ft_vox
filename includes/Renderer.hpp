@@ -36,7 +36,9 @@ public:
     void CreateMesh(unsigned int &meshID);
     unsigned int AddVertex(unsigned int &meshID, Vector3 &vecs, int type);
     unsigned int AddVertex(unsigned int &meshID, float x, float y, float z, int type, Vector2 size, int faceType);
+    unsigned int AddVertex2(unsigned int &meshID, float x, float y, float z, int type , Vector2 size, int faceType);
     void addIndices(unsigned int &meshID, unsigned int &v1, unsigned int &v2, unsigned int &v3);
+    void addIndices2(unsigned int &meshID, unsigned int &v1, unsigned int &v2, unsigned int &v3);
     void FinishMesh(unsigned int &meshID);
     void UpdateMesh(unsigned int &meshID);
     void EraseMesh(unsigned int &meshID);

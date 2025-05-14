@@ -53,6 +53,7 @@ void main()
 		tmpTexture = texture(snowTexture, textureCoords);
 	} else if (textureIndice == 6) {
 		tmpTexture = texture(iceTexture, textureCoords);
+		tmpTexture.a = 1;
 	} else if (textureIndice == 7) {
 		tmpTexture = texture(gravelTexture, textureCoords);
 	} else if (textureIndice == 8) {

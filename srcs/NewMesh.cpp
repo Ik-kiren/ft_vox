@@ -18,6 +18,14 @@ std::vector<unsigned int> NewMesh::GetIndicesArray() {
     return this->indicesArray;
 }
 
+std::vector<int> NewMesh::GetVertexArray2() {
+    return this->vertexArray2;
+}
+
+std::vector<unsigned int> NewMesh::GetIndicesArray2() {
+    return this->indicesArray2;
+}
+
 void NewMesh::CleanMeshData() {
     this->indicesArray.clear();
     this->vertexArray.clear();
@@ -50,10 +58,20 @@ void NewMesh::AddInt(int nbr) {
     this->vertexArray.push_back(nbr);
 }
 
+void NewMesh::AddInt2(int nbr) {
+    this->vertexArray2.push_back(nbr);
+}
+
 void NewMesh::AddIndices(unsigned int v1, unsigned int v2, unsigned int v3) {
     this->indicesArray.push_back(v1);
     this->indicesArray.push_back(v2);
     this->indicesArray.push_back(v3);
+}
+
+void NewMesh::AddIndices2(unsigned int v1, unsigned int v2, unsigned int v3) {
+    this->indicesArray2.push_back(v1);
+    this->indicesArray2.push_back(v2);
+    this->indicesArray2.push_back(v3);
 }
 
 void    NewMesh::SetPosition(Vector3 vec) {

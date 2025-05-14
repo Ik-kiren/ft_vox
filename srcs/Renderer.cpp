@@ -53,8 +53,29 @@ unsigned int Renderer::AddVertex(unsigned int &meshID, float x, float y, float z
     return index;
 }
 
+unsigned int Renderer::AddVertex2(unsigned int &meshID, float x, float y, float z, int type , Vector2 size, int faceType) {
+    int tmp = 0;
+    unsigned int index = this->meshes[meshID]->GetVertexArray2().size() / 2;
+    tmp = (int)x;
+    tmp = (tmp << 5) + (int)y;
+    tmp = (tmp << 5) + (int)z;
+    tmp = (tmp << 5) + (int)(meshes[meshID]->textureVertices[meshes[meshID]->textureIndex].x * size.x);
+    tmp = (tmp << 5) + (int)(meshes[meshID]->textureVertices[meshes[meshID]->textureIndex].y * size.y);
+    tmp = (tmp << 4) + type;
+    
+    meshes[meshID]->AddInt2(tmp);
+    meshes[meshID]->AddInt2(faceType);
+
+    meshes[meshID]->textureIndex = (meshes[meshID]->textureIndex + 1) % 4; // look to change that
+    return index;
+}
+
 void Renderer::addIndices(unsigned int &meshID, unsigned int &v1, unsigned int &v2, unsigned int &v3) {
     meshes[meshID]->AddIndices(v1, v2, v3);
+}
+
+void Renderer::addIndices2(unsigned int &meshID, unsigned int &v1, unsigned int &v2, unsigned int &v3) {
+    meshes[meshID]->AddIndices2(v1, v2, v3);
 }
 
 void Renderer::FinishMesh(unsigned int &meshID) {
@@ -75,6 +96,24 @@ void Renderer::FinishMesh(unsigned int &meshID) {
     glVertexAttribIPointer(1, 1, GL_INT, sizeof(int) * 2, (void*)(sizeof(int) * 1));
     glEnableVertexAttribArray(1);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    glGenVertexArrays(1, &this->meshes[meshID]->VAO2);
+    glGenBuffers(1, &this->meshes[meshID]->VBO2);
+    glGenBuffers(1, &this->meshes[meshID]->EBO2);
+    glBindVertexArray(this->meshes[meshID]->VAO2);
+
+    glBindBuffer(GL_ARRAY_BUFFER, this->meshes[meshID]->VBO2);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(*this->meshes[meshID]->GetVertexArray2().data()) * this->meshes[meshID]->GetVertexArray2().size(), this->meshes[meshID]->GetVertexArray2().data(), GL_DYNAMIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->meshes[meshID]->EBO2);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(*this->meshes[meshID]->GetIndicesArray2().data()) * this->meshes[meshID]->GetIndicesArray2().size(), this->meshes[meshID]->GetIndicesArray2().data(), GL_DYNAMIC_DRAW);
+
+    glVertexAttribIPointer(0, 1, GL_INT, sizeof(int) * 2, (void*)0);
+    glEnableVertexAttribArray(0);
+    glVertexAttribIPointer(1, 1, GL_INT, sizeof(int) * 2, (void*)(sizeof(int) * 1));
+    glEnableVertexAttribArray(1);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
 }
 
 void Renderer::UpdateMesh(unsigned int &meshID) {
@@ -140,12 +179,22 @@ void Renderer::Render(std::vector<Chunk *> &chunks) {
 
 
     for (size_t i = 0; i < chunks.size(); i++) {
-        if (chunks[i]->unload)
+        if (chunks[i]->unload || meshes[chunks[i]->meshID]->GetIndicesArray().size() == 0)
             continue;
         shader->setVector3("offset", meshes[chunks[i]->meshID]->GetPosition());
         glBindVertexArray(meshes[chunks[i]->meshID]->VAO);
         glDrawElements(GL_TRIANGLES, meshes[chunks[i]->meshID]->GetIndicesArray().size(), GL_UNSIGNED_INT, 0);
     }
+
+    glDepthMask(GL_FALSE);
+    for (size_t i = 0; i < chunks.size(); i++) {
+        if (chunks[i]->unload || meshes[chunks[i]->meshID]->GetIndicesArray2().size() == 0)
+            continue;
+        shader->setVector3("offset", meshes[chunks[i]->meshID]->GetPosition());
+        glBindVertexArray(meshes[chunks[i]->meshID]->VAO2);
+        glDrawElements(GL_TRIANGLES, meshes[chunks[i]->meshID]->GetIndicesArray2().size(), GL_UNSIGNED_INT, 0);
+    }
+    glDepthMask(GL_TRUE);
 }
 
 void Renderer::InitTexture() {
