@@ -50,7 +50,7 @@ GLFWwindow *InitGLFW() {
     glfwSetFramebufferSizeCallback(window, viewport_size_callback);
 
     glEnable(GL_DEPTH_TEST);
-    //glEnable(GL_CULL_FACE);
+    glEnable(GL_CULL_FACE);
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     //glfwSwapInterval(0);
 
