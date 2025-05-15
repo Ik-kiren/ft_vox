@@ -10,10 +10,10 @@
 class ChunkManager
 {
 private:
-    std::vector<Chunk *> loadList;
-    std::vector<Chunk *> setupList;
+    std::unordered_map<Vector3, Chunk *> loadList;
+    std::unordered_map<Vector3, Chunk *> setupList;
     std::unordered_map<Vector3, Chunk *> unloadMap;
-    std::vector<Chunk *> visibilityList;
+    std::unordered_map<Vector3, Chunk *> visibilityList;
     std::vector<Chunk *> renderList;
     Renderer *renderer;
     Camera *camera;

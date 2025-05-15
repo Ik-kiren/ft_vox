@@ -3,6 +3,7 @@
 #include "../includes/Vector3.hpp"
 #include "../includes/Renderer.hpp"
 #include "../includes/ChunkManager.hpp"
+#include <sys/time.h>
 
 Chunk::Chunk(Renderer *renderer, ChunkManager *chunkManager, unsigned char ***test) : renderer(renderer), chunkManager(chunkManager) {
     this->loaded = false;
@@ -412,11 +413,11 @@ void Chunk::CreateMesh() {
                 if (xPositif && xNegatif && yPositif && yNegatif && zPositif && zNegatif)
                     continue;
                 CreateCube(x, y, z, xPositif, xNegatif, yPositif, yNegatif, zPositif, zNegatif, this->blocksArray[x][y][z].type);
+                renderer->meshes[meshID]->SetPosition(position);
+            this->loaded = true;
             }
         }
     }
-    renderer->meshes[meshID]->SetPosition(position);
-    this->loaded = true;
 }
 
 void Chunk::UpdateMesh() {
