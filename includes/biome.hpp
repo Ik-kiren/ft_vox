@@ -36,7 +36,9 @@ class biome {
 		int			_heightDiff;
 		square		_sq;
 		int			_nbrGP;
-		float		_Hb;
+		float		_Hb1;
+		float		_Hb2;
+		float		_Hb3;
 		int			_level;
 		std::vector<std::vector<heightGP>>	_tab;
 		cave		*_cave;
@@ -63,6 +65,7 @@ class biome {
 		void	doGP();
 		std::array<unsigned char, sizeH>	&getArray(int x, int y);
 		chunk	voxelToChunk(int k);
+		void	voxelToChunk(unsigned char ****ch);
 		void	doGPlvl1();
 		square	getSquare();	
 		cave	*getCave();

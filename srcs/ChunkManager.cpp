@@ -3,8 +3,7 @@
 #include "../includes/Renderer.hpp"
 #include <chrono>
 #include <array>
-
-using namespace std::chrono_literals;
+#include <sys/time.h>
 
 ChunkManager::ChunkManager(Renderer *renderer, mapGP *tab, Player *player): renderer(renderer) {
     camera = NULL;
@@ -13,15 +12,28 @@ ChunkManager::ChunkManager(Renderer *renderer, mapGP *tab, Player *player): rend
     this->minPos = Vector3(-RENDERSIZE, 0, -RENDERSIZE);
 	this->tab = tab;
 
+	this->_chunk = new unsigned char***[16];
+	for (int i = 0; i < 16; i++) {
+		this->_chunk[i] = new unsigned char**[16];
+		for (int j = 0; j < 16; j++) {
+			this->_chunk[i][j] = new unsigned char*[16];
+			for (int k = 0; k < 16; k++) {
+				this->_chunk[i][j][k] = new unsigned char[16];
+				for (int l = 0; l < 16; l++)
+					this->_chunk[i][j][k][l] = 0;
+			}
+		}
+	}
+
  	for (int i = this->minPos.x; i <= this->maxPos.x; i++) {
 		for (int j = this->minPos.z ; j <= this->maxPos.z; j++) {
-			chunk *monoCx0 = tab->chunkToRet(i + player->getPos().x / 16, j + player->getPos().z / 16);
+			tab->chunkToRet(i + player->getPos().x / 16, j + player->getPos().z / 16, this->_chunk);
 			if (i == 0 && j == 0)
-				player->setYfromChunk(monoCx0);
+				player->setYfromChunk(this->_chunk);
             if (i == this->maxPos.x || j == this->maxPos.z || i == this->minPos.x || j == this->minPos.z)
-                this->AddTrailChunk(monoCx0, i + player->getPos().x / 16, j + player->getPos().z / 16);
+                this->AddTrailChunk(i + player->getPos().x / 16, j + player->getPos().z / 16);
             else
-			    this->loadNewChunk(monoCx0, i + player->getPos().x / 16, j + player->getPos().z / 16);
+			    this->loadNewChunk(i + player->getPos().x / 16, j + player->getPos().z / 16);
 		}
 	}
 }
@@ -50,6 +62,7 @@ ChunkManager::~ChunkManager() {
         delete it->second;
         it = chunkMap.erase(it);
     }
+	freeChunksAll(this->_chunk);
 }
 
 void ChunkManager::Init() {
@@ -174,15 +187,14 @@ void ChunkManager::UnloadChunkZ(int z) {
     }
 }
 
-void ChunkManager::AddTrailChunk(chunk *toLoad, int xdiff, int zdiff) {
+void ChunkManager::AddTrailChunk(int xdiff, int zdiff) {
     for (int i = 0; i < 16; i++) {
         if (chunkMap.find(Vector3(xdiff, i, zdiff)) == chunkMap.end()) {
-            Chunk *newChunk = new Chunk(this->renderer, this, toLoad[i].voxel);
+            Chunk *newChunk = new Chunk(this->renderer, this, this->_chunk[i]);
 		    newChunk->Translation(Vector3(xdiff * Chunk::CHUNK_SIZE_X, i * Chunk::CHUNK_SIZE_Y, zdiff * Chunk::CHUNK_SIZE_Z));
 		    chunkMap.insert({newChunk->GetNormalizedPos(), newChunk});
         }
     }
-    freeChunks(toLoad);
 }
 
 void ChunkManager::GetLimitChunk(int xdiff, int zdiff) {
@@ -201,21 +213,13 @@ void ChunkManager::GetLimitChunk(int xdiff, int zdiff) {
     }
 }
 
-void	ChunkManager::loadNewChunk(chunk *toLoad, int xdiff, int zdiff) {
+void	ChunkManager::loadNewChunk(int xdiff, int zdiff) {
 	for (int k = 0; k < 16; k++) {
-        Vector3 pos = Vector3(xdiff, k, zdiff);
-        // if (chunkMap.find(pos) != chunkMap.end()) {
-        //     chunkMap[pos]->update = true;
-        //     chunkMap[pos]->unload = false;
-        //     loadList.push_back(chunkMap[pos]);
-        //     continue;
-        // }
-		Chunk *newChunk = new Chunk(this->renderer, this, toLoad[k].voxel);
+		Chunk *newChunk = new Chunk(this->renderer, this, this->_chunk[k]);
 		newChunk->Translation(Vector3(xdiff * Chunk::CHUNK_SIZE_X, k * Chunk::CHUNK_SIZE_Y, zdiff * Chunk::CHUNK_SIZE_Z));
 		loadList.push_back(newChunk);
 		chunkMap.insert({newChunk->GetNormalizedPos(), newChunk});
 	}
-    freeChunks(toLoad);
 }
 
 void    ChunkManager::UpdateChunk(int xdiff, int zdiff) {
@@ -316,11 +320,10 @@ void ChunkManager::deactivateChunkZ(int zdiff) {
 
 void	ChunkManager::loadNewLine(int oldx, int newx, int z, Player *player) {
 	for (int j = this->minPos.z; j <= this->maxPos.z; j++) {
-		chunk *monoCx1 = this->tab->chunkToRet(oldx + RENDERSIZE * signe((int)(newx) - oldx) + signe((int)(newx) - oldx), z + j);
+		this->tab->chunkToRet(oldx + RENDERSIZE * signe((int)(newx) - oldx) + signe((int)(newx) - oldx), z + j, this->_chunk);
         if (j != this->minPos.z && j != this->maxPos.z)
             this->GetLimitChunk(oldx + (RENDERSIZE - 1) * signe((int)(newx) - oldx) + signe((int)(newx) - oldx), z + j);
-        this->AddTrailChunk(monoCx1, oldx + RENDERSIZE * signe((int)(newx) - oldx) + signe((int)(newx) - oldx), z + j);
-		//this->loadNewChunk(monoCx1, oldx + RENDERSIZE * signe((int)(newx) - oldx) + signe((int)(newx) - oldx), z + j);
+        this->AddTrailChunk(oldx + RENDERSIZE * signe((int)(newx) - oldx) + signe((int)(newx) - oldx), z + j);
 	}
     this->deactivateChunkX(oldx - (RENDERSIZE - 1) * signe((int)(newx) - oldx));
 	chunk *pos = this->tab->chunkToRet(newx, z);
@@ -330,11 +333,10 @@ void	ChunkManager::loadNewLine(int oldx, int newx, int z, Player *player) {
 
 void	ChunkManager::loadNewColumn(int oldz, int newz, int x, Player *player) {
 	for (int j = this->minPos.x; j <= this->maxPos.x; j++) {
-		chunk *monoCx2 = this->tab->chunkToRet(x + j, oldz + RENDERSIZE * signe((int)(newz) - oldz) + signe((int)(newz) - oldz));
+		this->tab->chunkToRet(x + j, oldz + RENDERSIZE * signe((int)(newz) - oldz) + signe((int)(newz) - oldz), this->_chunk);
         if (j != this->minPos.x && j != this->maxPos.x)
             this->GetLimitChunk(x + j, oldz + (RENDERSIZE - 1) * signe((int)(newz) - oldz) + signe((int)(newz) - oldz));
-        this->AddTrailChunk(monoCx2, x + j, oldz + RENDERSIZE * signe((int)(newz) - oldz) + signe((int)(newz) - oldz));
-		//this->loadNewChunk(monoCx2, x + j, oldz + RENDERSIZE * signe((int)(newz) - oldz) + signe((int)(newz) - oldz));
+        this->AddTrailChunk(x + j, oldz + RENDERSIZE * signe((int)(newz) - oldz) + signe((int)(newz) - oldz));
 	}
     this->deactivateChunkZ(oldz - (RENDERSIZE - 1) * signe((int)(newz) - oldz));
 	chunk *pos = this->tab->chunkToRet(x, newz);
@@ -360,6 +362,7 @@ void	ChunkManager::deleteCube(Camera &camera) {
 
 	this->tab->deleteCube(camera.GetPosition().x, camera.GetPosition().z, y);
 
-	chunk *monoC = this->tab->chunkToRet(i, z);
-	this->loadNewChunk(monoC, i, z);
+	this->tab->chunkToRet(i, z, this->_chunk);
+	this->loadNewChunk(i, z);
 }
+
