@@ -66,6 +66,18 @@ void	freeChunks(chunk *toFree) {
 	delete [] toFree;
 }
 
+void	freeChunksAll(unsigned char ****ch) {
+	for (int i = 0; i < 16; i++) {
+		for (int j = 0; j < 16; j++) {
+			for (int k = 0; k < 16; k++)
+				delete [] ch[i][j][k];
+			delete [] ch[i][j];
+		}
+		delete [] ch[i];
+	}
+	delete [] ch;
+}
+
 int	signe(float x) {
 	if (x < 0)
 		return -1;

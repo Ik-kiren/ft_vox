@@ -26,10 +26,11 @@ private:
     Vector3 lastCamPos;
     Vector3 lastCamDirection;
 
-	mapGP	*tab;
+	mapGP			*tab;
+	unsigned char	****_chunk;
 
 public:
-    const int RENDERSIZE = 8;
+    const int RENDERSIZE = 12;
     std::unordered_map<Vector3, Chunk *> chunkMap;
     Vector3 maxPos;
     Vector3 minPos;
@@ -47,14 +48,14 @@ public:
     void ChunkManagerLoop();
     void deactivateChunkX(int xdiff);
     void deactivateChunkZ(int zdiff);
-    void AddTrailChunk(chunk *toLoad, int xdiff, int zdiff);
+    void AddTrailChunk(int xdiff, int zdiff);
     void UpdateChunk(int xdiff, int zdiff);
     void GetLimitChunk(int xdiff, int zdiff);
 
 
     Vector3 GetMaxChunkPos();
     Vector3 GetMinChunkPos();
-	void loadNewChunk(chunk *toLoad, int xdiff, int zdiff);
+	void loadNewChunk(int xdiff, int zdiff);
 	void loadNewLine(int oldx, int newx, int z, Player *player);
 	void loadNewColumn(int oldz, int newz, int x, Player *player);
 

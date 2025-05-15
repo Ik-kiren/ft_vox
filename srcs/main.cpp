@@ -79,7 +79,7 @@ int main(void) {
 	gettimeofday(&tp1, NULL);
 	std::cout << tp1.tv_sec - tp0.tv_sec << " sec " << tp1.tv_usec - tp0.tv_usec << " ms\n";
 
-	Player	player(0, 0, 0);
+	Player	player(0, 128, 0);
 
 	chunk *pos = tab.chunkToRet(player.getPos().x, player.getPos().y);
 	player.setChunk(pos);
@@ -186,8 +186,8 @@ int main(void) {
 				camera.SetSpeedFps(1);
 			if ((glfwGetKey(window, GLFW_KEY_DOWN ) == GLFW_PRESS))
 				camera.SetSpeedFps(-1);
-			if ((glfwGetKey(window, GLFW_KEY_C ) == GLFW_PRESS))
-				test.deleteCube(camera);
+			// if ((glfwGetKey(window, GLFW_KEY_C ) == GLFW_PRESS))
+			// 	test.deleteCube(camera);
 
 			if ((glfwGetKey(window, GLFW_KEY_G ) == GLFW_PRESS) && fps == 0)
 				gravity = std::abs(gravity - 1);

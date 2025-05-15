@@ -129,9 +129,9 @@ void Camera::RegisterMouseInput(GLFWwindow *window) {
         pitch = -89.0f;
     
     Vector3 tmpFront = Vector3();
-    tmpFront.x = cos(yaw * (M_PI / 180) * cos(pitch * (M_PI / 180)));
+    tmpFront.x = cos(yaw * (M_PI / 180)) * cos(pitch * (M_PI / 180));
     tmpFront.y = sin(pitch * (M_PI / 180));
-    tmpFront.z = sin(yaw * (M_PI / 180) * cos(pitch * (M_PI / 180)));
+    tmpFront.z = sin(yaw * (M_PI / 180)) * cos(pitch * (M_PI / 180));
 
     front = normalized(tmpFront);
     right = normalized(cross(front, worldUp));

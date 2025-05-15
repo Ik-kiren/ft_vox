@@ -17,7 +17,7 @@ class Player {
 		Vector3	getPos();
 		void 	setPos(Vector3 const &vec);
 		void	setChunk(chunk *ch);
-		void	setYfromChunk(chunk *ch);
+		void	setYfromChunk(unsigned char ****ch);
 		void	setYfromOwnChunk(Vector3 const &camera);
 };
 

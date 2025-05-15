@@ -14,7 +14,9 @@ biome::biome(int size, square sq) {
 	this->_heightMax = 224;
 	this->_heightDiff = this->_heightMax - this->_heightMin;
 	this->_nbrGP = 8;
-	this->_Hb = 6;
+	this->_Hb1 = 6;
+	this->_Hb2 = this->_Hb1 / 2;
+	this->_Hb3 = this->_Hb1 / 4;
 	this->_level = 2;
 	this->_cave = NULL;
 	this->_deleted = NULL;
@@ -47,7 +49,9 @@ biome::biome(biome &biSup, int x, int y) {
 	this->_heightDiff = this->_heightMax - this->_heightMin;
 	this->_sq = squarelvl1(x, y);
 	this->_nbrGP = 8;
-	this->_Hb = biSup._Hb * 6;
+	this->_Hb1 = biSup._Hb1 * 6;
+	this->_Hb2 = this->_Hb1 / 2;
+	this->_Hb3 = this->_Hb1 / 4;
 	this->_level = 1;
 	this->_cave = NULL;
 	this->_deleted = NULL;
@@ -227,9 +231,9 @@ void	biome::doGPCalculColumn(int i, int j, int mid, int l, float H1, float H2, f
 
 void	biome::doGPLine(int i, coord2d cd) {
 	newSeed(cd.x, cd.y);
-	float	H1 = 2 / this->_Hb;
-	float	H2 = 2 / (this->_Hb / 2);
-	float	H3 = 2 / (this->_Hb / 4);
+	float	H1 = 2 / this->_Hb1;
+	float	H2 = 2 / this->_Hb2;
+	float	H3 = 2 / this->_Hb3;
 	int		L;
 
 	for (int t = 0; t < this->_nbrGP; t++) {
@@ -241,17 +245,17 @@ void	biome::doGPLine(int i, coord2d cd) {
 				L = j;
 			}
 		}
-		H1 /= this->_Hb;
-		H2 /= (this->_Hb / 2);
-		H3 /= (this->_Hb / 4);
+		H1 /= this->_Hb1;
+		H2 /= this->_Hb2;
+		H3 /= this->_Hb3;
 	}
 }
 
 void	biome::doGPColumn(int j, coord2d cd) {
 	newSeed(cd.x, cd.y);
-	float	H1 = 2 / this->_Hb;
-	float	H2 = 2 / (this->_Hb / 2);
-	float	H3 = 2 / (this->_Hb / 4);
+	float	H1 = 2 / this->_Hb1;
+	float	H2 = 2 / this->_Hb2;
+	float	H3 = 2 / this->_Hb3;
 	int		l;
 
 	for (int t = 0; t < this->_nbrGP; t++) {
@@ -263,9 +267,9 @@ void	biome::doGPColumn(int j, coord2d cd) {
 				l = i;
 			}
 		}
-		H1 /= this->_Hb;
-		H2 /= (this->_Hb / 2);
-		H3 /= (this->_Hb / 4);
+		H1 /= this->_Hb1;
+		H2 /= this->_Hb2;
+		H3 /= this->_Hb3;
 	}
 }
  
@@ -273,9 +277,9 @@ void	biome::doGPColumn(int j, coord2d cd) {
 void	biome::doGP() {
 	int		l;
 	int 	L;
-	float	H1 = 2 / this->_Hb;
-	float	H2 = 2 / (this->_Hb / 2);
-	float	H3 = 2 / (this->_Hb / 4);
+	float	H1 = 2 / this->_Hb1;
+	float	H2 = 2 / this->_Hb2;
+	float	H3 = 2 / this->_Hb3;
 
 	iniBiome();
 	doGPLine(0, this->_sq.NE);
@@ -304,9 +308,9 @@ void	biome::doGP() {
 				}
 			}
 		}
-		H1 /= this->_Hb;
-		H2 /= (this->_Hb / 2);
-		H3 /= (this->_Hb / 4);
+		H1 /= this->_Hb1;
+		H2 /= this->_Hb2;
+		H3 /= this->_Hb3;
 	}
 
 	for (int i = 0; i < this->_size; i++) {
@@ -399,6 +403,17 @@ chunk	biome::voxelToChunk(int c) {
 	return toRet;
 }
 
+void	biome::voxelToChunk(unsigned char ****ch) {
+	for (int i = 0; i < this->_size; i++) {
+		for (int j = 0; j < this->_size; j++) {
+			for (int k = 0; k < this->_size; k++) {
+				for (int l = 0; l < this->_size; l++)
+					ch[i][j][k][l] = this->_tab[j][k].arrayH[i * this->_size + l];
+			}
+		}
+	}
+}
+
 void	biome::iniBiome1(biome &biSup, int a, int b) {
 	int	x = (a + signeN(a)) % this->_nbr;
 	int	y = (b + signeN(b)) % this->_nbr;
@@ -442,9 +457,9 @@ void	biome::iniBiome1(biome &biSup, int a, int b) {
 void	biome::doGPlvl1() {
 	int		l;
 	int 	L;
-	float	H1 = 2 / this->_Hb;
-	float	H2 = 2 / (this->_Hb / 2);
-	float	H3 = 2 / (this->_Hb / 4);
+	float	H1 = 2 / this->_Hb1;
+	float	H2 = 2 / this->_Hb2;
+	float	H3 = 2 / this->_Hb3;
 
 	doGPLine(0, this->_sq.NE);
 	doGPLine(this->_size - 1, this->_sq.SE);
@@ -472,9 +487,9 @@ void	biome::doGPlvl1() {
 				}
 			}
 		}
-		H1 /= this->_Hb;
-		H2 /= (this->_Hb / 2);
-		H3 /= (this->_Hb / 4);
+		H1 /= this->_Hb1;
+		H2 /= this->_Hb2;
+		H3 /= this->_Hb3;
 	}
 	for (int i = 0; i < this->_size; i++) {
 		this->_tab[i][0].GP = 0;
@@ -545,18 +560,18 @@ void	biome::dig(biome &biSup, int a, int b) {
 				this->_tab[i][j].arrayH[k] = 0;
 		}
 	}
-	if (biSup._deleted[x][y].impact == 1) {
-		int i;
-		int j;
-		int	k;
-		for (int l = 0; l < biSup._deleted[x][y].toDel.size(); l++) {
-			i = biSup._deleted[x][y].toDel[l].x;
-			j = biSup._deleted[x][y].toDel[l].y;
-			k = biSup._deleted[x][y].toDel[l].z;
-			if (this->_tab[i][j].arrayH[k] != 9)
-				this->_tab[i][j].arrayH[k] = 0;
-		}
-	}
+	// if (biSup._deleted[x][y].impact == 1) {
+	// 	int i;
+	// 	int j;
+	// 	int	k;
+	// 	for (int l = 0; l < biSup._deleted[x][y].toDel.size(); l++) {
+	// 		i = biSup._deleted[x][y].toDel[l].x;
+	// 		j = biSup._deleted[x][y].toDel[l].y;
+	// 		k = biSup._deleted[x][y].toDel[l].z;
+	// 		if (this->_tab[i][j].arrayH[k] != 9)
+	// 			this->_tab[i][j].arrayH[k] = 0;
+	// 	}
+	// }
 }
 
 void	biome::deleteCube(int a, int b, int c, int d, int z) {
