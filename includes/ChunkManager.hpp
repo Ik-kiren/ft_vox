@@ -6,6 +6,7 @@
 #include "./Player.hpp"
 #include "./Vector3i.hpp"
 #include <unordered_map>
+#include <stack>
 
 class ChunkManager
 {
@@ -15,6 +16,8 @@ private:
     std::unordered_map<Vector3, Chunk *> unloadMap;
     std::unordered_map<Vector3, Chunk *> visibilityList;
     std::vector<Chunk *> renderList;
+
+    std::stack<Chunk *> cleanChunkList;
     Renderer *renderer;
     Camera *camera;
     Player *player;
@@ -24,6 +27,7 @@ private:
 
 	mapGP			*tab;
 	unsigned char	****_chunk;
+    bool newChunksAdded;
 
 public:
     const int RENDERSIZE = 12;
@@ -47,6 +51,7 @@ public:
     void AddTrailChunk(int xdiff, int zdiff);
     void UpdateChunk(int xdiff, int zdiff);
     void GetLimitChunk(int xdiff, int zdiff);
+    void RecycleChunk(int xdiff, int zdiff);
 
 
     Vector3 GetMaxChunkPos();

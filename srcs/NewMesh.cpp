@@ -28,7 +28,10 @@ std::vector<unsigned int> NewMesh::GetIndicesArray2() {
 
 void NewMesh::CleanMeshData() {
     this->indicesArray.clear();
+    this->indicesArray2.clear();
     this->vertexArray.clear();
+    this->vertexArray2.clear();
+
 }
 
 void NewMesh::AddVertex(Vector3 &vec) {
