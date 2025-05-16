@@ -125,7 +125,9 @@ void Renderer::EraseMesh(unsigned int &meshID) {
 }
 
 void Renderer::CleanMesh(unsigned int &meshID) {
-    meshes[meshID]->CleanMeshData();
+    if (meshes.find(meshID) != meshes.end()) {
+        meshes[meshID]->CleanMeshData();
+    }
 }
 
 void Renderer::Render(unsigned int &meshID) {
