@@ -324,21 +324,11 @@ void	ChunkManager::loadNewLine(int oldx, int newx, int z, Player *player) {
 void	ChunkManager::loadNewColumn(int oldz, int newz, int x, Player *player) {
     this->UnloadChunkZ(oldz - RENDERSIZE * signe((int)(newz) - oldz));
 	for (int j = this->minPos.x; j <= this->maxPos.x; j++) {
-		struct timeval tp0;
-		gettimeofday(&tp0, NULL);
-
 		this->tab->chunkToRet(x + j, oldz + RENDERSIZE * signe((int)(newz) - oldz) + signe((int)(newz) - oldz), this->_chunk);
-		
-		struct timeval tp1;
-		gettimeofday(&tp1, NULL);
-		moy += tp1.tv_usec - tp0.tv_usec;
-		std::cout << tp1.tv_sec - tp0.tv_sec << " sec " << tp1.tv_usec - tp0.tv_usec << " ms\n";
-
         if (j != this->minPos.x && j != this->maxPos.x)
             this->GetLimitChunk(x + j, oldz + (RENDERSIZE - 1) * signe((int)(newz) - oldz) + signe((int)(newz) - oldz));
         this->RecycleChunk(x + j, oldz + RENDERSIZE * signe((int)(newz) - oldz) + signe((int)(newz) - oldz));
 	}
-	std::cout << moy << '\n';
     this->deactivateChunkZ(oldz - (RENDERSIZE - 1) * signe((int)(newz) - oldz));
 	this->tab->chunkToRet(x, newz, this->_chunk);
 	player->setChunk(this->_chunk);
