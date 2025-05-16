@@ -9,15 +9,15 @@ extern int seed;
 int const	sizeH = 256;
 
 struct heightGP {
-	int			GP;
-	float		heightF1;
-	float		heightF2;
-	float		heightF3;
-	float		heightF;
-	float		tempF;
-	float		waterF;
-	int			heightI;
-	int			texture;
+	int			GP = 0;
+	float		heightF1 = 0;
+	float		heightF2 = 0;
+	float		heightF3 = 0;
+	float		heightF = 0;
+	float		tempF = 0;
+	float		waterF = 0;
+	int			heightI = 0;
+	int			texture = '0';
 	std::array<unsigned char, sizeH>	arrayH;
 };
 
@@ -40,6 +40,7 @@ class biome {
 		float		_Hb2;
 		float		_Hb3;
 		int			_level;
+		coord2d		_posTab;
 		std::vector<std::vector<heightGP>>	_tab;
 		cave		*_cave;
 		playerDig	**_deleted;
@@ -53,7 +54,7 @@ class biome {
 		std::array<unsigned char, sizeH>	fillArray(int h, int texture);
 		int		heightFtoI(float heightF, float denivele);
 		void	afterGP();
-		void	iniBiome1(biome &biSup, int x, int y);
+		void	iniBiome1(biome &biSup);
 	public:
 		biome();
 		biome(int size, square sq);
@@ -66,13 +67,14 @@ class biome {
 		std::array<unsigned char, sizeH>	&getArray(int x, int y);
 		chunk	voxelToChunk(int k);
 		void	voxelToChunk(unsigned char ****ch);
+		void	iniMyBiome(biome &biSup, int x, int y);
 		void	doGPlvl1();
 		square	getSquare();	
 		cave	*getCave();
 		void	setCaves(int xrand, int yrand, biome &biSup);
 		void	setDeleted();
 		float	getHeightF(int x, int y);
-		void	dig(biome &biSup, int x, int y);
+		void	dig(biome &biSup);
 		void	deleteCube(int a, int b, int c, int d, int z);
 };
 

@@ -18,6 +18,19 @@ coord2d	gene2D(int x, int y) {
 	return ret;
 }
 
+coord2d	gene2DposTab(int x, int y, int nbr) {
+	coord2d	ret;
+
+	ret.x = (x + signeN(x)) % nbr;
+	ret.y = (y + signeN(y)) % nbr;
+
+	if (x < 0)
+		ret.x = nbr - 1 + ret.x;
+	if (y < 0)
+		ret.y = nbr - 1 + ret.y;
+	return ret;
+}
+
 coord3d	gene3D(int x, int y, int z) {
 	coord3d	ret;
 

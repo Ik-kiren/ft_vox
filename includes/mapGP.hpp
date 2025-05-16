@@ -24,6 +24,7 @@ class mapGP {
 		int			_sizeBiome;
 		std::vector<std::vector<biomeGP>>		_tab;
 		biome		_voidBiome;
+		biome		*_myBiome;
 
 		void	doGPIniBiome();
 		coord2d	findCoord(int x, int y);
@@ -36,7 +37,6 @@ class mapGP {
 		void	printGP();
 		void	printSquareGP(int x, int y, int mode);
 		void	printCave(int x, int y, int a, int b);
-		chunk	*chunkToRet(int x, int y);
 		void	chunkToRet(int x, int y, unsigned char ****ch);
 		void	deleteCube(int x, int y, int z);
 };

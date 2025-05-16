@@ -7,7 +7,7 @@
 class Player {
 	private:
 		Vector3	_pos;
-		chunk	*_ch;
+		unsigned char	****_ch;
 		int		_timeFall;
 	public:
 		Player();
@@ -16,7 +16,7 @@ class Player {
 
 		Vector3	getPos();
 		void 	setPos(Vector3 const &vec);
-		void	setChunk(chunk *ch);
+		void	setChunk(unsigned char ****ch);
 		void	setYfromChunk(unsigned char ****ch);
 		void	setYfromOwnChunk(Vector3 const &camera);
 };

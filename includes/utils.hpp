@@ -30,6 +30,7 @@ struct chunk {
 
 square	squarelvl1(int x, int y);
 coord2d	gene2D(int x, int y);
+coord2d	gene2DposTab(int x, int y, int nbr);
 coord3d	gene3D(int x, int y, int k);
 float	randFloatBetween(float h);
 int		randIntBetween(int h);

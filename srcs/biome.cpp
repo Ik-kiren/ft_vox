@@ -1,9 +1,6 @@
 #include "../includes/biome.hpp"
 
-biome::biome() {
-	this->_cave = NULL;
-	this->_deleted = NULL;
-}
+biome::biome() {}
 
 biome::biome(int size, square sq) {
 	this->_size = size;
@@ -24,19 +21,9 @@ biome::biome(int size, square sq) {
 	for (int i = 0; i < this->_size; i++) {
 		std::vector<heightGP>	tmp;
 		for (int j = 0; j < this->_size; j++) {
-			heightGP*	tmpS = new heightGP();
-			tmpS->GP = 0;
-			tmpS->heightF1 = 0;
-			tmpS->heightF2 = 0;
-			tmpS->heightF3 = 0;
-			tmpS->tempF = 0;
-			tmpS->waterF = 0;
-			tmpS->heightI = 0;
-			tmpS->texture = '0';
-			tmp.push_back(*tmpS);
-			delete tmpS;
+			tmp.emplace_back(heightGP());
 		}
-		this->_tab.push_back(tmp);
+		this->_tab.emplace_back(tmp);
 	}
 }
 
@@ -53,27 +40,18 @@ biome::biome(biome &biSup, int x, int y) {
 	this->_Hb2 = this->_Hb1 / 2;
 	this->_Hb3 = this->_Hb1 / 4;
 	this->_level = 1;
+	this->_posTab = gene2DposTab(x, y, this->_nbr);
 	this->_cave = NULL;
 	this->_deleted = NULL;
 
 	for (int i = 0; i < this->_size; i++) {
 		std::vector<heightGP>	tmp;
 		for (int j = 0; j < this->_size; j++) {
-			heightGP*	tmpS = new heightGP();
-			tmpS->GP = 0;
-			tmpS->heightF1 = 0;
-			tmpS->heightF2 = 0;
-			tmpS->heightF3 = 0;
-			tmpS->tempF = 0;
-			tmpS->waterF = 0;
-			tmpS->heightI = 0;
-			tmpS->texture = '0';
-			tmp.push_back(*tmpS);
-			delete tmpS;
+			tmp.emplace_back(heightGP());
 		}
-		this->_tab.push_back(tmp);
+		this->_tab.emplace_back(tmp);
 	}
-	iniBiome1(biSup, x, y);
+	iniBiome1(biSup);
 }
 
 biome::~biome() {
@@ -405,52 +383,58 @@ chunk	biome::voxelToChunk(int c) {
 
 void	biome::voxelToChunk(unsigned char ****ch) {
 	for (int i = 0; i < this->_size; i++) {
+		unsigned char	***tmp0 = ch[i];
 		for (int j = 0; j < this->_size; j++) {
+			unsigned char	**tmp1 = tmp0[j];
 			for (int k = 0; k < this->_size; k++) {
+				unsigned char	*tmp2 = tmp1[k];
 				for (int l = 0; l < this->_size; l++)
-					ch[i][j][k][l] = this->_tab[j][k].arrayH[i * this->_size + l];
+					tmp2[l] = this->_tab[j][k].arrayH[i * this->_size + l];
 			}
 		}
 	}
 }
 
-void	biome::iniBiome1(biome &biSup, int a, int b) {
-	int	x = (a + signeN(a)) % this->_nbr;
-	int	y = (b + signeN(b)) % this->_nbr;
+void	biome::iniMyBiome(biome &biSup, int x, int y) {
+	for (int i = 0; i < this->_size; i++) {
+		for (int j = 0; j < this->_size; j++) {
+			this->_tab[i][j].GP = 0;
+		}
+	}
+	this->_sq = squarelvl1(x, y);
+	this->_posTab = gene2DposTab(x, y, this->_nbr);
+	iniBiome1(biSup);
+}
 
-	if (a < 0)
-		x = this->_nbr - 1 + x;
-	if (b < 0)
-		y = this->_nbr - 1 + y;
-
+void	biome::iniBiome1(biome &biSup) {
 	this->_tab[0][0].GP = 2;
 	this->_tab[0][this->_size - 1].GP = 2;
 	this->_tab[this->_size - 1][0].GP = 2;
 	this->_tab[this->_size - 1][this->_size - 1].GP = 2;
 
-	this->_tab[0][0].heightF1 = biSup._tab[x][y].heightF1;
-	this->_tab[0][0].heightF2 = biSup._tab[x][y].heightF2;
-	this->_tab[0][0].heightF3 = biSup._tab[x][y].heightF3;
-	this->_tab[0][0].tempF = biSup._tab[x][y].tempF;
-	this->_tab[0][0].waterF = biSup._tab[x][y].waterF;
+	this->_tab[0][0].heightF1 = biSup._tab[this->_posTab.x][this->_posTab.y].heightF1;
+	this->_tab[0][0].heightF2 = biSup._tab[this->_posTab.x][this->_posTab.y].heightF2;
+	this->_tab[0][0].heightF3 = biSup._tab[this->_posTab.x][this->_posTab.y].heightF3;
+	this->_tab[0][0].tempF = biSup._tab[this->_posTab.x][this->_posTab.y].tempF;
+	this->_tab[0][0].waterF = biSup._tab[this->_posTab.x][this->_posTab.y].waterF;
 
-	this->_tab[0][this->_size - 1].heightF1 = biSup._tab[x][y + 1].heightF1;
-	this->_tab[0][this->_size - 1].heightF2 = biSup._tab[x][y + 1].heightF2;
-	this->_tab[0][this->_size - 1].heightF3 = biSup._tab[x][y + 1].heightF3;
-	this->_tab[0][this->_size - 1].tempF = biSup._tab[x][y + 1].tempF;
-	this->_tab[0][this->_size - 1].waterF = biSup._tab[x][y + 1].waterF;
+	this->_tab[0][this->_size - 1].heightF1 = biSup._tab[this->_posTab.x][this->_posTab.y + 1].heightF1;
+	this->_tab[0][this->_size - 1].heightF2 = biSup._tab[this->_posTab.x][this->_posTab.y + 1].heightF2;
+	this->_tab[0][this->_size - 1].heightF3 = biSup._tab[this->_posTab.x][this->_posTab.y + 1].heightF3;
+	this->_tab[0][this->_size - 1].tempF = biSup._tab[this->_posTab.x][this->_posTab.y + 1].tempF;
+	this->_tab[0][this->_size - 1].waterF = biSup._tab[this->_posTab.x][this->_posTab.y + 1].waterF;
 
-	this->_tab[this->_size - 1][0].heightF1 = biSup._tab[x + 1][y].heightF1;
-	this->_tab[this->_size - 1][0].heightF2 = biSup._tab[x + 1][y].heightF2;
-	this->_tab[this->_size - 1][0].heightF3 = biSup._tab[x + 1][y].heightF3;
-	this->_tab[this->_size - 1][0].tempF = biSup._tab[x + 1][y].tempF;
-	this->_tab[this->_size - 1][0].waterF = biSup._tab[x + 1][y].waterF;
+	this->_tab[this->_size - 1][0].heightF1 = biSup._tab[this->_posTab.x + 1][this->_posTab.y].heightF1;
+	this->_tab[this->_size - 1][0].heightF2 = biSup._tab[this->_posTab.x + 1][this->_posTab.y].heightF2;
+	this->_tab[this->_size - 1][0].heightF3 = biSup._tab[this->_posTab.x + 1][this->_posTab.y].heightF3;
+	this->_tab[this->_size - 1][0].tempF = biSup._tab[this->_posTab.x + 1][this->_posTab.y].tempF;
+	this->_tab[this->_size - 1][0].waterF = biSup._tab[this->_posTab.x + 1][this->_posTab.y].waterF;
 
-	this->_tab[this->_size - 1][this->_size - 1].heightF1 = biSup._tab[x + 1][y + 1].heightF1;
-	this->_tab[this->_size - 1][this->_size - 1].heightF2 = biSup._tab[x + 1][y + 1].heightF2;
-	this->_tab[this->_size - 1][this->_size - 1].heightF3 = biSup._tab[x + 1][y + 1].heightF3;
-	this->_tab[this->_size - 1][this->_size - 1].tempF = biSup._tab[x + 1][y + 1].tempF;
-	this->_tab[this->_size - 1][this->_size - 1].waterF = biSup._tab[x + 1][y + 1].waterF;
+	this->_tab[this->_size - 1][this->_size - 1].heightF1 = biSup._tab[this->_posTab.x + 1][this->_posTab.y + 1].heightF1;
+	this->_tab[this->_size - 1][this->_size - 1].heightF2 = biSup._tab[this->_posTab.x + 1][this->_posTab.y + 1].heightF2;
+	this->_tab[this->_size - 1][this->_size - 1].heightF3 = biSup._tab[this->_posTab.x + 1][this->_posTab.y + 1].heightF3;
+	this->_tab[this->_size - 1][this->_size - 1].tempF = biSup._tab[this->_posTab.x + 1][this->_posTab.y + 1].tempF;
+	this->_tab[this->_size - 1][this->_size - 1].waterF = biSup._tab[this->_posTab.x + 1][this->_posTab.y + 1].waterF;
 }
  
 
@@ -539,35 +523,27 @@ float	biome::getHeightF(int x, int y) {
 	return this->_tab[x][y].heightF;
 }
 
-void	biome::dig(biome &biSup, int a, int b) {
-	int	x = (a + signeN(a)) % this->_nbr;
-	int	y = (b + signeN(b)) % this->_nbr;
-
-	if (a < 0)
-		x = this->_nbr - 1 + x;
-	if (b < 0)
-		y = this->_nbr - 1 + y;
-
-	if (biSup._cave->_tab[x][y].impact == 1) {
+void	biome::dig(biome &biSup) {
+	if (biSup._cave->_tab[this->_posTab.x][this->_posTab.y].impact == 1) {
 		int i;
 		int j;
 		int	k;
-		for (int l = 0; l < biSup._cave->_tab[x][y].toDel.size(); l++) {
-			i = biSup._cave->_tab[x][y].toDel[l].x;
-			j = biSup._cave->_tab[x][y].toDel[l].y;
-			k = biSup._cave->_tab[x][y].toDel[l].z;
+		for (int l = 0; l < biSup._cave->_tab[this->_posTab.x][this->_posTab.y].toDel.size(); l++) {
+			i = biSup._cave->_tab[this->_posTab.x][this->_posTab.y].toDel[l].x;
+			j = biSup._cave->_tab[this->_posTab.x][this->_posTab.y].toDel[l].y;
+			k = biSup._cave->_tab[this->_posTab.x][this->_posTab.y].toDel[l].z;
 			if (this->_tab[i][j].arrayH[k] != 9)
 				this->_tab[i][j].arrayH[k] = 0;
 		}
 	}
-	// if (biSup._deleted[x][y].impact == 1) {
+	// if (biSup._deleted[this->_posTab.x][this->_posTab.y].impact == 1) {
 	// 	int i;
 	// 	int j;
 	// 	int	k;
-	// 	for (int l = 0; l < biSup._deleted[x][y].toDel.size(); l++) {
-	// 		i = biSup._deleted[x][y].toDel[l].x;
-	// 		j = biSup._deleted[x][y].toDel[l].y;
-	// 		k = biSup._deleted[x][y].toDel[l].z;
+	// 	for (int l = 0; l < biSup._deleted[this->_posTab.x][this->_posTab.y].toDel.size(); l++) {
+	// 		i = biSup._deleted[this->_posTab.x][this->_posTab.y].toDel[l].x;
+	// 		j = biSup._deleted[this->_posTab.x][this->_posTab.y].toDel[l].y;
+	// 		k = biSup._deleted[this->_posTab.x][this->_posTab.y].toDel[l].z;
 	// 		if (this->_tab[i][j].arrayH[k] != 9)
 	// 			this->_tab[i][j].arrayH[k] = 0;
 	// 	}

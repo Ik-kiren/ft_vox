@@ -29,7 +29,7 @@ ChunkManager::ChunkManager(Renderer *renderer, mapGP *tab, Player *player): rend
 		for (int j = this->minPos.z ; j <= this->maxPos.z; j++) {
 			tab->chunkToRet(i + player->getPos().x / 16, j + player->getPos().z / 16, this->_chunk);
 			if (i == 0 && j == 0)
-				player->setYfromChunk(this->_chunk);
+				player->setChunk(this->_chunk);
             if (i == this->maxPos.x || j == this->maxPos.z || i == this->minPos.x || j == this->minPos.z)
                 this->AddTrailChunk(i + player->getPos().x / 16, j + player->getPos().z / 16);
             else
@@ -187,7 +187,7 @@ void ChunkManager::AddTrailChunk(int xdiff, int zdiff) {
         if (chunkMap.find(Vector3(xdiff, i, zdiff)) == chunkMap.end()) {
             Chunk *newChunk = new Chunk(this->renderer, this, this->_chunk[i]);
 		    newChunk->Translation(Vector3(xdiff * Chunk::CHUNK_SIZE_X, i * Chunk::CHUNK_SIZE_Y, zdiff * Chunk::CHUNK_SIZE_Z));
-		    chunkMap.insert({newChunk->GetNormalizedPos(), newChunk});
+			chunkMap.insert({newChunk->GetNormalizedPos(), newChunk});
         }
     }
 }
@@ -297,21 +297,35 @@ void	ChunkManager::loadNewLine(int oldx, int newx, int z, Player *player) {
         this->AddTrailChunk(oldx + RENDERSIZE * signe((int)(newx) - oldx) + signe((int)(newx) - oldx), z + j);
 	}
     this->deactivateChunkX(oldx - (RENDERSIZE - 1) * signe((int)(newx) - oldx));
-	chunk *pos = this->tab->chunkToRet(newx, z);
-	player->setChunk(pos);
+	this->tab->chunkToRet(newx, z, this->_chunk);
+	player->setChunk(this->_chunk);
     this->UnloadChunkX(oldx - RENDERSIZE * signe((int)(newx) - oldx));
 }
 
 void	ChunkManager::loadNewColumn(int oldz, int newz, int x, Player *player) {
+	int	moy = 0;
 	for (int j = this->minPos.x; j <= this->maxPos.x; j++) {
+		struct timeval tp0;
+		gettimeofday(&tp0, NULL);
+
 		this->tab->chunkToRet(x + j, oldz + RENDERSIZE * signe((int)(newz) - oldz) + signe((int)(newz) - oldz), this->_chunk);
+		
+		struct timeval tp1;
+		gettimeofday(&tp1, NULL);
+		moy += tp1.tv_usec - tp0.tv_usec;
+		std::cout << tp1.tv_sec - tp0.tv_sec << " sec " << tp1.tv_usec - tp0.tv_usec << " ms\n";
+
         if (j != this->minPos.x && j != this->maxPos.x)
             this->GetLimitChunk(x + j, oldz + (RENDERSIZE - 1) * signe((int)(newz) - oldz) + signe((int)(newz) - oldz));
+			
         this->AddTrailChunk(x + j, oldz + RENDERSIZE * signe((int)(newz) - oldz) + signe((int)(newz) - oldz));
+
+
 	}
+	std::cout << moy << '\n';
     this->deactivateChunkZ(oldz - (RENDERSIZE - 1) * signe((int)(newz) - oldz));
-	chunk *pos = this->tab->chunkToRet(x, newz);
-	player->setChunk(pos);
+	this->tab->chunkToRet(x, newz, this->_chunk);
+	player->setChunk(this->_chunk);
     this->UnloadChunkZ(oldz - RENDERSIZE * signe((int)(newz) - oldz));
 }
 

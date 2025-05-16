@@ -27,6 +27,7 @@ mapGP::mapGP(int size, int sizeBiome) {
 	}
 	this->_voidBiome = biome(this->_sizeBiome, squarelvl1(0, 0));
 	doGPIniBiome();
+	this->_myBiome = new biome(*this->_tab[0][0].bio, 0, 0);
 }
 
 mapGP::~mapGP() {
@@ -34,6 +35,7 @@ mapGP::~mapGP() {
 		for (int j = 0; j < this->_tab[i].size(); j++)
 			delete this->_tab[i][j].bio;
 	}
+	delete this->_myBiome;
 }
 
 void	mapGP::printGP() {
@@ -91,52 +93,24 @@ biomeGP	mapGP::createEmpty(int x, int y) {
 	return ret;
 }
 
-chunk	*mapGP::chunkToRet(int x, int y) {
-	int	a = (x + signeN(x)) / (this->_sizeBiome - 1) + (this->_sizeIni / 2 + 1) - signeN(x);
-	int	b = (y + signeN(y)) / (this->_sizeBiome - 1) + (this->_sizeIni / 2 + 1) - signeN(y);
-
-	biome *newB;
-	if (a >= this->_sizeH || b >= this->_sizeL || a < 0 || b < 0) {
-		newB = new biome(this->_voidBiome, x, y);
-		newB->doGPlvl1();
-	} else {
-		newB = new biome(*this->_tab[a][b].bio, x, y);
-		newB->doGPlvl1();
-		if (!this->_tab[a][b].bio->getCave()) {
-			this->_tab[a][b].bio->setCaves(this->_tab[a][b].sq.NE.x, this->_tab[a][b].sq.NE.y, *this->_tab[a][b].bio);
-			// this->_tab[a][b].bio->setDeleted();
-		}
-		newB->dig(*this->_tab[a][b].bio, x, y);
-	}
-
-	chunk	*ret = new chunk[16];
-	for (int k = 0; k < 16; k++) {
-		ret[k] = newB->voxelToChunk(k);
-	}
-	delete newB;
-	return ret;
-}
-
 void	mapGP::chunkToRet(int x, int y, unsigned char ****ch) {
 	int	a = (x + signeN(x)) / (this->_sizeBiome - 1) + (this->_sizeIni / 2 + 1) - signeN(x);
 	int	b = (y + signeN(y)) / (this->_sizeBiome - 1) + (this->_sizeIni / 2 + 1) - signeN(y);
 
-	biome *newB;
 	if (a >= this->_sizeH || b >= this->_sizeL || a < 0 || b < 0) {
-		newB = new biome(this->_voidBiome, x, y);
-		newB->doGPlvl1();
+		this->_myBiome->iniMyBiome(this->_voidBiome, x, y);
+		this->_myBiome->doGPlvl1();
 	} else {
-		newB = new biome(*this->_tab[a][b].bio, x, y);
-		newB->doGPlvl1();
+		this->_myBiome->iniMyBiome(*this->_tab[a][b].bio, x, y);
+		this->_myBiome->doGPlvl1();
 		if (!this->_tab[a][b].bio->getCave()) {
 			this->_tab[a][b].bio->setCaves(this->_tab[a][b].sq.NE.x, this->_tab[a][b].sq.NE.y, *this->_tab[a][b].bio);
 			// this->_tab[a][b].bio->setDeleted();
 		}
-		newB->dig(*this->_tab[a][b].bio, x, y);
+		this->_myBiome->dig(*this->_tab[a][b].bio);
 	}
 
-	newB->voxelToChunk(ch);
-	delete newB;
+	this->_myBiome->voxelToChunk(ch);
 }
 
 void	mapGP::deleteCube(int x, int y, int z) {

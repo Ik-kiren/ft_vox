@@ -81,9 +81,6 @@ int main(void) {
 
 	Player	player(0, 128, 0);
 
-	chunk *pos = tab.chunkToRet(player.getPos().x, player.getPos().y);
-	player.setChunk(pos);
-
     ChunkManager test(&renderer, &tab, &player);
 	test.Init();
 
