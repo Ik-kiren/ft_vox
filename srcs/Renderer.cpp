@@ -79,39 +79,70 @@ void Renderer::addIndices2(unsigned int &meshID, unsigned int &v1, unsigned int 
 }
 
 void Renderer::FinishMesh(unsigned int &meshID) {
-    glGenVertexArrays(1, &this->meshes[meshID]->VAO);
-    glGenBuffers(1, &this->meshes[meshID]->VBO);
-    glGenBuffers(1, &this->meshes[meshID]->EBO);
-    glBindVertexArray(this->meshes[meshID]->VAO);
+    if (!this->meshes[meshID]->update) {
+        glGenVertexArrays(1, &this->meshes[meshID]->VAO);
+        glGenBuffers(1, &this->meshes[meshID]->VBO);
+        glGenBuffers(1, &this->meshes[meshID]->EBO);
+        glBindVertexArray(this->meshes[meshID]->VAO);
 
-    glBindBuffer(GL_ARRAY_BUFFER, this->meshes[meshID]->VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(*this->meshes[meshID]->GetVertexArray().data()) * this->meshes[meshID]->GetVertexArray().size(), this->meshes[meshID]->GetVertexArray().data(), GL_STATIC_DRAW);
+        glBindBuffer(GL_ARRAY_BUFFER, this->meshes[meshID]->VBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(*this->meshes[meshID]->GetVertexArray().data()) * this->meshes[meshID]->GetVertexArray().size(), this->meshes[meshID]->GetVertexArray().data(), GL_DYNAMIC_DRAW);
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->meshes[meshID]->EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(*this->meshes[meshID]->GetIndicesArray().data()) * this->meshes[meshID]->GetIndicesArray().size(), this->meshes[meshID]->GetIndicesArray().data(), GL_STATIC_DRAW);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->meshes[meshID]->EBO);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(*this->meshes[meshID]->GetIndicesArray().data()) * this->meshes[meshID]->GetIndicesArray().size(), this->meshes[meshID]->GetIndicesArray().data(), GL_STATIC_DRAW);
 
-    glVertexAttribIPointer(0, 1, GL_INT, sizeof(int) * 2, (void*)0);
-    glEnableVertexAttribArray(0);
-    glVertexAttribIPointer(1, 1, GL_INT, sizeof(int) * 2, (void*)(sizeof(int) * 1));
-    glEnableVertexAttribArray(1);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glVertexAttribIPointer(0, 1, GL_INT, sizeof(int) * 2, (void*)0);
+        glEnableVertexAttribArray(0);
+        glVertexAttribIPointer(1, 1, GL_INT, sizeof(int) * 2, (void*)(sizeof(int) * 1));
+        glEnableVertexAttribArray(1);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-    glGenVertexArrays(1, &this->meshes[meshID]->VAO2);
-    glGenBuffers(1, &this->meshes[meshID]->VBO2);
-    glGenBuffers(1, &this->meshes[meshID]->EBO2);
-    glBindVertexArray(this->meshes[meshID]->VAO2);
+        glGenVertexArrays(1, &this->meshes[meshID]->VAO2);
+        glGenBuffers(1, &this->meshes[meshID]->VBO2);
+        glGenBuffers(1, &this->meshes[meshID]->EBO2);
+        glBindVertexArray(this->meshes[meshID]->VAO2);
 
-    glBindBuffer(GL_ARRAY_BUFFER, this->meshes[meshID]->VBO2);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(*this->meshes[meshID]->GetVertexArray2().data()) * this->meshes[meshID]->GetVertexArray2().size(), this->meshes[meshID]->GetVertexArray2().data(), GL_STATIC_DRAW);
+        glBindBuffer(GL_ARRAY_BUFFER, this->meshes[meshID]->VBO2);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(*this->meshes[meshID]->GetVertexArray2().data()) * this->meshes[meshID]->GetVertexArray2().size(), this->meshes[meshID]->GetVertexArray2().data(), GL_DYNAMIC_DRAW);
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->meshes[meshID]->EBO2);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(*this->meshes[meshID]->GetIndicesArray2().data()) * this->meshes[meshID]->GetIndicesArray2().size(), this->meshes[meshID]->GetIndicesArray2().data(), GL_STATIC_DRAW);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->meshes[meshID]->EBO2);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(*this->meshes[meshID]->GetIndicesArray2().data()) * this->meshes[meshID]->GetIndicesArray2().size(), this->meshes[meshID]->GetIndicesArray2().data(), GL_STATIC_DRAW);
 
-    glVertexAttribIPointer(0, 1, GL_INT, sizeof(int) * 2, (void*)0);
-    glEnableVertexAttribArray(0);
-    glVertexAttribIPointer(1, 1, GL_INT, sizeof(int) * 2, (void*)(sizeof(int) * 1));
-    glEnableVertexAttribArray(1);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glVertexAttribIPointer(0, 1, GL_INT, sizeof(int) * 2, (void*)0);
+        glEnableVertexAttribArray(0);
+        glVertexAttribIPointer(1, 1, GL_INT, sizeof(int) * 2, (void*)(sizeof(int) * 1));
+        glEnableVertexAttribArray(1);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+    } else {
+        glBindVertexArray(this->meshes[meshID]->VAO);
+
+        glBindBuffer(GL_ARRAY_BUFFER, this->meshes[meshID]->VBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(*this->meshes[meshID]->GetVertexArray().data()) * this->meshes[meshID]->GetVertexArray().size(), this->meshes[meshID]->GetVertexArray().data(), GL_DYNAMIC_DRAW);
+        
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->meshes[meshID]->EBO);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(*this->meshes[meshID]->GetIndicesArray().data()) * this->meshes[meshID]->GetIndicesArray().size(), this->meshes[meshID]->GetIndicesArray().data(), GL_STATIC_DRAW);
+
+        glVertexAttribIPointer(0, 1, GL_INT, sizeof(int) * 2, (void*)0);
+        glEnableVertexAttribArray(0);
+        glVertexAttribIPointer(1, 1, GL_INT, sizeof(int) * 2, (void*)(sizeof(int) * 1));
+        glEnableVertexAttribArray(1);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+        glBindVertexArray(this->meshes[meshID]->VAO2);
+
+        glBindBuffer(GL_ARRAY_BUFFER, this->meshes[meshID]->VBO2);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(*this->meshes[meshID]->GetVertexArray2().data()) * this->meshes[meshID]->GetVertexArray2().size(), this->meshes[meshID]->GetVertexArray2().data(), GL_DYNAMIC_DRAW);
+
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->meshes[meshID]->EBO2);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(*this->meshes[meshID]->GetIndicesArray2().data()) * this->meshes[meshID]->GetIndicesArray2().size(), this->meshes[meshID]->GetIndicesArray2().data(), GL_STATIC_DRAW);
+
+        glVertexAttribIPointer(0, 1, GL_INT, sizeof(int) * 2, (void*)0);
+        glEnableVertexAttribArray(0);
+        glVertexAttribIPointer(1, 1, GL_INT, sizeof(int) * 2, (void*)(sizeof(int) * 1));
+        glEnableVertexAttribArray(1);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        this->meshes[meshID]->update = false;
+    }
 }
 
 void Renderer::UpdateMesh(unsigned int &meshID) {
@@ -127,6 +158,7 @@ void Renderer::EraseMesh(unsigned int &meshID) {
 void Renderer::CleanMesh(unsigned int &meshID) {
     if (meshes.find(meshID) != meshes.end()) {
         meshes[meshID]->CleanMeshData();
+         meshes[meshID]->update = true;
     }
 }
 
@@ -164,8 +196,8 @@ void Renderer::Render(std::vector<Chunk *> &chunks) {
     shader->setMatrix4("view", camera->GetViewMatrix());
     shader->setMatrix4("projection", camera->GetProjectionMat());
     shader->setVector3("cameraPos", camera->GetPosition());
-    shader->setVector3("lightPos", Vector3(0, 150, 0));
-    shader->setFloat("timeValue", sin(glfwGetTime()) / 0.3f);
+    shader->setVector3("lightPos", camera->GetPosition());
+    shader->setFloat("timeValue", std::fmod(glfwGetTime() / 10, 2 * M_PI));
     shader->setBool("activeTexture", true);
     shader->setFloat("timerTextureTransition", 1.0f);
 

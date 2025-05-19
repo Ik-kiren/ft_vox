@@ -182,7 +182,6 @@ void ChunkManager::UnloadChunkZ(int z) {
 }
 
 void ChunkManager::RecycleChunk(int xdiff, int zdiff) {
-	
     for (int k = 0; k < 16; k++) {
 		Chunk *newChunk = cleanChunkList.top();
         cleanChunkList.pop();

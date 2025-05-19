@@ -32,6 +32,8 @@ class Camera {
     float zNear;
     float zFar;
 
+    Player *player;
+
     void setCameraVectors();
     void CreateFrustum(float aspect, float fovY, float zNear, float zFar);
 

@@ -27,7 +27,8 @@ uniform vec3 lightPos;
 void main()
 {
 	vec3 lightColor = vec3(1.0, 1.0, 1.0);
-	vec3 lightDir = normalize(lightPos - fragpos);
+	vec3 currentLightPos = vec3(600 * cos(timeValue) + lightPos.x, 600 * sin(timeValue) + lightPos.y, lightPos.z);
+	vec3 lightDir = normalize(currentLightPos - fragpos);
 
 	float ambientStrength = 0.6;
 	vec3 ambient = ambientStrength * lightColor;

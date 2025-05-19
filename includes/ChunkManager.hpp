@@ -39,7 +39,6 @@ public:
 
     void Init();
     void LoadChunk();
-    Chunk *LoadThread(Chunk *chunk);
     void ChunkSetup();
     void ChunkUnload();
     void ChunkVisibility();

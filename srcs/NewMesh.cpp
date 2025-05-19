@@ -6,6 +6,7 @@ unsigned long int NewMesh::meshID = 1;
 NewMesh::NewMesh() {
     this->textureIndex = 0;
     NewMesh::meshID += 1;
+    this->update = false;
 }
 
 NewMesh::~NewMesh() {}

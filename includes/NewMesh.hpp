@@ -11,6 +11,7 @@ private:
     Vector3 position;
     
 public:
+    bool update;
     static unsigned long int meshID;
     std::vector<int> vertexArray;
     std::vector<int> vertexArray2;
