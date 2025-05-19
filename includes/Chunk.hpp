@@ -24,7 +24,6 @@ public:
     static const int CHUNK_SIZE_X = 16;
     static const int CHUNK_SIZE_Y = 16;
     static const int CHUNK_SIZE_Z = 16;
-    long int timer;
 
     Chunk();
     Chunk(Renderer *renderer, ChunkManager *chunkManager, unsigned char ***test);
@@ -40,7 +39,6 @@ public:
     void Translation(Vector3 vec);
     Vector3 GetNormalizedPos();
     Vector3 GetPosition();
-    bool CheckNextFace(Block &block, Block &nextBlock, Block &nextBlockUp, Block &nextChunkBlock, int up);
     bool CheckIce(Block &nextBlock, Block *block);
 };
 

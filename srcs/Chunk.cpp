@@ -12,18 +12,21 @@ Chunk::Chunk(Renderer *renderer, ChunkManager *chunkManager, unsigned char ***te
     this->unload = false;
     this->update = false;
     this->meshID = 0;
+    Block *block;
+    unsigned char texture;
     this->blocksArray = new Block**[CHUNK_SIZE_X];
     for (int i = 0; i < CHUNK_SIZE_X; i++) {
         this->blocksArray[i] = new Block*[CHUNK_SIZE_Y];
         for (int j = 0; j < CHUNK_SIZE_Y; j++) {
             this->blocksArray[i][j] = new Block[CHUNK_SIZE_Z];
             for (int k = 0; k < CHUNK_SIZE_Z; k++) {
-                this->blocksArray[i][j][k].SetActive(test[i][k][j]);
-                this->blocksArray[i][j][k].type = static_cast<BlockType>(test[i][k][j]);
+                texture = test[i][k][j];
+                block  = &this->blocksArray[i][j][k];
+                block->SetActive(texture);
+                block->type = static_cast<BlockType>(texture);
             }
         }
     }
-    timer = 0;
 }
 
 Chunk::~Chunk() {
@@ -340,9 +343,6 @@ bool Chunk::CheckIce(Block &nextBlock, Block *block) {
 }
 
 void Chunk::CreateMesh() {
-        struct timeval tp0;
-    struct timeval tp1;
-    gettimeofday(&tp0, NULL);
     Vector3 normalizedPos = GetNormalizedPos();
     if (!this->loaded) {
         renderer->CreateMesh(meshID);
@@ -439,8 +439,6 @@ void Chunk::CreateMesh() {
             }
         }
     }
-        gettimeofday(&tp1, NULL);
-	std::cout << tp1.tv_sec - tp0.tv_sec << " sec " << tp1.tv_usec - tp0.tv_usec << " ms\n";
 }
 
 void Chunk::UpdateMesh() {
