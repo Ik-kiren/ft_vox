@@ -79,7 +79,7 @@ int main(void) {
 	gettimeofday(&tp1, NULL);
 	std::cout << tp1.tv_sec - tp0.tv_sec << " sec " << tp1.tv_usec - tp0.tv_usec << " ms\n";
 
-	Player	player(0, 128, 0);
+	Player	player(-8000, 128, 0);
 
     ChunkManager test(&renderer, &tab, &player);
 	test.Init();
@@ -115,8 +115,8 @@ int main(void) {
     int	lastFpsInt = 60;
     std::string lastFps = "0";
 
-	int	cameraCx = camera.GetPosition().x / 16;
-	int	cameraCz = camera.GetPosition().z / 16;
+	int	cameraCx = (int)(camera.GetPosition().x / 16 - signeN(camera.GetPosition().x));
+	int	cameraCz = (int)(camera.GetPosition().z / 16 - signeN(camera.GetPosition().z));
 	float	oldx = camera.GetPosition().x;
 	float	oldy = camera.GetPosition().y;
 	float	oldz = camera.GetPosition().z;

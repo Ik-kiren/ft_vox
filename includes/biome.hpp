@@ -65,12 +65,12 @@ class biome {
 		void	printCave(int x, int y);
 		void	doGP();
 		std::array<unsigned char, sizeH>	&getArray(int x, int y);
-		chunk	voxelToChunk(int k);
 		void	voxelToChunk(unsigned char ****ch);
 		void	iniMyBiome(biome &biSup, int x, int y);
 		void	doGPlvl1();
 		square	getSquare();	
 		cave	*getCave();
+		void	deleteCave();
 		void	setCaves(int xrand, int yrand, biome &biSup);
 		void	setDeleted();
 		float	getHeightF(int x, int y);

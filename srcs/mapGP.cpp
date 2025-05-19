@@ -31,10 +31,15 @@ mapGP::mapGP(int size, int sizeBiome) {
 }
 
 mapGP::~mapGP() {
+	int cpt = 0;
 	for (int i = 0; i < this->_tab.size(); i++) {
-		for (int j = 0; j < this->_tab[i].size(); j++)
+		for (int j = 0; j < this->_tab[i].size(); j++) {
+			if (this->_tab[i][j].bio->getCave())
+				cpt++;
 			delete this->_tab[i][j].bio;
+		}
 	}
+	std::cout << cpt << '\n';
 	delete this->_myBiome;
 }
 
@@ -67,6 +72,7 @@ void	mapGP::doGPIniBiome() {
 			if (this->_tab[i][j].GP == 0) {
 				this->_tab[i][j].bio->doGP();
 				this->_tab[i][j].GP = 1;
+				// this->_tab[i][j].bio->setCaves(this->_tab[i][j].sq.NE.x, this->_tab[i][j].sq.NE.y, *this->_tab[i][j].bio);
 			}
 		}
 	}
@@ -93,6 +99,29 @@ biomeGP	mapGP::createEmpty(int x, int y) {
 	return ret;
 }
 
+void	mapGP::deleteCave(int a, int b) {
+	if (b - 2 >= 0) {
+		for (int i = std::max(0, a - 2); i <= std::min(this->_sizeH - 1, a + 2); i++) {
+			this->_tab[i][b - 2].bio->deleteCave();
+		}
+	}
+	if (b + 2 < this->_sizeL) {
+		for (int i = std::max(0, a - 2); i <= std::min(this->_sizeH - 1, a + 2); i++) {
+			this->_tab[i][b + 2].bio->deleteCave();
+		}
+	}
+	if (a - 2 >= 0) {
+		for (int i = std::max(0, b - 2); i <= std::min(this->_sizeL - 1, b + 2); i++) {
+			this->_tab[a - 2][i].bio->deleteCave();
+		}
+	}
+	if (a +  2 < this->_sizeH) {
+		for (int i = std::max(0, b - 2); i <= std::min(this->_sizeL - 1, b + 2); i++) {
+			this->_tab[a + 2][i].bio->deleteCave();
+		}
+	}
+}
+
 void	mapGP::chunkToRet(int x, int y, unsigned char ****ch) {
 	int	a = (x + signeN(x)) / (this->_sizeBiome - 1) + (this->_sizeIni / 2 + 1) - signeN(x);
 	int	b = (y + signeN(y)) / (this->_sizeBiome - 1) + (this->_sizeIni / 2 + 1) - signeN(y);
@@ -106,6 +135,7 @@ void	mapGP::chunkToRet(int x, int y, unsigned char ****ch) {
 		if (!this->_tab[a][b].bio->getCave()) {
 			this->_tab[a][b].bio->setCaves(this->_tab[a][b].sq.NE.x, this->_tab[a][b].sq.NE.y, *this->_tab[a][b].bio);
 			// this->_tab[a][b].bio->setDeleted();
+			this->deleteCave(a, b);
 		}
 		this->_myBiome->dig(*this->_tab[a][b].bio);
 	}

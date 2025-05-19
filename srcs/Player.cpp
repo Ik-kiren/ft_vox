@@ -44,7 +44,9 @@ void	Player::setYfromOwnChunk(Vector3 const &camera) {
 	if (camera.z < 0)
 		z = 15 + z;
 
-	if (y > 255 || y < 1) {
+	if (y < 1)
+		return ;
+	else if (y > 255) {
 		this->setPos(Vector3(camera.x, this->getPos().y - 0.04f * this->_timeFall, camera.z));
 		this->_timeFall++;
 	} else if (this->_ch[(y - 1) / 16][x][z][(y - 1) % 16] == 0) {

@@ -29,6 +29,7 @@ class mapGP {
 		void	doGPIniBiome();
 		coord2d	findCoord(int x, int y);
 		biomeGP	createEmpty(int x, int y);
+		void	deleteCave(int a, int b);
 	public:
 		mapGP();
 		mapGP(int size, int sizeBiome);

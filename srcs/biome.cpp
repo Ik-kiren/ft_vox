@@ -364,23 +364,6 @@ std::array<unsigned char, sizeH>	&biome::getArray(int x, int y) {
 	return this->_tab[x][y].arrayH;
 }
 
-chunk	biome::voxelToChunk(int c) {
-	chunk toRet;
-	unsigned char	***ret = new unsigned char**[this->_size];
-
-	for (int i = 0; i < this->_size; i++) {
-		ret[i] = new unsigned char*[this->_size];
-		for (int j = 0; j < this->_size; j++) {
-			ret[i][j] = new unsigned char[this->_size];
-			for (int k = 0; k < this->_size; k++) {
-				ret[i][j][k] = this->_tab[i][j].arrayH[c * this->_size + k];
-			}
-		}
-	}
-	toRet.voxel = ret;
-	return toRet;
-}
-
 void	biome::voxelToChunk(unsigned char ****ch) {
 	for (int i = 0; i < this->_size; i++) {
 		unsigned char	***tmp0 = ch[i];
@@ -494,6 +477,13 @@ square	biome::getSquare() {
 
 cave	*biome::getCave() {
 	return this->_cave;
+}
+
+void	biome::deleteCave() {
+	if (this->_cave) {
+		delete this->_cave;
+		this->_cave = NULL;
+	}
 }
 
 void	biome::setCaves(int xrand, int yrand, biome &biSup) {
