@@ -73,12 +73,6 @@ void ChunkManager::Init() {
     }
 }
 
-Chunk *ChunkManager::LoadThread(Chunk *chunk) {
-    chunk->CreateMesh();
-    return chunk;
-}
-
-
 
 void ChunkManager::LoadChunk() {
     int tmp = 0;

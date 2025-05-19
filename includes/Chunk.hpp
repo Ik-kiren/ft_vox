@@ -21,6 +21,7 @@ public:
     bool update;
     Renderer *renderer;
     unsigned int meshID;
+    const unsigned int UINTMAX = 4294967295;
     static const int CHUNK_SIZE_X = 16;
     static const int CHUNK_SIZE_Y = 16;
     static const int CHUNK_SIZE_Z = 16;

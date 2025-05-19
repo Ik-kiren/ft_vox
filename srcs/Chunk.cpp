@@ -11,7 +11,7 @@ Chunk::Chunk(Renderer *renderer, ChunkManager *chunkManager, unsigned char ***te
     this->meshed = false;
     this->unload = false;
     this->update = false;
-    this->meshID = 0;
+    this->meshID = UINTMAX;
     Block *block;
     unsigned char texture;
     this->blocksArray = new Block**[CHUNK_SIZE_X];
@@ -344,7 +344,7 @@ bool Chunk::CheckIce(Block &nextBlock, Block *block) {
 
 void Chunk::CreateMesh() {
     Vector3 normalizedPos = GetNormalizedPos();
-    if (!this->loaded) {
+    if (!this->loaded && meshID == UINTMAX) {
         renderer->CreateMesh(meshID);
     }
     Block *block;

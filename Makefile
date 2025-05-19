@@ -16,6 +16,13 @@ clean :
 fclean : clean
 	rm -f $(NAME)
 
+dll:
+	curl -fsSL https://rawgit.com/kube/42homebrew/master/install.sh | zsh
+	brew install freetype
+	git clone https://github.com/nothings/stb.git
+	mv ./stb/stb_image.h ./includes
+	rm  -rf ./stb
+
 re: fclean all
 
 home :
