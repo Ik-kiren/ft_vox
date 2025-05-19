@@ -11,7 +11,7 @@
 class ChunkManager
 {
 private:
-    std::unordered_map<Vector3, Chunk *> loadList;
+    std::vector<Chunk *> loadList;
     std::unordered_map<Vector3, Chunk *> setupList;
     std::unordered_map<Vector3, Chunk *> unloadMap;
     std::unordered_map<Vector3, Chunk *> visibilityList;

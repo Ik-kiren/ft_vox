@@ -106,6 +106,14 @@ Vector3 &Vector3::operator=(Vector3 const &rhs) {
     return *this;
 }
 
+bool Vector3::operator<(const Vector3 &rhs) {
+    return (this->x < rhs.x || this->y < rhs.y || this->z < rhs.z);
+}
+
+bool Vector3::operator>(const Vector3 &rhs) {
+    return (this->x > rhs.x || this->y > rhs.y ||this->z > rhs.z);
+}
+
 bool operator!=(Vector3 const &lhs, Vector3 const &rhs){
     return (lhs.x != rhs.x || lhs.y != rhs.y || lhs.z != rhs.z);
 }
@@ -117,6 +125,10 @@ std::ostream &operator<<(std::ostream &out, Vector3 &rhs) {
     }
     out << ">";
     return out;
+}
+
+bool operator==(const Vector3& lhs, const Vector3& rhs) {
+    return (lhs.x == rhs.x && lhs.y < rhs.y && lhs.z < rhs.z);
 }
 
 bool Vector3::operator==(const Vector3 &other) const

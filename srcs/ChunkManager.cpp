@@ -41,10 +41,10 @@ ChunkManager::ChunkManager(Renderer *renderer, mapGP *tab, Player *player): rend
 }
 
 ChunkManager::~ChunkManager() {
-    for (std::unordered_map<Vector3, Chunk *>::iterator it = loadList.begin(); it != loadList.end();) {
-        if (chunkMap.find(it->second->GetNormalizedPos()) != chunkMap.end())
-            chunkMap.erase(chunkMap.find(it->second->GetNormalizedPos()));
-        delete it->second;
+    for (std::vector<Chunk *>::iterator it = loadList.begin(); it != loadList.end();) {
+        if (chunkMap.find((*it)->GetNormalizedPos()) != chunkMap.end())
+            chunkMap.erase(chunkMap.find((*it)->GetNormalizedPos()));
+        delete (*it);
         it = loadList.erase(it);
     }
     for (std::unordered_map<Vector3, Chunk *>::iterator it = visibilityList.begin(); it != visibilityList.end();) {
@@ -86,16 +86,16 @@ void ChunkManager::LoadChunk() {
         this->newChunksAdded = false;
         return;
     }
-    for (std::unordered_map<Vector3, Chunk *>::iterator it = loadList.begin(); it != loadList.end();) {
-        if (it->second->unload) {
-            if (unloadMap.find(it->second->GetNormalizedPos()) == unloadMap.end())
-                unloadMap.insert({it->second->GetNormalizedPos(), it->second});
+    for (std::vector<Chunk *>::iterator it = loadList.begin(); it != loadList.end();) {
+        if ((*it)->unload) {
+            if (unloadMap.find((*it)->GetNormalizedPos()) == unloadMap.end())
+                unloadMap.insert({(*it)->GetNormalizedPos(), (*it)});
             it = loadList.erase(it);
             continue;
         }
-        if (it->second->loaded == false) {	
-            it->second->CreateMesh();
-            setupList.insert({it->first, it->second});
+        if ((*it)->loaded == false) {	
+            (*it)->CreateMesh();
+            setupList.insert({(*it)->GetNormalizedPos(), (*it)});
             it = loadList.erase(it);
 			tmp++;
 			if (tmp == 8)
@@ -218,7 +218,7 @@ void ChunkManager::GetLimitChunk(int xdiff, int zdiff) {
             if (chunkMap[vec]->loaded) {
                 visibilityList.insert({vec, chunkMap[vec]});
             } else {
-                loadList.insert({vec, chunkMap[vec]});
+                loadList.push_back(chunkMap[vec]);
             }
         } else {
             std::cout << "Error: limit chunk not found in chunkMap" << std::endl;
@@ -230,7 +230,7 @@ void	ChunkManager::loadNewChunk(int xdiff, int zdiff) {
 	for (int k = 0; k < 16; k++) {
 		Chunk *newChunk = new Chunk(this->renderer, this, this->_chunk[k]);
 		newChunk->Translation(Vector3(xdiff * Chunk::CHUNK_SIZE_X, k * Chunk::CHUNK_SIZE_Y, zdiff * Chunk::CHUNK_SIZE_Z));
-        loadList.insert({newChunk->GetNormalizedPos(), newChunk});
+        loadList.push_back(newChunk);
 		chunkMap.insert({newChunk->GetNormalizedPos(), newChunk});
 	}
 }
@@ -241,9 +241,10 @@ void    ChunkManager::UpdateChunk(int xdiff, int zdiff) {
         if (chunkMap.find(pos) != chunkMap.end()) {
             chunkMap[pos]->update = true;
             chunkMap[pos]->unload = false;
-            loadList[pos] = chunkMap[pos];
+            loadList.push_back(chunkMap[pos]);
         }
 	}
+    
 }
 
 void ChunkManager::ChunkManagerLoop() {
@@ -287,10 +288,16 @@ void ChunkManager::deactivateChunkX(int xdiff) {
     for (int i = GetMinChunkPos().z - 2; i <= GetMaxChunkPos().z + 2; i++) {
         for (int j = minPos.y; j <= maxPos.y; j++) {
             Vector3 vecToDeactivate = Vector3(xdiff, j, i);
-            loadList.erase(vecToDeactivate);
             visibilityList.erase(vecToDeactivate);
             setupList.erase(vecToDeactivate);
             unloadMap.erase(vecToDeactivate);
+        }
+    }
+    for (std::vector<Chunk *>::iterator it = loadList.begin(); it != loadList.end();) {
+        if ((*it)->GetNormalizedPos().x == xdiff) {
+            it = loadList.erase(it);
+        } else {
+            it++;
         }
     }
 }
@@ -299,10 +306,16 @@ void ChunkManager::deactivateChunkZ(int zdiff) {
     for (int i = GetMinChunkPos().x - 2; i <= GetMaxChunkPos().x + 2; i++) {
         for (int j = minPos.y; j <= maxPos.y; j++) {
             Vector3 vecToDeactivate = Vector3(i, j, zdiff);
-            loadList.erase(vecToDeactivate);
             visibilityList.erase(vecToDeactivate);
             setupList.erase(vecToDeactivate);
             unloadMap.erase(vecToDeactivate);
+        }
+    }
+    for (std::vector<Chunk *>::iterator it = loadList.begin(); it != loadList.end();) {
+        if ((*it)->GetNormalizedPos().z == zdiff) {
+            it = loadList.erase(it);
+        } else {
+            it++;
         }
     }
 }
