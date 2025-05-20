@@ -358,7 +358,6 @@ void Chunk::CreateMesh() {
                 if (!block->IsActive()) {
                     continue;
                 }
-                // block->ClearFaces();
                 bool xPositif = false;
                 if (!block->visited[XPOSITIF]) {
                     if (x < CHUNK_SIZE_X - 1)

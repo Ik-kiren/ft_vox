@@ -32,7 +32,7 @@ void main()
 
 	float ambientStrength = 0.6;
 	vec3 ambient = ambientStrength * lightColor;
-	vec2 textpos = vertexPos.xy;
+	
 	float diff = max(dot(normalize(normal), lightDir), 0.0);
 	vec3 diffuse = diff * lightColor;
 

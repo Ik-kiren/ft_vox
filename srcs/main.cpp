@@ -67,19 +67,20 @@ void GetTimer(double &lastTime, double &deltaTime) {
 
 int main(void) {
     srand(time(NULL));
-	// seed = std::rand();
+
 	seed = 255;
     Renderer renderer;
 
 	struct timeval tp0;
 	gettimeofday(&tp0, NULL);
-    // mapGP tab(65, 16);
+
     mapGP tab(32, 32);
+    
 	struct timeval tp1;
 	gettimeofday(&tp1, NULL);
 	std::cout << tp1.tv_sec - tp0.tv_sec << " sec " << tp1.tv_usec - tp0.tv_usec << " ms\n";
 
-	Player	player(0, 128, 0);
+	Player	player(-8000, 128, 0);
 
     ChunkManager test(&renderer, &tab, &player);
 	test.Init();
@@ -90,19 +91,15 @@ int main(void) {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     Shader cubeShader = Shader("./shaders/VertexShader.shader", "./shaders/FragmentShader2.shader");
-    Shader fontShader = Shader("./shaders/fontVS.shader", "./shaders/fontFS.shader");
-
-    //Mesh cubeMesh = Mesh("./objects/DirtCube.obj");  
+    Shader fontShader = Shader("./shaders/fontVS.shader", "./shaders/fontFS.shader"); 
 
     Camera camera = Camera(player.getGlobalPos(), Vector3(0, 1, 0));
     test.SetCamera(&camera);
 
-    //Object cubeObj = Object(cubeShader, &cubeMesh, Vector4(1, 1, 1, 1));
-
     Font font = Font();
     renderer.InitRenderer(&cubeShader, &camera);
 
-    double lastTime = 0;
+    double lastTime = glfwGetTime();
     double deltaTime = 0;
 
     double actionTimer = 0;
@@ -154,13 +151,7 @@ int main(void) {
             camera.UpdateFrustum();
             font.RenderText(fontShader, lastFps, 0.5, 1100, 2, Vector3(1, 0.2, 0.2));
 			font.RenderText(fontShader, lastSpeed, 0.5, 1000, 2, Vector3(1, 0.2, 0.2));
-            
-            //cubeObj.drawMeshInstance(window, camera, objects, compute);
-			
-            //Vector3 camPos = camera.GetPosition() / 16;
-            //std::cout << camPos << std::endl;
-            // camera.RegisterKeyboardInput(window);
-            // camera.RegisterKeyboardInput(window, deltaTime);
+
             camera.RegisterKeyboardInput(window, lastFpsInt);
             camera.RegisterMouseInput(window);
             test.ChunkManagerLoop();
@@ -183,8 +174,6 @@ int main(void) {
 				camera.SetSpeedFps(1);
 			if ((glfwGetKey(window, GLFW_KEY_DOWN ) == GLFW_PRESS))
 				camera.SetSpeedFps(-1);
-			// if ((glfwGetKey(window, GLFW_KEY_C ) == GLFW_PRESS))
-			// 	test.deleteCube(camera);
 
 			if ((glfwGetKey(window, GLFW_KEY_G ) == GLFW_PRESS) && fps == 0)
 				gravity = std::abs(gravity - 1);

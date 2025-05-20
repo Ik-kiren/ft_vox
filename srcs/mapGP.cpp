@@ -31,15 +31,11 @@ mapGP::mapGP(int size, int sizeBiome) {
 }
 
 mapGP::~mapGP() {
-	int cpt = 0;
 	for (int i = 0; i < this->_tab.size(); i++) {
 		for (int j = 0; j < this->_tab[i].size(); j++) {
-			if (this->_tab[i][j].bio->getCave())
-				cpt++;
 			delete this->_tab[i][j].bio;
 		}
 	}
-	std::cout << cpt << '\n';
 	delete this->_myBiome;
 }
 

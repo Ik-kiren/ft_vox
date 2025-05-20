@@ -58,7 +58,7 @@ void main() {
     vec3 newVertex = vec3(posX, posY, posZ);
     gl_Position = projection * view * model * vec4((newVertex + offset), 1.0);
     vertexPos = newVertex.xyz;
-    fragpos = vec3(model * vec4(newVertex, 1.0));
+    fragpos = vec3(model * vec4(newVertex + offset, 1.0));
     normal = mat3(transpose(inverse(model))) * facesNormal[face];
     textureCoords = vec2(TextX, TextY);
     color = colorVertex;

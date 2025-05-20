@@ -62,7 +62,6 @@ void	Camera::SetSpeedFps(float speed) {
 }
 
 void	Camera::setYfromPlayer(Player &player) {
-	// this->position = Vector3(this->position.x, player.getPos().y + 3, this->position.z);
 	this->position = Vector3(player._pos.x, player._pos.y + 3, player._pos.z);
 }
 
