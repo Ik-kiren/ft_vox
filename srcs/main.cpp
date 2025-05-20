@@ -33,7 +33,7 @@ GLFWwindow *InitGLFW() {
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     GLFWwindow *window;
-    window = glfwCreateWindow(1920, 1200, "window", NULL, NULL);
+    window = glfwCreateWindow(1920, 1200, "window", glfwGetPrimaryMonitor(), NULL);
     if (!window) {
         std::cerr << "failed to create window" << std::endl;
         glfwTerminate();
@@ -51,7 +51,6 @@ GLFWwindow *InitGLFW() {
 
     glEnable(GL_DEPTH_TEST);
     //glEnable(GL_CULL_FACE);
-    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     glfwSwapInterval(1);
 
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED); 
