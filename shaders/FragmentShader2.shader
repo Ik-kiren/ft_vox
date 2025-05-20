@@ -26,7 +26,7 @@ uniform vec3 lightPos;
 
 void main()
 {
-	vec3 lightColor = vec3(1.0, 1.0, 1.0);
+	vec3 lightColor = vec3(0.7, 0.7, 0.7);
 	vec3 currentLightPos = vec3(600 * cos(timeValue) + lightPos.x, 600 * sin(timeValue) + lightPos.y, lightPos.z);
 	vec3 lightDir = normalize(currentLightPos - fragpos);
 

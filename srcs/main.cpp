@@ -68,7 +68,7 @@ void GetTimer(double &lastTime, double &deltaTime) {
 int main(void) {
     srand(time(NULL));
 
-	seed = 255;
+	seed = std::rand();
     Renderer renderer;
 
 	struct timeval tp0;
@@ -80,7 +80,7 @@ int main(void) {
 	gettimeofday(&tp1, NULL);
 	std::cout << tp1.tv_sec - tp0.tv_sec << " sec " << tp1.tv_usec - tp0.tv_usec << " ms\n";
 
-	Player	player(-8000, 128, 0);
+	Player	player(0, 128, 0);
 
     ChunkManager test(&renderer, &tab, &player);
 	test.Init();

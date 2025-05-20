@@ -31,7 +31,7 @@ ChunkManager::ChunkManager(Renderer *renderer, mapGP *tab, Player *player): rend
 		for (int j = this->minPos.z ; j <= this->maxPos.z; j++) {
 			tab->chunkToRet(i + player->getChunkPos().x, j + player->getChunkPos().z, this->_chunk);
 			if (i == 0 && j == 0)
-				player->setChunk(this->_chunk);
+				player->setYfromChunk(this->_chunk);
             if (i == this->maxPos.x || j == this->maxPos.z || i == this->minPos.x || j == this->minPos.z)
                 this->AddTrailChunk(i + player->getChunkPos().x, j + player->getChunkPos().z);
             else
