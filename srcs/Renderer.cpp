@@ -197,7 +197,7 @@ void Renderer::Render(std::vector<Chunk *> &chunks) {
     shader->setMatrix4("projection", camera->GetProjectionMat());
     shader->setVector3("cameraPos", camera->GetPosition());
     shader->setVector3("lightPos", camera->GetPosition());
-    shader->setFloat("timeValue", std::fmod(glfwGetTime() / 10, 2 * M_PI));
+    shader->setFloat("timeValue", std::fmod(glfwGetTime(), 2 * M_PI));
     shader->setBool("activeTexture", true);
     shader->setFloat("timerTextureTransition", 1.0f);
 

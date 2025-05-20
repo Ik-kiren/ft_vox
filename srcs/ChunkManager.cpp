@@ -29,13 +29,13 @@ ChunkManager::ChunkManager(Renderer *renderer, mapGP *tab, Player *player): rend
 
  	for (int i = this->minPos.x; i <= this->maxPos.x; i++) {
 		for (int j = this->minPos.z ; j <= this->maxPos.z; j++) {
-			tab->chunkToRet(i + player->getPos().x / 16, j + player->getPos().z / 16, this->_chunk);
+			tab->chunkToRet(i + player->getChunkPos().x, j + player->getChunkPos().z, this->_chunk);
 			if (i == 0 && j == 0)
 				player->setChunk(this->_chunk);
             if (i == this->maxPos.x || j == this->maxPos.z || i == this->minPos.x || j == this->minPos.z)
-                this->AddTrailChunk(i + player->getPos().x / 16, j + player->getPos().z / 16);
+                this->AddTrailChunk(i + player->getChunkPos().x, j + player->getChunkPos().z);
             else
-			    this->loadNewChunk(i + player->getPos().x / 16, j + player->getPos().z / 16);
+			    this->loadNewChunk(i + player->getChunkPos().x, j + player->getChunkPos().z);
 		}
 	}
 }
@@ -252,7 +252,9 @@ Vector3 ChunkManager::GetMaxChunkPos() {
     if (camera != NULL) {
         tmp = camera->GetPosition();
     } else {
-        tmp = player->getPos();
+        tmp = player->getChunkPos();
+        tmp = tmp + ((maxPos - minPos) / 2);
+        return tmp;
     }
     if (tmp.x < 0)
         tmp.x -= 16;
@@ -267,7 +269,9 @@ Vector3 ChunkManager::GetMinChunkPos() {
     if (camera != NULL) {
         tmp = camera->GetPosition();
     } else {
-        tmp = player->getPos();
+        tmp = player->getChunkPos();
+        tmp = tmp - ((maxPos - minPos) / 2);
+        return tmp;
     }
     if (tmp.x < 0)
         tmp.x -= 16;

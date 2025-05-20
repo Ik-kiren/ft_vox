@@ -94,7 +94,7 @@ int main(void) {
 
     //Mesh cubeMesh = Mesh("./objects/DirtCube.obj");  
 
-    Camera camera = Camera(Vector3(player.getPos().x + 0.5, player.getPos().y, player.getPos().z + 0.5), Vector3(0, 1, 0));
+    Camera camera = Camera(player.getGlobalPos(), Vector3(0, 1, 0));
     test.SetCamera(&camera);
 
     //Object cubeObj = Object(cubeShader, &cubeMesh, Vector4(1, 1, 1, 1));
@@ -177,7 +177,7 @@ int main(void) {
 
 			if ((glfwGetKey(window, GLFW_KEY_F ) == GLFW_PRESS)) {
 				std::cout << cameraCx << " " << cameraCz << " " << camera.GetPosition().x << " " << camera.GetPosition().z << " " << camera.GetPosition().y << '\n';
-				std::cout << player.getPos().x << " " << player.getPos().z << '\n';
+				std::cout << player.getChunkPos().x << " " << player.getChunkPos().z << '\n';
 			}
 			if ((glfwGetKey(window, GLFW_KEY_UP ) == GLFW_PRESS))
 				camera.SetSpeedFps(1);

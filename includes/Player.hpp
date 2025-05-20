@@ -6,15 +6,16 @@
 
 class Player {
 	private:
-		Vector3	_pos;
 		unsigned char	****_ch;
 		int		_timeFall;
 	public:
+		Vector3	_pos;
 		Player();
 		Player(float x, float y, float z);
 		~Player();
 
-		Vector3	getPos();
+		Vector3	getGlobalPos();
+		Vector3 getChunkPos();
 		void 	setPos(Vector3 const &vec);
 		void	setChunk(unsigned char ****ch);
 		void	setYfromChunk(unsigned char ****ch);
