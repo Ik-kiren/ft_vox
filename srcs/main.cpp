@@ -69,6 +69,7 @@ int main(void) {
     srand(time(NULL));
 
 	seed = std::rand();
+	std::cout << "seed: " << seed << '\n';
     Renderer renderer;
 
 	struct timeval tp0;
