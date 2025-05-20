@@ -121,13 +121,20 @@ int main(void) {
 	float	speed = 0;
 	std::string	lastSpeed;
 	int		gravity = 0;
+    bool polyMode = false;
 
     while ((glfwGetKey(window, GLFW_KEY_ESCAPE ) != GLFW_PRESS &&
         glfwWindowShouldClose(window) == 0)) {
             glClearColor(0.0f, 0.45f, 0.3f, 0.0f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            if (glfwGetKey(window, GLFW_KEY_R ) == GLFW_PRESS) {
-                glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+            if (glfwGetKey(window, GLFW_KEY_R ) == GLFW_PRESS && fpsTimer == 0) {
+                if (!polyMode) {
+                    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+                    polyMode = true;
+                } else {
+                    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+                    polyMode = false;
+                }
             }
             glfwGetCursorPos(window, &xpos, &ypos);
             ypos = abs(ypos - windowHeigth);
