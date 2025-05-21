@@ -194,4 +194,78 @@
       <Filter>Resource Files</Filter>
     </ResourceCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="glew32.dll" />
+    <None Include="freetype.dll" />
+    <None Include="shaders\fontFS.shader" />
+    <None Include="shaders\fontVS.shader" />
+    <None Include="shaders\FragmentShader2.frag" />
+    <None Include="shaders\lightFS.shader" />
+    <None Include="shaders\lightVS.shader" />
+    <None Include="shaders\SkyBoxFragment.shader" />
+    <None Include="shaders\SkyBoxVertex.shader" />
+    <None Include="shaders\VertexShader.shader" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="textures\SkyBox\SkyBoxBackwardFace.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="textures\SkyBox\SkyBoxDownFace.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="textures\SkyBox\SkyBoxForwardFace.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="textures\SkyBox\SkyBoxLeftFace.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="textures\SkyBox\SkyBoxRightFace.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="textures\SkyBox\SkyBoxUpFace.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="textures\awesomeface.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="textures\dirt.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="textures\grass_carried.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="textures\gravel.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="textures\ice.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="textures\lapis.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="textures\OldGrass.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="textures\red_sand.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="textures\sand.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="textures\snow.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="textures\stone.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="textures\water.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="textures\water-placeholder.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="Antonio-VariableFont_wght.ttf" />
+  </ItemGroup>
 </Project>
