@@ -25,13 +25,14 @@ ChunkManager::ChunkManager(Renderer *renderer, mapGP *tab, Player *player): rend
 		}
 	}
 
-    
 
  	for (int i = this->minPos.x; i <= this->maxPos.x; i++) {
 		for (int j = this->minPos.z ; j <= this->maxPos.z; j++) {
 			tab->chunkToRet(i + player->getChunkPos().x, j + player->getChunkPos().z, this->_chunk);
-			if (i == 0 && j == 0)
+			if (i == 0 && j == 0) {
+				player->setChunk(this->_chunk);
 				player->setYfromChunk(this->_chunk);
+			}
             if (i == this->maxPos.x || j == this->maxPos.z || i == this->minPos.x || j == this->minPos.z)
                 this->AddTrailChunk(i + player->getChunkPos().x, j + player->getChunkPos().z);
             else
@@ -39,6 +40,7 @@ ChunkManager::ChunkManager(Renderer *renderer, mapGP *tab, Player *player): rend
 		}
 	}
 }
+
 
 ChunkManager::~ChunkManager() {
     for (std::vector<Chunk *>::iterator it = loadList.begin(); it != loadList.end();) {
@@ -73,7 +75,6 @@ void ChunkManager::Init() {
     }
 }
 
-
 void ChunkManager::LoadChunk() {
     int tmp = 0;
     if (this->newChunksAdded) {
@@ -92,7 +93,7 @@ void ChunkManager::LoadChunk() {
             setupList.insert({(*it)->GetNormalizedPos(), (*it)});
             it = loadList.erase(it);
 			tmp++;
-			if (tmp == 8)
+			if (tmp == 16)
 				break;
         } else {
             it++;

@@ -61,7 +61,7 @@ void main()
 		tmpTexture = texture(oldGrassTexture, textureCoords);
 	} else if (textureIndice == 9) {
 		tmpTexture = texture(waterTexture, textureCoords);
-		tmpTexture.w = 0.5;
+		tmpTexture.w = 0.8;
 	}
 	fragText = tmpTexture * vec4(result, 1);
 }

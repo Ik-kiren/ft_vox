@@ -68,7 +68,8 @@ void GetTimer(double &lastTime, double &deltaTime) {
 int main(void) {
     srand(time(NULL));
 
-	seed = std::rand();
+	// seed = std::rand();
+	seed = 2039412743;
 	std::cout << "seed: " << seed << '\n';
     Renderer renderer;
 

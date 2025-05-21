@@ -14,8 +14,8 @@ Camera::Camera(Vector3 cameraPos, Vector3 up) : position(cameraPos), worldUp(up)
     setCameraVectors();
     lastPosX = cameraPos.x;
     lastPosY = cameraPos.y;
-    CreateFrustum((1920.0f / 1200.0f), 80.0f, 0.1f, 160.0f);
-    projectionMat = Perspective(80.0f, (1920.0f / 1200.0f), 0.1f, 160.0f);
+    CreateFrustum((1920.0f / 1200.0f), 80.0f, 0.1f, 288.0f);
+    projectionMat = Perspective(80.0f, (1920.0f / 1200.0f), 0.1f, 288.0f);
 }
 
 Camera::~Camera() {}
