@@ -132,7 +132,7 @@
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>.\libraries\freetype-2.7\release dll\win64;.\libraries\glfw-3.4.bin.WIN64\lib-vc2022;.\libraries\glew-2.1.0\lib\Release\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>.\libraries\freetype-2.7\release dll\win64;.\libraries\glfw-3.4.bin.WIN64\lib-vc2022;.\libraries\glew-2.1.0\glew_lib\lib\glew_x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>opengl32.lib;glew32.lib;glfw3.lib;freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
