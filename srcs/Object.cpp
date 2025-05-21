@@ -1,6 +1,7 @@
 #include <cmath>
 #include <vector>
 #include <iostream>
+#include <numbers>
 #include "../includes/Object.hpp"
 #include "../includes/Scop.hpp"
 
@@ -380,11 +381,11 @@ void        Object::translate(Vector3 vec) {
 }
 
 void        Object::rotate(Vector3 vec) {
-    this->model = Rotate(this->model, M_PI / 512, vec);
+    this->model = Rotate(this->model, std::numbers::pi / 512, vec);
 }
 
 void        Object::rotate(Vector3 vec, float speed) {
-    this->model = Rotate(this->model, M_PI / speed * 2, vec);
+    this->model = Rotate(this->model, std::numbers::pi / speed * 2, vec);
 }
 
 void        Object::scale(float scale) {

@@ -2,7 +2,6 @@
 # define utils_H
 
 # include <iostream>
-# include <bits/stdc++.h>
 
 extern int seed;
 

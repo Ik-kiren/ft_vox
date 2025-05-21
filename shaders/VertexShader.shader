@@ -37,7 +37,7 @@ out vec3 normal;
 out vec3 fragpos;
 out vec2 textureCoords;
 out vec3 color;
-out float textureIndice;
+out flat int textureIndice;
 
 uniform vec3 offset;
 

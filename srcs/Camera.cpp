@@ -2,6 +2,7 @@
 #include "../includes/Scop.hpp"
 #include "../includes/BSphere.hpp"
 #include "../includes/ScopMaths.hpp"
+#include <numbers>
 
 Camera::Camera() {}
 
@@ -14,8 +15,8 @@ Camera::Camera(Vector3 cameraPos, Vector3 up) : position(cameraPos), worldUp(up)
     setCameraVectors();
     lastPosX = cameraPos.x;
     lastPosY = cameraPos.y;
-    CreateFrustum((1920.0f / 1200.0f), 80.0f, 0.1f, 160.0f);
-    projectionMat = Perspective(80.0f, (1920.0f / 1200.0f), 0.1f, 160.0f);
+    CreateFrustum((1920.0f / 1200.0f), 80.0f, 0.1f, 380.0f);
+    projectionMat = Perspective(80.0f, (1920.0f / 1200.0f), 0.1f, 380.0f);
 }
 
 Camera::~Camera() {}
@@ -70,7 +71,7 @@ void Camera::CreateFrustum(float aspect, float fovY, float zNear, float zFar) {
     this->fovY = fovY;
     this->zNear = zNear;
     this->zFar = zFar;
-    const float DEG2RAD = M_PI / 180;
+    const float DEG2RAD = std::numbers::pi / 180;
     const float halfVSide = zFar * tanf(fovY * DEG2RAD * 0.5f);
     const float halfHSide = halfVSide * aspect;
     Vector3 frontMultFar = this->GetFront() * zFar;
@@ -84,7 +85,7 @@ void Camera::CreateFrustum(float aspect, float fovY, float zNear, float zFar) {
 }
 
 void Camera::UpdateFrustum() {
-    const float DEG2RAD = M_PI / 180;
+    const float DEG2RAD = std::numbers::pi / 180;
     const float halfVSide = zFar * tanf(fovY * DEG2RAD * 0.5f);
     const float halfHSide = halfVSide * aspect;
     Vector3 frontMultFar = this->GetFront() * zFar;
@@ -128,9 +129,9 @@ void Camera::RegisterMouseInput(GLFWwindow *window) {
         pitch = -89.0f;
     
     Vector3 tmpFront = Vector3();
-    tmpFront.x = cos(yaw * (M_PI / 180)) * cos(pitch * (M_PI / 180));
-    tmpFront.y = sin(pitch * (M_PI / 180));
-    tmpFront.z = sin(yaw * (M_PI / 180)) * cos(pitch * (M_PI / 180));
+    tmpFront.x = cos(yaw * (std::numbers::pi / 180)) * cos(pitch * (std::numbers::pi / 180));
+    tmpFront.y = sin(pitch * (std::numbers::pi / 180));
+    tmpFront.z = sin(yaw * (std::numbers::pi / 180)) * cos(pitch * (std::numbers::pi / 180));
 
     front = normalized(tmpFront);
     right = normalized(cross(front, worldUp));
@@ -194,9 +195,9 @@ void Camera::RegisterKeyboardInput(GLFWwindow *window, int fps) {
 
 void Camera::setCameraVectors() {
     Vector3 tmpFront = Vector3();
-    tmpFront.x = cos(yaw * (M_PI / 180) * cos(pitch * (M_PI / 180)));
-    tmpFront.y = sin(pitch * (M_PI / 180));
-    tmpFront.z = sin(yaw * (M_PI / 180) * cos(pitch * (M_PI / 180)));
+    tmpFront.x = cos(yaw * (std::numbers::pi / 180) * cos(pitch * (std::numbers::pi / 180)));
+    tmpFront.y = sin(pitch * (std::numbers::pi / 180));
+    tmpFront.z = sin(yaw * (std::numbers::pi / 180) * cos(pitch * (std::numbers::pi / 180)));
     front = normalized(tmpFront);
 
     right = normalized(cross(front, worldUp));

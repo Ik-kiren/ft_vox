@@ -9,8 +9,7 @@
 #include "../includes/Renderer.hpp"
 #include "../includes/mapGP.hpp"
 #include <chrono>
-
-#include <sys/time.h>
+#include <ctime>
 
 int seed = 0;
 
@@ -51,7 +50,7 @@ GLFWwindow *InitGLFW() {
 
     glEnable(GL_DEPTH_TEST);
     //glEnable(GL_CULL_FACE);
-    glfwSwapInterval(1);
+    glfwSwapInterval(2);
 
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED); 
     return window;
@@ -71,14 +70,7 @@ int main(void) {
 	std::cout << "seed: " << seed << '\n';
     Renderer renderer;
 
-	struct timeval tp0;
-	gettimeofday(&tp0, NULL);
-
     mapGP tab(32, 32);
-    
-	struct timeval tp1;
-	gettimeofday(&tp1, NULL);
-	std::cout << tp1.tv_sec - tp0.tv_sec << " sec " << tp1.tv_usec - tp0.tv_usec << " ms\n";
 
 	Player	player(0, 128, 0);
 
@@ -90,7 +82,7 @@ int main(void) {
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    Shader cubeShader = Shader("./shaders/VertexShader.shader", "./shaders/FragmentShader2.shader");
+    Shader cubeShader = Shader("./shaders/VertexShader.shader", "./shaders/FragmentShader2.frag");
     Shader fontShader = Shader("./shaders/fontVS.shader", "./shaders/fontFS.shader"); 
 
     Camera camera = Camera(player.getGlobalPos(), Vector3(0, 1, 0));

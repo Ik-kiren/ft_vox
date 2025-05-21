@@ -1,4 +1,5 @@
 #include <cmath>
+#include <numbers>
 #include "../includes/MatrixStack.hpp"
 #include "../includes/Scop.hpp"
 
@@ -29,17 +30,17 @@ void MatrixStack::translate(Vector3 vec, bool local) {
 
 void MatrixStack::rotate(Vector3 axis) {
     Matrix4 &last = matrixStack.back();
-    last = Rotate(last, 5 * M_PI / 4, axis);
+    last = Rotate(last, 5 * std::numbers::pi / 4, axis);
 }
 
 void MatrixStack::rotate(float radians, Vector3 axis) {
     Matrix4 &last = matrixStack.back();
-    last = Rotate(last, radians * M_PI, axis);
+    last = Rotate(last, radians * std::numbers::pi, axis);
 }
 
 void MatrixStack::rotate(float radians, Vector3 axis, bool local) {
     Matrix4 &last = matrixStack.back();
-    last = Rotate(last, radians * M_PI, axis, local);
+    last = Rotate(last, radians * std::numbers::pi, axis, local);
 }
 
 void MatrixStack::scale(float scale) {

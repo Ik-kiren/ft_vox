@@ -3,7 +3,7 @@
 #include "../includes/Vector3.hpp"
 #include "../includes/Renderer.hpp"
 #include "../includes/ChunkManager.hpp"
-#include <sys/time.h>
+#include <ctime>
 
 Chunk::Chunk(Renderer *renderer, ChunkManager *chunkManager, unsigned char ***test) : renderer(renderer), chunkManager(chunkManager) {
     this->loaded = false;

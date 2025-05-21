@@ -3,7 +3,7 @@
 #include "../includes/Renderer.hpp"
 #include <chrono>
 #include <array>
-#include <sys/time.h>
+#include <ctime>
 
 ChunkManager::ChunkManager(Renderer *renderer, mapGP *tab, Player *player): renderer(renderer) {
     camera = NULL;
@@ -92,7 +92,7 @@ void ChunkManager::LoadChunk() {
             setupList.insert({(*it)->GetNormalizedPos(), (*it)});
             it = loadList.erase(it);
 			tmp++;
-			if (tmp == 8)
+			if (tmp == 16)
 				break;
         } else {
             it++;

@@ -6,8 +6,8 @@
 #include "../includes/Vector2.hpp"
 #include "../includes/Shader.hpp"
 #include "../includes/Vector3.hpp"
-#include <freetype2/freetype/freetype.h>
-#include <freetype2/ft2build.h>
+#include <freetype/freetype.h>
+#include <ft2build.h>
 #include FT_FREETYPE_H
 
 struct Character;

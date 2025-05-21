@@ -6,7 +6,7 @@ in vec3 normal;
 in vec3 fragpos;
 in vec2 textureCoords;
 in vec3 color;
-in float textureIndice;
+in flat int textureIndice;
 
 uniform vec3 cameraPos;
 
@@ -43,8 +43,10 @@ void main()
 	vec3 specular = specularStrength * spec * lightColor;
 
 	vec3 result = ambient + diffuse + specular;
-	vec4 tmpTexture = texture(dirtTexture, textureCoords);
-	if (textureIndice == 2) {
+	vec4 tmpTexture = vec4(1.0, 0.5, 0.2, 1.0);
+	if (textureIndice == 1) {
+		tmpTexture = texture(dirtTexture, textureCoords);
+	} else if (textureIndice == 2) {
 		tmpTexture = texture(stoneTexture, textureCoords);
 	} else if (textureIndice == 3) {
 		tmpTexture = texture(sandTexture, textureCoords);

@@ -2,6 +2,8 @@
 # define biome_H
  
 # include <iostream>
+# include <vector>
+# include <array>
 # include "utils.hpp"
 # include "cave.hpp"
 

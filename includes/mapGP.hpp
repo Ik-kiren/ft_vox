@@ -3,7 +3,6 @@
  
 # include <iostream>
 # include <limits> 
-# include <bits/stdc++.h>
 # include "biome.hpp"
 # include "utils.hpp"
 

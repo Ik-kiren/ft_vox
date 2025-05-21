@@ -2,6 +2,7 @@
 # define cave_H
 
 # include <iostream>
+# include <vector>
 # include "utils.hpp"
 
 struct caveGP {
