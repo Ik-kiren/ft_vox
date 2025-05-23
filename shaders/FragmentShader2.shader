@@ -1,7 +1,6 @@
 #version 420 core
 
 out vec4 fragText;
-in vec3 vertexPos;
 in vec3 normal;
 in vec3 fragpos;
 in vec2 textureCoords;
@@ -10,7 +9,6 @@ in float textureIndice;
 
 uniform vec3 cameraPos;
 
-uniform float timeValue;
 uniform sampler2D dirtTexture;
 uniform sampler2D stoneTexture;
 uniform sampler2D sandTexture;
@@ -21,13 +19,17 @@ uniform sampler2D gravelTexture;
 uniform sampler2D waterTexture;
 uniform sampler2D oldGrassTexture;
 uniform bool activeTexture;
-uniform float timerTextureTransition;
 uniform vec3 lightPos;
 
 void main()
 {
 	vec3 lightColor = vec3(0.7, 0.7, 0.7);
-	vec3 currentLightPos = vec3(600 * cos(timeValue) + lightPos.x, 600 * sin(timeValue) + lightPos.y, lightPos.z);
+	lightColor.z = mix(0.7, 0.4, abs(lightPos.x) / 10);
+	lightColor.y = mix(0.7, 0.6,  abs(lightPos.x) / 10);
+	lightColor.x = mix(0.7, 0.8,  abs(lightPos.x) / 10);
+	/*if (abs(lightPos.x) < 10 && abs(lightPos.x) > 9)
+		lightColor = vec3(0.7, 0.7, 0.6);*/
+	vec3 currentLightPos = lightPos;
 	vec3 lightDir = normalize(currentLightPos - fragpos);
 
 	float ambientStrength = 0.6;

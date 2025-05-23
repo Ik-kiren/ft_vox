@@ -33,7 +33,7 @@ GLFWwindow *InitGLFW() {
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     GLFWwindow *window;
-    window = glfwCreateWindow(1920, 1200, "window", glfwGetPrimaryMonitor(), NULL);
+    window = glfwCreateWindow(1920, 1200, "window", NULL, NULL);
     if (!window) {
         std::cerr << "failed to create window" << std::endl;
         glfwTerminate();
@@ -122,6 +122,7 @@ int main(void) {
 	std::string	lastSpeed;
 	int		gravity = 0;
     bool polyMode = false;
+    renderer.InitSun(&player);
 
     while ((glfwGetKey(window, GLFW_KEY_ESCAPE ) != GLFW_PRESS &&
         glfwWindowShouldClose(window) == 0)) {

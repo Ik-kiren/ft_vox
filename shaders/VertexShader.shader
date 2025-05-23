@@ -45,7 +45,7 @@ uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
 
-vec3 facesNormal[6] = vec3[6](vec3(1, 0, 0), vec3(0, 1, 0), vec3(0, 0, 1), vec3(-1, 0, 0), vec3(0, -1, 0), vec3(0, 0, -1));
+vec3 facesNormal[6] = vec3[6](vec3(0, 1, 0), vec3(0, -1, 0), vec3(1, 0, 0), vec3(-1, 0, 0), vec3(0, 0, 1), vec3(0, 0, -1));
 
 void main() {
     int posX = ((vertexData >> 24) & 31);

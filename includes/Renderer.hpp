@@ -6,6 +6,7 @@
 #include "./Camera.hpp"
 #include "./Chunk.hpp"
 #include "./SkyBox.hpp"
+#include "./Sun.hpp"
 #include <string>
 #include <unordered_map>
 
@@ -23,6 +24,7 @@ private:
 		"snowTexture", "iceTexture", "gravelTexture", "oldGrassTexture", "waterTexture"};
 public:
     SkyBox *skyBox;
+    Sun     *sun;
     const std::string textureArray[TEXTURE_COUNT] = {"./textures/dirt.png", "./textures/stone.png", "./textures/sand.png", "./textures/red_sand.png", "./textures/snow.png",
         "./textures/ice.png", "./textures/gravel.png", "./textures/grass_carried.png", "./textures/water.png"};
     
@@ -46,7 +48,7 @@ public:
     void Render(unsigned int &meshID);
     void Render(std::vector<Chunk *> &chunks);
     void InitTexture();
-    void InitSkyBox();
+    void InitSun(Player *player);
 
     Renderer &operator=(const Renderer &rhs);
 };

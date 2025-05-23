@@ -11,6 +11,7 @@ Renderer::~Renderer() {
         delete meshes[i];
     }
     delete skyBox;
+    delete sun;
 }
 
 void Renderer::InitRenderer(Shader *shader, Camera *camera) {
@@ -19,6 +20,10 @@ void Renderer::InitRenderer(Shader *shader, Camera *camera) {
     model = Matrix4(1);
     this->InitTexture();
     this->skyBox = new SkyBox();
+}
+
+void Renderer::InitSun(Player *player) {
+    this->sun = new Sun(player);
 }
 
 void Renderer::CreateMesh(unsigned int &meshID) {
@@ -188,6 +193,8 @@ void Renderer::Render(std::vector<Chunk *> &chunks) {
     glBindVertexArray(skyBox->skyBoxMeshVAO);
     glBindTexture(GL_TEXTURE_CUBE_MAP, skyBox->skyBoxID);
     glDrawArrays(GL_TRIANGLES, 0, 36);
+
+    sun->UpdateRender(camera);
     glDepthMask(GL_TRUE);
 
     shader->use();
@@ -196,10 +203,8 @@ void Renderer::Render(std::vector<Chunk *> &chunks) {
     shader->setMatrix4("view", camera->GetViewMatrix());
     shader->setMatrix4("projection", camera->GetProjectionMat());
     shader->setVector3("cameraPos", camera->GetPosition());
-    shader->setVector3("lightPos", camera->GetPosition());
-    shader->setFloat("timeValue", std::fmod(glfwGetTime() / 10, 2 * M_PI));
+    shader->setVector3("lightPos", sun->position);
     shader->setBool("activeTexture", true);
-    shader->setFloat("timerTextureTransition", 1.0f);
 
 
     for (int i = 0; i < TEXTURE_COUNT; i++) {
@@ -227,6 +232,7 @@ void Renderer::Render(std::vector<Chunk *> &chunks) {
         glDrawElements(GL_TRIANGLES, meshes[chunks[i]->meshID]->GetIndicesArray2().size(), GL_UNSIGNED_INT, 0);
     }
     glDepthMask(GL_TRUE);
+
 }
 
 void Renderer::InitTexture() {

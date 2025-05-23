@@ -1,16 +1,12 @@
-#version 330 core
+#version 420 core
 
-out vec3 vertexColor;
+out vec4 vertexColor;
 in vec3 vertexPos;
 
-uniform vec3 cameraPos;
-
-uniform float timeValue;
-uniform sampler2D ourTexture;
-uniform bool activeTexture;
-uniform float timerTextureTransition;
+uniform sampler2D sun;
 
 void main()
 {
-	vertexColor = vec3(1, 1, 1);
+	vec2 newVertex = vec2(vertexPos.y / 5, vertexPos.z / 5);
+	vertexColor = texture(sun, newVertex);
 }
