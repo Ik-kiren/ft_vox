@@ -132,7 +132,6 @@ void ChunkManager::ChunkUnload() {
 }
 
 void ChunkManager::ChunkVisibility() {
-    if (lastCamPos != camera->GetPosition() || lastCamDirection != camera->GetFront()) {
         renderList.clear();
 
         for (std::unordered_map<Vector3, Chunk *>::iterator it = visibilityList.begin(); it != visibilityList.end();) {
@@ -151,9 +150,8 @@ void ChunkManager::ChunkVisibility() {
             }
             it++;
         }
-    }
     if (renderList.size() > 0)
-        renderer->Render(renderList);
+        renderer->Render(renderList, visibilityList);
     lastCamPos = camera->GetPosition();
     lastCamDirection = camera->GetFront();
 }

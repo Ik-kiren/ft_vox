@@ -67,8 +67,8 @@ void GetTimer(double &lastTime, double &deltaTime) {
 int main(void) {
     srand(time(NULL));
 
-	// seed = std::rand();
-	seed = 2039412743;
+	seed = std::rand();
+	//seed = 2039412743;
 	std::cout << "seed: " << seed << '\n';
     Renderer renderer;
 
@@ -158,8 +158,8 @@ int main(void) {
                 fps = 0;
             }
             camera.UpdateFrustum();
-            font.RenderText(fontShader, lastFps, 0.5, 1100, 2, Vector3(1, 0.2, 0.2));
-			font.RenderText(fontShader, lastSpeed, 0.5, 1000, 2, Vector3(1, 0.2, 0.2));
+            //font.RenderText(fontShader, lastFps, 0.5, 1100, 2, Vector3(1, 0.2, 0.2));
+			//font.RenderText(fontShader, lastSpeed, 0.5, 1000, 2, Vector3(1, 0.2, 0.2));
 
             camera.RegisterKeyboardInput(window, lastFpsInt);
             camera.RegisterMouseInput(window);
