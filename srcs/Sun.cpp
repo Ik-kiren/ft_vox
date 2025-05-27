@@ -43,7 +43,7 @@ Sun::~Sun() {
 
 void Sun::UpdatePosition() {
     float revolutionTimer = std::fmod(glfwGetTime() / ROTATIONSPEED, 2 * M_PI);
-    position = Vector3(SUNDISTANCE * cos(revolutionTimer) + player->getGlobalPos().x, SUNDISTANCE * sin(revolutionTimer) + player->getGlobalPos().y, player->getGlobalPos().z);
+    position = Vector3(SUNDISTANCE * cos(revolutionTimer) + player->getGlobalPos().x, SUNDISTANCE * sin(revolutionTimer) + 110, player->getGlobalPos().z);
     model[3] = position;
     timer = glfwGetTime() - lastTimer;
     lastTimer = glfwGetTime();

@@ -245,23 +245,16 @@ void Renderer::Render(std::vector<Chunk *> &chunks, std::unordered_map<Vector3, 
     Matrix4 lightProjection, lightView;
         Matrix4 lightSpaceMatrix;
         float near_plane = 0.1f, far_plane = 1000.0f;
-        //lightProjection = Orthographique(-400, 400, -400, 400, 0.1, 700);
-        lightProjection = Perspective(120.0f, (SHADOW_WIDTH / SHADOW_HEIGHT), 0.1f, 600.0f);
-        std::cout << sun->position << std::endl;
-        lightView = lookAt(sun->position, camera->GetPosition(), normalized(cross(camera->GetPosition() - sun->position, Vector3(0, 0, -1))));
-        lightSpaceMatrix = lightProjection * lightView;
+        lightProjection = Orthographique(-200, 200, -200, 200, 0.1, 700);
+        //lightProjection = Perspective(120.0f, (SHADOW_WIDTH / SHADOW_HEIGHT), 0.1f, 600.0f);
+        Vector3 newCamPos = camera->GetPosition();
+        newCamPos.y = 130;
+        lightView = lookAt(sun->position, camera->GetPosition(), normalized(cross(newCamPos - sun->position, Vector3(0, 0, -1))));
         // render scene from light's point of view
         simpleDepthShader.use();
         simpleDepthShader.setMatrix4("model", model);
         simpleDepthShader.setMatrix4("view", lightView);
         simpleDepthShader.setMatrix4("projection", lightProjection);
-
-        for (int i = 0; i < TEXTURE_COUNT; i++) {
-            textureLocation[i] = simpleDepthShader.GetUniformLocation(textureName[i]);
-            glUniform1i(textureLocation[i], i);
-            glActiveTexture(GL_TEXTURE0 + i);
-            glBindTexture(GL_TEXTURE_2D, textureIDs[i]);
-        }
 
         glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
         glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
@@ -308,17 +301,19 @@ void Renderer::Render(std::vector<Chunk *> &chunks, std::unordered_map<Vector3, 
     shader->setMatrix4("projection", camera->GetProjectionMat());
     shader->setVector3("cameraPos", camera->GetPosition());
     shader->setVector3("lightPos", sun->position);
-    shader->setMatrix4("lightProjection", lightSpaceMatrix);
 
-    glUniform1i(shader->GetUniformLocation("shadowMap"), 0);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, depthMap);
+    shader->setMatrix4("lightView", lightView);
+    shader->setMatrix4("lightProjection", lightProjection);
+
     for (int i = 0; i < TEXTURE_COUNT; i++) {
         textureLocation[i] = shader->GetUniformLocation(textureName[i]);
-        glUniform1i(textureLocation[i], i + 1);
-        glActiveTexture(GL_TEXTURE0 + i + 1);
+        glUniform1i(textureLocation[i], i);
+        glActiveTexture(GL_TEXTURE0 + i);
         glBindTexture(GL_TEXTURE_2D, textureIDs[i]);
     }
+    glUniform1i(shader->GetUniformLocation("shadowMap"),9);
+    glActiveTexture(GL_TEXTURE0 + 9);
+    glBindTexture(GL_TEXTURE_2D, depthMap);
 
     for (size_t i = 0; i < chunks.size(); i++) {
         if (chunks[i]->unload || meshes[chunks[i]->meshID]->GetIndicesArray().size() == 0)

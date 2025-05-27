@@ -24,11 +24,16 @@ uniform sampler2D shadowMap;
 uniform vec3 lightPos;
 
 float ShadowCalculation(vec4 fragPosLight) {
+	if (lightPos.y <= 110)
+		return 1;
 	vec3 projCoords = fragPosLight.xyz / fragPosLight.w;
 	projCoords = projCoords* 0.5 + 0.5;
 	float closestDepth = texture(shadowMap, projCoords.xy).r;
 	float currentDepth = projCoords.z;
-	float shadow = currentDepth > closestDepth ? 1.0 : 0.0;
+	float shadow = currentDepth - 0.025 > closestDepth ? 1.0 : 0.0;
+
+	if(projCoords.z > 1.0)
+        shadow = 0.0;
 
 	return shadow;
 }

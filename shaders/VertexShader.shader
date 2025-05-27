@@ -18,6 +18,7 @@ uniform vec3 offset;
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
+uniform mat4 lightView;
 uniform mat4 lightProjection;
 
 vec3 facesNormal[6] = vec3[6](vec3(0, 1, 0), vec3(0, -1, 0), vec3(1, 0, 0), vec3(-1, 0, 0), vec3(0, 0, 1), vec3(0, 0, -1));
@@ -36,5 +37,5 @@ void main() {
     fragpos = vec3(model * vec4(newVertex + offset, 1.0));
     normal = mat3(transpose(inverse(model))) * facesNormal[face];
     textureCoords = vec2(TextX, TextY);
-    lightSpace = lightProjection * vec4(fragpos, 1.0);
+    lightSpace = lightProjection * lightView * vec4(fragpos, 1.0);
 }
