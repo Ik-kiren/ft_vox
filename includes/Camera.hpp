@@ -9,6 +9,10 @@
 
 class Camera {
  private:
+    float fov;
+    float nearPlane;
+    float farPlane;
+
     Vector3 position;
     Vector3 front;
     Vector3 up;

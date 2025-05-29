@@ -2,20 +2,24 @@
 #include "../includes/Scop.hpp"
 #include "../includes/BSphere.hpp"
 #include "../includes/ScopMaths.hpp"
+#include "../includes/Constants.hpp"
 
 Camera::Camera() {}
 
 Camera::Camera(Vector3 cameraPos, Vector3 up) : position(cameraPos), worldUp(up) {
-    yaw = -90.0f;
-    pitch = 0.0f;
-    speed = 0.3f;
-	speedFps = 6.0f;
-    sensitivity = 0.0001f;
-    setCameraVectors();
-    lastPosX = cameraPos.x;
-    lastPosY = cameraPos.y;
-    CreateFrustum((1920.0f / 1200.0f), 80.0f, 0.1f, 288.0f);
-    projectionMat = Perspective(80.0f, (1920.0f / 1200.0f), 0.1f, 288.0f);
+    this->yaw = -90.0f;
+    this->pitch = 0.0f;
+    this->speed = 0.3f;
+	this->speedFps = 6.0f;
+    this->sensitivity = 0.0001f;
+    this->setCameraVectors();
+    this->lastPosX = cameraPos.x;
+    this->lastPosY = cameraPos.y;
+    this->fov = 80.f;
+    this->nearPlane = 0.1f;
+    this->farPlane = 288.0f;
+    this->CreateFrustum((constants::WINDOW_WIDTH / constants::WINDOW_HEIGHT), this->fov, this->nearPlane, this->farPlane);
+    this->projectionMat = Perspective(this->fov, (constants::WINDOW_WIDTH / constants::WINDOW_HEIGHT), this->nearPlane, this->farPlane);
 }
 
 Camera::~Camera() {}

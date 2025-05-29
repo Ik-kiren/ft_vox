@@ -24,7 +24,7 @@ uniform sampler2D shadowMap;
 uniform vec3 lightPos;
 
 float ShadowCalculation(vec4 fragPosLight) {
-	if (lightPos.y <= 110)
+	if (lightPos.y <= 100)
 		return 1;
 	vec3 projCoords = fragPosLight.xyz / fragPosLight.w;
 	projCoords = projCoords* 0.5 + 0.5;

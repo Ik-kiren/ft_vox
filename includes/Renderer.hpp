@@ -15,7 +15,6 @@ class ShadowMap;
 class Renderer
 {
 private:
-    ShadowMap *shadowMap;
     Shader *shader;
     Matrix4 model;
 
@@ -25,6 +24,7 @@ private:
     std::string		textureName[TEXTURE_COUNT] = {"dirtTexture", "stoneTexture", "sandTexture", "redSandTexture",
 		"snowTexture", "iceTexture", "gravelTexture", "oldGrassTexture", "waterTexture"};
 public:
+    ShadowMap *shadowMap;
     SkyBox *skyBox;
     Sun     *sun;
     Camera *camera;
@@ -38,7 +38,7 @@ public:
     Renderer();
     ~Renderer();
 
-    void InitRenderer(Shader *shader, Camera *camera);
+    void InitRenderer(Camera *camera);
     void CreateMesh(unsigned int &meshID);
     unsigned int AddVertex(unsigned int &meshID, Vector3 &vecs, int type);
     unsigned int AddVertex(unsigned int &meshID, float x, float y, float z, int type, Vector2 size, int faceType);
@@ -49,7 +49,6 @@ public:
     void UpdateMesh(unsigned int &meshID);
     void EraseMesh(unsigned int &meshID);
     void CleanMesh(unsigned int &meshID);
-    void Render(unsigned int &meshID);
     void Render(std::vector<Chunk *> &chunks, std::unordered_map<Vector3, Chunk *> &visibility);
     void InitTexture();
     void InitSun(Player *player);

@@ -446,10 +446,6 @@ void Chunk::UpdateMesh() {
     CreateMesh();
 }
 
-void Chunk::Render() {
-    renderer->Render(meshID);
-}
-
 void Chunk::Translation(Vector3 vec) {
     this->position = vec;
 }

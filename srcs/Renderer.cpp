@@ -14,10 +14,11 @@ Renderer::~Renderer() {
     delete skyBox;
     delete sun;
     delete shadowMap;
+    delete shader;
 }
 
-void Renderer::InitRenderer(Shader *shader, Camera *camera) {
-    this->shader = shader;
+void Renderer::InitRenderer(Camera *camera) {
+    this->shader = new Shader("./shaders/VertexShader.shader", "./shaders/FragmentShader2.shader");
     this->camera = camera;
     model = Matrix4(1);
     this->InitTexture();
@@ -168,24 +169,6 @@ void Renderer::CleanMesh(unsigned int &meshID) {
         meshes[meshID]->CleanMeshData();
          meshes[meshID]->update = true;
     }
-}
-
-void Renderer::Render(unsigned int &meshID) {
-    shader->use();
-
-    shader->setVector4("newColor", Vector3(0.2, 0.5, 0.8));
-    shader->setMatrix4("model", model);
-    shader->setMatrix4("view", camera->GetViewMatrix());
-    shader->setMatrix4("projection", camera->GetProjectionMat());
-    shader->setVector3("cameraPos", camera->GetPosition());
-    shader->setFloat("timeValue", sin(glfwGetTime()) / 0.3f);
-    shader->setBool("activeTexture", true);
-    shader->setFloat("timerTextureTransition", 0.0f);
-    shader->setVector3("offset", meshes[meshID]->GetPosition());
-
-    glBindVertexArray(meshes[meshID]->VAO);
-    glDrawElements(GL_TRIANGLES, meshes[meshID]->GetIndicesArray().size(), GL_UNSIGNED_INT, 0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 void Renderer::Render(std::vector<Chunk *> &chunks, std::unordered_map<Vector3, Chunk *> &visibility) {
