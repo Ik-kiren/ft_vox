@@ -45,6 +45,7 @@ GLFWwindow *InitGLFW() {
 
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED); 
     glEnable(GL_BLEND);
+    glEnable(GL_FRAMEBUFFER_SRGB);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     return window;
 }

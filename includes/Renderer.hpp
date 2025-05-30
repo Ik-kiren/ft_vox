@@ -15,6 +15,7 @@ class ShadowMap;
 class Renderer
 {
 private:
+    bool celShading;
     Shader *shader;
     Matrix4 model;
 
@@ -23,6 +24,7 @@ private:
     GLint			textureLocation[TEXTURE_COUNT] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
     std::string		textureName[TEXTURE_COUNT] = {"dirtTexture", "stoneTexture", "sandTexture", "redSandTexture",
 		"snowTexture", "iceTexture", "gravelTexture", "oldGrassTexture", "waterTexture"};
+    double celShadingCooldown;
 public:
     ShadowMap *shadowMap;
     SkyBox *skyBox;
@@ -52,6 +54,7 @@ public:
     void Render(std::vector<Chunk *> &chunks, std::unordered_map<Vector3, Chunk *> &visibility);
     void InitTexture();
     void InitSun(Player *player);
+    void SetCelShading();
 
     Renderer &operator=(const Renderer &rhs);
 };

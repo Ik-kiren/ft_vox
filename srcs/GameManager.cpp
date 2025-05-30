@@ -52,6 +52,9 @@ void GameManager::Update() {
         bool debug = renderer->shadowMap->debug ? false : true;
         renderer->shadowMap->SetDebug(debug);
     }
+    if (glfwGetKey(window, GLFW_KEY_T ) == GLFW_PRESS) {
+        renderer->SetCelShading();
+    }
     GetTimer(lastTime, deltaTime);
     fpsTimer += deltaTime;
     fps++;

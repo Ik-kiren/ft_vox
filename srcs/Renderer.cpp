@@ -4,6 +4,7 @@
 #include <ctime>
 
 Renderer::Renderer() {
+    celShading = false;
 }
 
 Renderer::~Renderer() {
@@ -191,6 +192,7 @@ void Renderer::Render(std::vector<Chunk *> &chunks, std::unordered_map<Vector3, 
     shader->setVector3("cameraPos", camera->GetPosition());
     shader->setVector3("lightPos", sun->position);
     shader->setMatrix4("lightSpaceMatrix", shadowMap->lightSpaceMatrix);
+    shader->setBool("celShading", this->celShading);
 
     for (int i = 0; i < TEXTURE_COUNT; i++) {
         textureLocation[i] = shader->GetUniformLocation(textureName[i]);
@@ -241,6 +243,13 @@ void Renderer::InitTexture() {
             std::cout << "Failed to load texture" << std::endl;
         }
         stbi_image_free(data);
+    }
+}
+
+void Renderer::SetCelShading() {
+    if (celShadingCooldown + 1 < glfwGetTime()) {
+        this->celShading = this->celShading ? false : true;
+        celShadingCooldown = glfwGetTime();
     }
 }
 

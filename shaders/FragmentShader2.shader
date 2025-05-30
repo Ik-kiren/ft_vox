@@ -9,6 +9,7 @@ in float textureIndice;
 in vec4 lightSpace;
 
 uniform vec3 cameraPos;
+uniform bool celShading;
 
 uniform sampler2D dirtTexture;
 uniform sampler2D stoneTexture;
@@ -51,12 +52,17 @@ void main()
 	vec3 ambient = ambientStrength * lightColor;
 	
 	float diff = max(dot(normalize(normal), lightDir), 0.0);
+	if (celShading) {
+		float level = ceil(diff * 4.0);
+		diff = level / 4;
+	}
 	vec3 diffuse = diff * lightColor;
 
 	float specularStrength = 0.5;
 	vec3 viewDir = normalize(cameraPos - fragpos);
+	vec3 halfwayDir = normalize(lightDir + viewDir);
     vec3 reflectDir = reflect(-lightDir, normalize(normal));
-	float spec = pow(max(dot(viewDir, reflectDir), 0.0), 64);
+	float spec = pow(max(dot(normalize(normal), halfwayDir), 0.0), 64);
 	vec3 specular = specularStrength * spec * lightColor;
 	vec4 tmpTexture = texture(dirtTexture, textureCoords);
 	if (textureIndice == 2) {

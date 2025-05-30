@@ -20,7 +20,7 @@ class Sun
         float lastTimer;
 
         const int SUNDISTANCE = 100;
-        const int ROTATIONSPEED = 20;
+        const int ROTATIONSPEED = 50;
 
         float sunVertices[18] = {
             0.0f, 0.0f, 0.0f,

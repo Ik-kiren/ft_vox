@@ -119,5 +119,7 @@ void ShadowMap::Render(Renderer *renderer, std::unordered_map<Vector3, Chunk *> 
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
         glBindVertexArray(0);
         glViewport(constants::WINDOW_WIDTH / 2, 0, constants::WINDOW_WIDTH, constants::WINDOW_HEIGHT);
+    } else {
+        glViewport(0, 0, constants::WINDOW_WIDTH, constants::WINDOW_HEIGHT);
     }
 }
