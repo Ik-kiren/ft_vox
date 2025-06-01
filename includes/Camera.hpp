@@ -62,11 +62,12 @@ class Camera {
     void RegisterKeyboardInput(GLFWwindow *window, double deltaTime);
     void RegisterKeyboardInput(GLFWwindow *window, int fps);
     void UpdateFrustum();
+    bool AABBInterstect(AABB &aabb);
 
     Vector3 GetChunkPos();
     
-    bool InsideFrustum(BSphere bsphere);
-    bool InsideFrustum(AABB aabb);
+    bool InsideFrustum(BSphere &bsphere);
+    bool InsideFrustum(AABB &aabb);
 
     Camera &operator=(const Camera &rhs);
 };

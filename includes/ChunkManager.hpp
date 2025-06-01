@@ -28,9 +28,9 @@ private:
 	mapGP			*tab;
 	unsigned char	****_chunk;
     bool newChunksAdded;
-
+    double keyCooldown;
 public:
-    const int RENDERSIZE = 20;
+    const int RENDERSIZE = 4;
     std::unordered_map<Vector3, Chunk *> chunkMap;
     Vector3 maxPos;
     Vector3 minPos;
@@ -41,10 +41,10 @@ public:
     void LoadChunk();
     void ChunkSetup();
     void ChunkUnload();
-    void ChunkVisibility();
+    void ChunkVisibility(GLFWwindow *window);
     void UnloadChunkX(int x);
     void UnloadChunkZ(int z);
-    void ChunkManagerLoop();
+    void ChunkManagerLoop(GLFWwindow *window);
     void deactivateChunkX(int xdiff);
     void deactivateChunkZ(int zdiff);
     void AddTrailChunk(int xdiff, int zdiff);

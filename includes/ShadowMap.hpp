@@ -51,6 +51,6 @@ public:
     ShadowMap(bool debug);
     ~ShadowMap();
 
-    void SetDebug(bool debug);
+    void SetDebug();
     void Render(Renderer *renderer, std::unordered_map<Vector3, Chunk *> &visibility);
 };

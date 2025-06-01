@@ -54,6 +54,10 @@ Vector3 Vector3::Trunc() {
     return Vector3(trunc(this->x), trunc(this->y), trunc(this->z));
 }
 
+float   Vector3::Distance(Vector3 vec) {
+    return (sqrt(pow(this->x - vec.x, 2) + pow(this->y - vec.y, 2) + pow(this->z - vec.z, 2)));
+}
+
 float &Vector3::operator[](int index) {
     if (index < 0 || index > 2) {
         std::string str = "Vector3: " + std::to_string(index) + " out of range";
@@ -79,6 +83,12 @@ Vector3 Vector3::operator/(float rhs) {
     if (rhs == 0)
         return *this;
     return Vector3(x / rhs, y / rhs, z / rhs);
+}
+
+Vector3 operator/(float lhs, Vector3 rhs) {
+    if (lhs == 0)
+        return rhs;
+    return Vector3(lhs / rhs.x, lhs / rhs.y, lhs / rhs.z);
 }
 
 Vector3 Vector3::operator/(Vector3 rhs) {

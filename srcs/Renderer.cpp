@@ -1,10 +1,10 @@
 #include "../includes/Renderer.hpp"
 #include "../includes/Scop.hpp"
 #include "../includes/ShadowMap.hpp"
-#include <ctime>
 
 Renderer::Renderer() {
-    celShading = false;
+    this->celShading = false;
+    this->polyMode = false;
 }
 
 Renderer::~Renderer() {
@@ -168,12 +168,16 @@ void Renderer::EraseMesh(unsigned int &meshID) {
 void Renderer::CleanMesh(unsigned int &meshID) {
     if (meshes.find(meshID) != meshes.end()) {
         meshes[meshID]->CleanMeshData();
-         meshes[meshID]->update = true;
+        meshes[meshID]->update = true;
     }
 }
 
 void Renderer::Render(std::vector<Chunk *> &chunks, std::unordered_map<Vector3, Chunk *> &visibility) {
     shadowMap->Render(this, visibility);
+    if (polyMode)
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    else
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glDepthMask(GL_FALSE);
     skyBox->SkyBoxShader.use();
     skyBox->SkyBoxShader.setMatrix4("view", camera->GetViewMatrix());
@@ -205,7 +209,7 @@ void Renderer::Render(std::vector<Chunk *> &chunks, std::unordered_map<Vector3, 
     glBindTexture(GL_TEXTURE_2D, shadowMap->depthMap);
 
     for (size_t i = 0; i < chunks.size(); i++) {
-        if (chunks[i]->unload || meshes[chunks[i]->meshID]->GetIndicesArray().size() == 0)
+        if (chunks[i]->update || chunks[i]->unload || meshes[chunks[i]->meshID]->GetIndicesArray().size() == 0)
             continue;
         shader->setVector3("offset", meshes[chunks[i]->meshID]->GetPosition());
         glBindVertexArray(meshes[chunks[i]->meshID]->VAO);
@@ -214,7 +218,7 @@ void Renderer::Render(std::vector<Chunk *> &chunks, std::unordered_map<Vector3, 
 
     glDepthMask(GL_FALSE);
     for (size_t i = 0; i < chunks.size(); i++) {
-        if (chunks[i]->unload || meshes[chunks[i]->meshID]->GetIndicesArray2().size() == 0)
+        if (chunks[i]->update || chunks[i]->unload || meshes[chunks[i]->meshID]->GetIndicesArray2().size() == 0)
             continue;
         shader->setVector3("offset", meshes[chunks[i]->meshID]->GetPosition());
         glBindVertexArray(meshes[chunks[i]->meshID]->VAO2);
@@ -247,9 +251,22 @@ void Renderer::InitTexture() {
 }
 
 void Renderer::SetCelShading() {
-    if (celShadingCooldown + 1 < glfwGetTime()) {
+    if (keyCooldown + 1 < glfwGetTime()) {
         this->celShading = this->celShading ? false : true;
-        celShadingCooldown = glfwGetTime();
+        keyCooldown = glfwGetTime();
+    }
+}
+
+void Renderer::EnablePolyMode() {
+    if (keyCooldown + 1 < glfwGetTime()) {
+        if (!polyMode) {
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+            polyMode = true;
+        } else {
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+            polyMode = false;
+        }
+        keyCooldown = glfwGetTime();
     }
 }
 
@@ -258,4 +275,13 @@ Renderer &Renderer::operator=(const Renderer &rhs) {
     this->camera = rhs.camera;
     this->model = rhs.model;
     return *this;
+}
+
+void Renderer::RendererInput(GLFWwindow *window) {
+    if (glfwGetKey(window, GLFW_KEY_R ) == GLFW_PRESS)
+        this->shadowMap->SetDebug();
+    if (glfwGetKey(window, GLFW_KEY_T ) == GLFW_PRESS)
+        this->SetCelShading();
+    if (glfwGetKey(window, GLFW_KEY_Y ) == GLFW_PRESS)
+        this->EnablePolyMode();
 }

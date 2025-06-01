@@ -47,14 +47,7 @@ void GameManager::GetTimer(double &lastTime, double &deltaTime) {
 
 
 void GameManager::Update() {
-
-    if (glfwGetKey(window, GLFW_KEY_R ) == GLFW_PRESS) {
-        bool debug = renderer->shadowMap->debug ? false : true;
-        renderer->shadowMap->SetDebug(debug);
-    }
-    if (glfwGetKey(window, GLFW_KEY_T ) == GLFW_PRESS) {
-        renderer->SetCelShading();
-    }
+    renderer->RendererInput(window);
     GetTimer(lastTime, deltaTime);
     fpsTimer += deltaTime;
     fps++;
@@ -77,7 +70,7 @@ void GameManager::Update() {
 
     camera.RegisterKeyboardInput(window, lastFpsInt);
     camera.RegisterMouseInput(window);
-    chunkManager->ChunkManagerLoop();
+    chunkManager->ChunkManagerLoop(window);
 
     if (cameraCx != (int)(camera.GetPosition().x / 16 - signeN(camera.GetPosition().x))) {
         chunkManager->loadNewLine(cameraCx, camera.GetPosition().x / 16 - signeN(camera.GetPosition().x), cameraCz, player);

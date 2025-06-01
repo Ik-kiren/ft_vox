@@ -3,6 +3,7 @@
 #include "../includes/BSphere.hpp"
 #include "../includes/ScopMaths.hpp"
 #include "../includes/Constants.hpp"
+#include <algorithm>
 
 Camera::Camera() {}
 
@@ -101,11 +102,66 @@ void Camera::UpdateFrustum() {
     this->frustum.bottomFace = CreatePlane(this->GetPosition(), cross(frontMultFar+ this->GetUp() * halfVSide, this->GetRight()));
 }
 
-bool Camera::InsideFrustum(BSphere bsphere) {
+bool Camera::AABBInterstect(AABB &aabb) {
+    float t1 = (aabb.center[0] - this->position.x) / this->front.x;
+    float t2 = (aabb.extents[0] - this->position.x) / this->front.x;
+    float t3 = (aabb.center[1] - this->position.y) / this->front.y;
+    float t4 = (aabb.extents[1] - this->position.y) / this->front.y;
+    float t5 = (aabb.center[2] - this->position.z) / this->front.z;
+    float t6 = (aabb.extents[2] - this->position.z) / this->front.z;
+
+    float tmin = std::max(std::max(std::min(t1, t2), std::min(t3, t4)), std::min(t5, t6));
+    float tmax = std::min(std::min(std::max(t1, t2), std::max(t3, t4)), std::max(t5, t6));
+
+    if (tmax < 0) {
+        return false;
+    }
+    if (tmin > tmax) {
+        return false;
+    }
+    return true;
+    /*float tmin, tmax, tymin, tymax, tzmin, tzmax;
+    if (this->front.x >= 0) {
+        tmin = (aabb.center[0] - this->position.x) / this->front.x;
+        tmax = (aabb.extents[0] - this->position.x) / this->front.x;
+    } else {
+        tmin = (aabb.extents[0] - this->position.x) / this->front.x;
+        tmax = (aabb.center[0] - this->position.x) / this->front.x;
+    }
+
+    if (this->front.y >= 0) {
+        tymin = (aabb.center[1] - this->position.y) / this->front.y;
+        tymax = (aabb.extents[1] - this->position.y) / this->front.y;
+    } else {
+        tymin = (aabb.extents[1] - this->position.y) / this->front.y;
+        tymax = (aabb.center[1] - this->position.y) / this->front.y;
+    }
+    if ((tmin > tymax) || (tymin > tmax))
+        return false;
+    
+    if (tymin > tmin)
+        tmin = tymin;
+    if (tymax < tmax)
+        tmax = tymax;
+    
+    
+    if (this->front.z >= 0) {
+        tzmin = (aabb.center[2]- this->position.z) / this->front.z;
+        tzmax = (aabb.extents[2] - this->position.z) / this->front.z;
+    } else {
+        tzmin = (aabb.extents[2] - this->position.z) / this->front.z;
+        tzmax = (aabb.center[2] - this->position.z) / this->front.z;
+    }
+    if ((tmin > tzmax) || (tzmin > tmax))
+        return false;
+    return true;*/
+}
+
+bool Camera::InsideFrustum(BSphere &bsphere) {
     return frustum.IsInFrustum(bsphere);
 }
 
-bool Camera::InsideFrustum(AABB aabb) {
+bool Camera::InsideFrustum(AABB &aabb) {
     return frustum.IsInFrustum(aabb);
 }
 

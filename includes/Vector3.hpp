@@ -22,6 +22,7 @@ class Vector3 {
     Vector3 Inverse();
     Vector3 Round();
     Vector3 Trunc();
+    float   Distance(Vector3 vec);
 
     float   &operator[](int index);
     Vector3 operator*(float rhs);
@@ -38,6 +39,7 @@ class Vector3 {
 };
 
 bool operator!=(Vector3 const &lhs, Vector3 const &rhs);
+Vector3 operator/(float lhs, Vector3 rhs);
 
 std::ostream &operator<<(std::ostream &out, Vector3 &rhs);
 

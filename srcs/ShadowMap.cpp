@@ -64,8 +64,9 @@ ShadowMap::~ShadowMap() {
 
 }
 
-void ShadowMap::SetDebug(bool debug) {
+void ShadowMap::SetDebug() {
     if (debugCooldown + 1 < glfwGetTime()) {
+        this->debug = this->debug ? false : true;
         this->debug = debug;
         debugCooldown = glfwGetTime();
     }
@@ -90,7 +91,7 @@ void ShadowMap::Render(Renderer *renderer, std::unordered_map<Vector3, Chunk *> 
     glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
     glClear(GL_DEPTH_BUFFER_BIT);
     for (std::unordered_map<Vector3, Chunk *>::iterator it = visibility.begin(); it != visibility.end(); it++) {
-        if (it->second->unload || renderer->meshes[it->second->meshID]->GetIndicesArray().size() == 0)
+        if (it->second->update || it->second->unload || renderer->meshes[it->second->meshID]->GetIndicesArray().size() == 0)
             continue;
         simpleDepthShader.setVector3("offset", renderer->meshes[it->second->meshID]->GetPosition());
         glBindVertexArray(renderer->meshes[it->second->meshID]->VAO);

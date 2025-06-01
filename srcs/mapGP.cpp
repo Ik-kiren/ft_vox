@@ -1,5 +1,4 @@
 #include "../includes/mapGP.hpp"
-#include <sys/time.h>
 
 mapGP::mapGP() {}
 

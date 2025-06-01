@@ -16,6 +16,7 @@ class Renderer
 {
 private:
     bool celShading;
+    bool polyMode;
     Shader *shader;
     Matrix4 model;
 
@@ -24,7 +25,7 @@ private:
     GLint			textureLocation[TEXTURE_COUNT] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
     std::string		textureName[TEXTURE_COUNT] = {"dirtTexture", "stoneTexture", "sandTexture", "redSandTexture",
 		"snowTexture", "iceTexture", "gravelTexture", "oldGrassTexture", "waterTexture"};
-    double celShadingCooldown;
+    double keyCooldown;
 public:
     ShadowMap *shadowMap;
     SkyBox *skyBox;
@@ -55,6 +56,8 @@ public:
     void InitTexture();
     void InitSun(Player *player);
     void SetCelShading();
+    void RendererInput(GLFWwindow *window);
+    void EnablePolyMode();
 
     Renderer &operator=(const Renderer &rhs);
 };

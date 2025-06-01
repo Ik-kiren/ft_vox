@@ -3,10 +3,10 @@
 #include "../includes/Renderer.hpp"
 #include <chrono>
 #include <array>
-#include <sys/time.h>
 
 ChunkManager::ChunkManager(Renderer *renderer, mapGP *tab, Player *player): renderer(renderer) {
     camera = NULL;
+    this->keyCooldown = 0;
     this->player = player;
     this->maxPos = Vector3(RENDERSIZE, 15, RENDERSIZE);
     this->minPos = Vector3(-RENDERSIZE, 0, -RENDERSIZE);
@@ -95,6 +95,16 @@ void ChunkManager::LoadChunk() {
 			tmp++;
 			if (tmp == 16)
 				break;
+        } else if ((*it)->update == true) {
+            (*it)->CleanChunk(false);
+            (*it)->loaded = false;
+            (*it)->activated = true;
+            (*it)->meshed = false;
+            (*it)->unload = false;
+            (*it)->CreateMesh();
+            renderer->FinishMesh((*it)->meshID);
+            (*it)->update = false;
+            it = loadList.erase(it);
         } else {
             it++;
         }
@@ -131,25 +141,63 @@ void ChunkManager::ChunkUnload() {
     }
 }
 
-void ChunkManager::ChunkVisibility() {
-        renderList.clear();
-
-        for (std::unordered_map<Vector3, Chunk *>::iterator it = visibilityList.begin(); it != visibilityList.end();) {
-            if (it->second->unload) {
-                if (unloadMap.find(it->second->GetNormalizedPos()) == unloadMap.end())
-                    unloadMap.insert({it->second->GetNormalizedPos(), it->second});
-                it = visibilityList.erase(it);
-                continue;
+void ChunkManager::ChunkVisibility(GLFWwindow *window) {
+    bool raycastBool = false;
+    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS && keyCooldown + 1 < glfwGetTime())
+        raycastBool = true;
+    renderList.clear();
+    if (raycastBool) {
+        // for (block distance) utiliser position global / 16 pour chunk et le reste est la position du block
+        if (visibilityList.find(camera->GetChunkPos()) != visibilityList.end()) {
+            if (visibilityList[camera->GetChunkPos()]->CubeRayCast(camera)) {
+                loadList.push_back(visibilityList[camera->GetChunkPos()]);
+            } else {
+                Vector3 nextCheck = camera->GetChunkPos() + camera->GetFront().Round();
+                if (visibilityList.find(nextCheck) != visibilityList.end()) {
+                    if (visibilityList[nextCheck]->CubeRayCast(camera)) {
+                        loadList.push_back(visibilityList[nextCheck]);
+                    }
+                }
             }
-            AABB aabb;
-            aabb.center[0] = it->second->GetPosition().x + 8.5f;
-            aabb.center[1] = it->second->GetPosition().y + 8.5f;
-            aabb.center[2] = it->second->GetPosition().z + 8.5f;
-            if (camera->InsideFrustum(aabb)) {
-                renderList.push_back(it->second);
-            }
-            it++;
         }
+        keyCooldown = glfwGetTime();
+    }
+    for (std::unordered_map<Vector3, Chunk *>::iterator it = visibilityList.begin(); it != visibilityList.end();) {
+        AABB aabb;
+        aabb.center[0] = it->second->GetPosition().x + 8.5f;
+        aabb.center[1] = it->second->GetPosition().y + 8.5f;
+        aabb.center[2] = it->second->GetPosition().z + 8.5f;
+        if (camera->InsideFrustum(aabb)) {
+            renderList.push_back(it->second);
+            /*if (raycastBool && it->second->GetPosition().Distance(camera->GetPosition()) < 16) {
+                for (int x = 0; x < 16; x++) {
+                    for (int y = 0; y < 16; y++) {
+                        for (int z = 0; z < 16; z++) {
+                            Block *tmp = &it->second->GetBlocksArray()[x][y][z];
+                            if (!tmp->IsActive())
+                                continue;
+                            AABB blockAABB;
+                            blockAABB.center[0] = it->second->GetPosition().x + x;
+                            blockAABB.extents[0] = it->second->GetPosition().x + x + 1;
+                            blockAABB.center[1] = it->second->GetPosition().y + y;
+                            blockAABB.extents[1] = it->second->GetPosition().y + y + 1;
+                            blockAABB.center[2] = it->second->GetPosition().z + z;
+                            blockAABB.extents[2] = it->second->GetPosition().z + z + 1;
+                            if (camera->AABBInterstect(blockAABB)) {
+                                tmp->type = BlockType::DEFAULT;
+                                tmp->SetActive(false);
+                                it->second->update = true;
+                                std::cout << "here " << tmp->type << " " << x << " " << y << " " << z << std::endl;
+                                loadList.push_back(it->second);
+                            }
+                        }
+                    }
+                }
+                keyCooldown = glfwGetTime();
+            }*/
+        }
+        it++;
+    }
     if (renderList.size() > 0)
         renderer->Render(renderList, visibilityList);
     lastCamPos = camera->GetPosition();
@@ -160,7 +208,7 @@ void ChunkManager::UnloadChunkX(int x) {
     for (int i = this->minPos.y; i <= this->maxPos.y; i++) {
         for (int j = GetMinChunkPos().z - 3; j <= GetMaxChunkPos().z + 3; j++) {
             if (chunkMap.find(Vector3(x, i, j)) != chunkMap.end()) {
-				chunkMap[Vector3(x, i, j)]->CleanChunk();
+				chunkMap[Vector3(x, i, j)]->CleanChunk(true);
                 cleanChunkList.push(chunkMap[Vector3(x, i, j)]);
 				chunkMap.erase(Vector3(x, i, j));
             }
@@ -172,7 +220,7 @@ void ChunkManager::UnloadChunkZ(int z) {
     for (int i = GetMinChunkPos().x - 3; i <= GetMaxChunkPos().x + 3; i++) {
         for (int j = this->minPos.y; j <= this->maxPos.y; j++) {
 			if (chunkMap.find(Vector3(i, j , z)) != chunkMap.end()) {
-                chunkMap[Vector3(i, j , z)]->CleanChunk();
+                chunkMap[Vector3(i, j , z)]->CleanChunk(true);
                 cleanChunkList.push(chunkMap[Vector3(i, j, z)]);
 				chunkMap.erase(Vector3(i, j, z));
             }
@@ -239,8 +287,8 @@ void    ChunkManager::UpdateChunk(int xdiff, int zdiff) {
     
 }
 
-void ChunkManager::ChunkManagerLoop() {
-    ChunkVisibility();
+void ChunkManager::ChunkManagerLoop(GLFWwindow *window) {
+    ChunkVisibility(window);
     LoadChunk();
     ChunkSetup();
     ChunkUnload();
