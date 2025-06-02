@@ -487,7 +487,6 @@ bool Chunk::CubeRayCast(Camera *camera, Vector3i &cubePos) {
     blockAABB.extents[2] = this->GetPosition().z + cubePos.z + 1;
     if (camera->AABBInterstect(blockAABB)) {
         Vector3 str = Vector3(cubePos.x, cubePos.y, cubePos.z);
-        std::cout << str << std::endl;
         blockTmp->type = BlockType::DEFAULT;
         blockTmp->SetActive(false);
         this->update = true;
