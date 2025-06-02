@@ -154,7 +154,7 @@ void ChunkManager::ChunkVisibility(GLFWwindow *window) {
         raycastBool = true;
     renderList.clear();
     if (raycastBool) {
-        for (int i = 0; i < 16; i++) {
+        for (int i = 0; i < 8; i++) {
             Vector3 tmp = camera->GetPosition() + (camera->GetFront() * i);
             Vector3i cubeIndex = tmp.ChunkNormalize() % 16;
             Vector3 tmpChunkPos = camera->PosToChunkPos(tmp);
@@ -169,7 +169,7 @@ void ChunkManager::ChunkVisibility(GLFWwindow *window) {
                     UpdateChunk(tmpChunkPos.Back());
                 else if (cubeIndex.z == 15)
                     UpdateChunk(tmpChunkPos.Front());
-                    
+
                 if (cubeIndex.y == 0)
                     UpdateChunk(tmpChunkPos.Bottom());
                 else if (cubeIndex.y == 15)
