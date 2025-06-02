@@ -6,13 +6,14 @@
 #include "../includes/Vector2.hpp"
 #include "../includes/Shader.hpp"
 #include "../includes/Vector3.hpp"
+#include "../includes/Constants.hpp"
 #include <freetype/freetype.h>
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
 struct Character;
 
-Font::Font(/* args */) {
+Font::Font() : shader(Shader("./shaders/fontVS.shader", "./shaders/fontFS.shader")) {
     FT_Library ft;
     // All functions return a value different than 0 whenever an error occurred
     if (FT_Init_FreeType(&ft)) {
@@ -89,11 +90,11 @@ Font::Font(/* args */) {
 Font::~Font() {
 }
 
-void Font::RenderText(Shader &s, std::string text, float x, float y, float scale, Vector3 color) {
+void Font::RenderText(std::string text, float x, float y, float scale, Vector3 color) {
     // activate corresponding render state	
-    s.use();
-    s.setVector3("textColor", Vector3(color.x, color.y, color.z));
-    s.setMatrix4("projection", Orthographique(0.0f, 1920, 0.0f, 1200, 0, 15));
+    shader.use();
+    shader.setVector3("textColor", Vector3(color.x, color.y, color.z));
+    shader.setMatrix4("projection", Orthographique(0.0f, constants::WINDOW_WIDTH, 0.0f, constants::WINDOW_HEIGHT, 0, 15));
     glActiveTexture(GL_TEXTURE0);
     glBindVertexArray(VAO);
 

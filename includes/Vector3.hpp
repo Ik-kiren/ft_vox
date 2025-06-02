@@ -22,6 +22,14 @@ class Vector3 {
     Vector3 Inverse();
     Vector3 Round();
     Vector3 Trunc();
+    float   Distance(Vector3 vec);
+    Vector3 ChunkNormalize();
+    Vector3 Left();
+    Vector3 Right();
+    Vector3 Front();
+    Vector3 Back();
+    Vector3 Up();
+    Vector3 Bottom();
 
     float   &operator[](int index);
     Vector3 operator*(float rhs);
@@ -31,6 +39,7 @@ class Vector3 {
     Vector3 operator-(Vector3 rhs);
     Vector3 operator+(Vector3 rhs);
     Vector3 operator+(Vector3i rhs);
+    Vector3 operator%(int rhs);
     Vector3 &operator=(Vector3 const &rhs);
     bool operator<(const Vector3 &rhs);
     bool operator>(const Vector3 &rhs);
@@ -38,6 +47,7 @@ class Vector3 {
 };
 
 bool operator!=(Vector3 const &lhs, Vector3 const &rhs);
+Vector3 operator/(float lhs, Vector3 rhs);
 
 std::ostream &operator<<(std::ostream &out, Vector3 &rhs);
 

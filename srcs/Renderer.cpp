@@ -1,9 +1,10 @@
 #include "../includes/Renderer.hpp"
 #include "../includes/Scop.hpp"
-#include <numbers>
-#include <ctime>
+#include "../includes/ShadowMap.hpp"
 
 Renderer::Renderer() {
+    this->celShading = false;
+    this->polyMode = false;
 }
 
 Renderer::~Renderer() {
@@ -12,14 +13,22 @@ Renderer::~Renderer() {
         delete meshes[i];
     }
     delete skyBox;
+    delete sun;
+    delete shadowMap;
+    delete shader;
 }
 
-void Renderer::InitRenderer(Shader *shader, Camera *camera) {
-    this->shader = shader;
+void Renderer::InitRenderer(Camera *camera) {
+    this->shader = new Shader("./shaders/VertexShader.shader", "./shaders/FragmentShader2.shader");
     this->camera = camera;
     model = Matrix4(1);
     this->InitTexture();
     this->skyBox = new SkyBox();
+    this->shadowMap = new ShadowMap();
+}
+
+void Renderer::InitSun(Player *player) {
+    this->sun = new Sun(player);
 }
 
 void Renderer::CreateMesh(unsigned int &meshID) {
@@ -159,29 +168,16 @@ void Renderer::EraseMesh(unsigned int &meshID) {
 void Renderer::CleanMesh(unsigned int &meshID) {
     if (meshes.find(meshID) != meshes.end()) {
         meshes[meshID]->CleanMeshData();
-         meshes[meshID]->update = true;
+        meshes[meshID]->update = true;
     }
 }
 
-void Renderer::Render(unsigned int &meshID) {
-    shader->use();
-
-    shader->setVector4("newColor", Vector3(0.2, 0.5, 0.8));
-    shader->setMatrix4("model", model);
-    shader->setMatrix4("view", camera->GetViewMatrix());
-    shader->setMatrix4("projection", camera->GetProjectionMat());
-    shader->setVector3("cameraPos", camera->GetPosition());
-    shader->setFloat("timeValue", sin(glfwGetTime()) / 0.3f);
-    shader->setBool("activeTexture", true);
-    shader->setFloat("timerTextureTransition", 0.0f);
-    shader->setVector3("offset", meshes[meshID]->GetPosition());
-
-    glBindVertexArray(meshes[meshID]->VAO);
-    glDrawElements(GL_TRIANGLES, meshes[meshID]->GetIndicesArray().size(), GL_UNSIGNED_INT, 0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-}
-
-void Renderer::Render(std::vector<Chunk *> &chunks) {
+void Renderer::Render(std::vector<Chunk *> &chunks, std::unordered_map<Vector3, Chunk *> &visibility) {
+    shadowMap->Render(this, visibility);
+    if (polyMode)
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    else
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glDepthMask(GL_FALSE);
     skyBox->SkyBoxShader.use();
     skyBox->SkyBoxShader.setMatrix4("view", camera->GetViewMatrix());
@@ -189,19 +185,18 @@ void Renderer::Render(std::vector<Chunk *> &chunks) {
     glBindVertexArray(skyBox->skyBoxMeshVAO);
     glBindTexture(GL_TEXTURE_CUBE_MAP, skyBox->skyBoxID);
     glDrawArrays(GL_TRIANGLES, 0, 36);
+
+    sun->UpdateRender(camera);
     glDepthMask(GL_TRUE);
 
     shader->use();
-    shader->setVector4("newColor", Vector3(0.2, 0.5, 0.8));
     shader->setMatrix4("model", model);
     shader->setMatrix4("view", camera->GetViewMatrix());
     shader->setMatrix4("projection", camera->GetProjectionMat());
     shader->setVector3("cameraPos", camera->GetPosition());
-    shader->setVector3("lightPos", camera->GetPosition());
-    shader->setFloat("timeValue", std::fmod(glfwGetTime() / 10, 2 * std::numbers::pi));
-    shader->setBool("activeTexture", true);
-    shader->setFloat("timerTextureTransition", 1.0f);
-
+    shader->setVector3("lightPos", sun->position);
+    shader->setMatrix4("lightSpaceMatrix", shadowMap->lightSpaceMatrix);
+    shader->setBool("celShading", this->celShading);
 
     for (int i = 0; i < TEXTURE_COUNT; i++) {
         textureLocation[i] = shader->GetUniformLocation(textureName[i]);
@@ -209,7 +204,9 @@ void Renderer::Render(std::vector<Chunk *> &chunks) {
         glActiveTexture(GL_TEXTURE0 + i);
         glBindTexture(GL_TEXTURE_2D, textureIDs[i]);
     }
-
+    glUniform1i(shader->GetUniformLocation("shadowMap"),9);
+    glActiveTexture(GL_TEXTURE0 + 9);
+    glBindTexture(GL_TEXTURE_2D, shadowMap->depthMap);
 
     for (size_t i = 0; i < chunks.size(); i++) {
         if (chunks[i]->unload || meshes[chunks[i]->meshID]->GetIndicesArray().size() == 0)
@@ -228,6 +225,7 @@ void Renderer::Render(std::vector<Chunk *> &chunks) {
         glDrawElements(GL_TRIANGLES, meshes[chunks[i]->meshID]->GetIndicesArray2().size(), GL_UNSIGNED_INT, 0);
     }
     glDepthMask(GL_TRUE);
+
 }
 
 void Renderer::InitTexture() {
@@ -252,9 +250,38 @@ void Renderer::InitTexture() {
     }
 }
 
+void Renderer::SetCelShading() {
+    if (keyCooldown + 1 < glfwGetTime()) {
+        this->celShading = this->celShading ? false : true;
+        keyCooldown = glfwGetTime();
+    }
+}
+
+void Renderer::EnablePolyMode() {
+    if (keyCooldown + 1 < glfwGetTime()) {
+        if (!polyMode) {
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+            polyMode = true;
+        } else {
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+            polyMode = false;
+        }
+        keyCooldown = glfwGetTime();
+    }
+}
+
 Renderer &Renderer::operator=(const Renderer &rhs) {
     this->shader = rhs.shader;
     this->camera = rhs.camera;
     this->model = rhs.model;
     return *this;
+}
+
+void Renderer::RendererInput(GLFWwindow *window) {
+    if (glfwGetKey(window, GLFW_KEY_R ) == GLFW_PRESS)
+        this->shadowMap->SetDebug();
+    if (glfwGetKey(window, GLFW_KEY_T ) == GLFW_PRESS)
+        this->SetCelShading();
+    if (glfwGetKey(window, GLFW_KEY_Y ) == GLFW_PRESS)
+        this->EnablePolyMode();
 }

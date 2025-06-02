@@ -99,6 +99,15 @@
     <ClCompile Include="srcs\Vector4.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="srcs\GameManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="srcs\ShadowMap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="srcs\Sun.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="includes\stb_image.h">
@@ -188,6 +197,18 @@
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="includes\Constants.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="includes\GameManager.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="includes\ShadowMap.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="includes\Sun.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="ft_vox.rc">
@@ -197,14 +218,6 @@
   <ItemGroup>
     <None Include="glew32.dll" />
     <None Include="freetype.dll" />
-    <None Include="shaders\fontFS.shader" />
-    <None Include="shaders\fontVS.shader" />
-    <None Include="shaders\FragmentShader2.frag" />
-    <None Include="shaders\lightFS.shader" />
-    <None Include="shaders\lightVS.shader" />
-    <None Include="shaders\SkyBoxFragment.shader" />
-    <None Include="shaders\SkyBoxVertex.shader" />
-    <None Include="shaders\VertexShader.shader" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="textures\SkyBox\SkyBoxBackwardFace.png">
@@ -267,5 +280,8 @@
   </ItemGroup>
   <ItemGroup>
     <Font Include="Antonio-VariableFont_wght.ttf" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="libraries\glew-2.1.0\glew_lib\lib\glew_x64\glew32.lib" />
   </ItemGroup>
 </Project>

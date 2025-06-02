@@ -12,10 +12,11 @@ class Font {
     unsigned int VBO;
 
     std::map<unsigned char, Character> characters;
+    Shader shader;
 
  public:
     Font(/* args */);
     ~Font();
 
-    void RenderText(Shader &s, std::string text, float x, float y, float scale, Vector3 color);
+    void RenderText(std::string text, float x, float y, float scale, Vector3 color);
 };

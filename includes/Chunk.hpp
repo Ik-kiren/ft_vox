@@ -31,15 +31,18 @@ public:
     ~Chunk();
 
     void NewChunk(unsigned char ***test);
-    void CleanChunk();
+    void CleanChunk(bool withPos);
     Block ***GetBlocksArray();
     void CreateCube(Vector3 &normalizedPos, int &x, int &y, int &z, bool &xPositif, bool &xNegatif, bool &yPositif, bool &yNegatif, bool &zPositif, bool &zNegatif, int type);
     void CreateMesh();
     void UpdateMesh();
-    void Render();
     void Translation(Vector3 vec);
     Vector3 GetNormalizedPos();
     Vector3 GetPosition();
     bool CheckIce(Block &nextBlock, Block *block);
+    bool CubeRayCast(Camera *camera);
+    bool CubeRayCast(Camera *camera, Vector3i &cubePos);
+
+    void PrintBlocksArray();
 };
 

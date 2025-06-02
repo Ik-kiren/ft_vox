@@ -9,6 +9,10 @@
 
 class Camera {
  private:
+    float fov;
+    float nearPlane;
+    float farPlane;
+
     Vector3 position;
     Vector3 front;
     Vector3 up;
@@ -58,11 +62,13 @@ class Camera {
     void RegisterKeyboardInput(GLFWwindow *window, double deltaTime);
     void RegisterKeyboardInput(GLFWwindow *window, int fps);
     void UpdateFrustum();
+    bool AABBInterstect(AABB &aabb);
 
     Vector3 GetChunkPos();
+    Vector3 PosToChunkPos(Vector3 pos);
     
-    bool InsideFrustum(BSphere bsphere);
-    bool InsideFrustum(AABB aabb);
+    bool InsideFrustum(BSphere &bsphere);
+    bool InsideFrustum(AABB &aabb);
 
     Camera &operator=(const Camera &rhs);
 };

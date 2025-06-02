@@ -3,7 +3,6 @@
 #include "../includes/Vector3.hpp"
 #include "../includes/Renderer.hpp"
 #include "../includes/ChunkManager.hpp"
-#include <ctime>
 
 Chunk::Chunk(Renderer *renderer, ChunkManager *chunkManager, unsigned char ***test) : renderer(renderer), chunkManager(chunkManager) {
     this->loaded = false;
@@ -40,9 +39,10 @@ Chunk::~Chunk() {
     delete[] this->blocksArray;
 }
 
-void Chunk::CleanChunk() {
+void Chunk::CleanChunk(bool withPos) {
     renderer->CleanMesh(meshID);
-    position = Vector3(0, 0, 0);
+    if (withPos)
+        position = Vector3(0, 0, 0);
 }
 
 void Chunk::NewChunk(unsigned char ***test) {
@@ -344,7 +344,7 @@ bool Chunk::CheckIce(Block &nextBlock, Block *block) {
 
 void Chunk::CreateMesh() {
     Vector3 normalizedPos = GetNormalizedPos();
-    if (!this->loaded && meshID == UINTMAX) {
+    if (!this->loaded && this->meshID == UINTMAX) {
         renderer->CreateMesh(meshID);
     }
     Block *block;
@@ -355,6 +355,8 @@ void Chunk::CreateMesh() {
         for (int y = 0; y < CHUNK_SIZE_Y; y++) {
             for (int z = 0; z < CHUNK_SIZE_Z; z++) {
                 block = &this->blocksArray[x][y][z];
+                if (this->update)
+                    block->ClearFaces();
                 if (!block->IsActive()) {
                     continue;
                 }
@@ -440,14 +442,63 @@ void Chunk::CreateMesh() {
     }
 }
 
+bool Chunk::CubeRayCast(Camera *camera) {
+    for (int x = 0; x < 16; x++) {
+        for (int y = 0; y < 16; y++) {
+            for (int z = 0; z < 16; z++) {
+                Block *blockTmp = &this->GetBlocksArray()[x][y][z];
+                if (!blockTmp->IsActive())
+                    continue;
+                AABB blockAABB;
+                blockAABB.center[0] = this->GetPosition().x + x;
+                blockAABB.extents[0] = this->GetPosition().x + x + 1;
+                blockAABB.center[1] = this->GetPosition().y + y;
+                blockAABB.extents[1] = this->GetPosition().y + y + 1;
+                blockAABB.center[2] = this->GetPosition().z + z;
+                blockAABB.extents[2] = this->GetPosition().z + z + 1;
+                if (camera->AABBInterstect(blockAABB)) {
+                    blockTmp->type = BlockType::DEFAULT;
+                    blockTmp->SetActive(false);
+                    this->update = true;
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
+}
+
+bool Chunk::CubeRayCast(Camera *camera, Vector3i &cubePos) {
+    if (cubePos.x < 0)
+        cubePos.x = 16 + cubePos.x;
+    if (cubePos.y < 0)
+        cubePos.y = 16 + cubePos.y;
+    if (cubePos.z < 0)
+        cubePos.z = 16 + cubePos.z;
+    Block *blockTmp = &this->GetBlocksArray()[cubePos.x][cubePos.y][cubePos.z];
+    if (!blockTmp->IsActive())
+        return false;
+    AABB blockAABB;
+    blockAABB.center[0] = this->GetPosition().x + cubePos.x;
+    blockAABB.extents[0] = this->GetPosition().x + cubePos.x + 1;
+    blockAABB.center[1] = this->GetPosition().y + cubePos.y;
+    blockAABB.extents[1] = this->GetPosition().y + cubePos.y + 1;
+    blockAABB.center[2] = this->GetPosition().z + cubePos.z;
+    blockAABB.extents[2] = this->GetPosition().z + cubePos.z + 1;
+    if (camera->AABBInterstect(blockAABB)) {
+        Vector3 str = Vector3(cubePos.x, cubePos.y, cubePos.z);
+        blockTmp->type = BlockType::DEFAULT;
+        blockTmp->SetActive(false);
+        this->update = true;
+        return true;
+    }
+    return false;
+}
+
 void Chunk::UpdateMesh() {
     renderer->CleanMesh(meshID);
 
     CreateMesh();
-}
-
-void Chunk::Render() {
-    renderer->Render(meshID);
 }
 
 void Chunk::Translation(Vector3 vec) {
@@ -464,4 +515,18 @@ Vector3 Chunk::GetNormalizedPos() {
 
 Block ***Chunk::GetBlocksArray() {
     return blocksArray;
+}
+
+void Chunk::PrintBlocksArray() {
+    std::cout << "Print Block array " << std::endl;
+     for (int i = 0; i < CHUNK_SIZE_X; i++) {
+        for (int j = 0; j < CHUNK_SIZE_Y; j++) {
+            std::string tmp = "line = ";
+            for (int k = 0; k < CHUNK_SIZE_Z; k++) {
+                Block block = this->blocksArray[i][j][k];
+                tmp.append(std::to_string(block.type) + " ");
+            }
+            std::cout << tmp << std::endl;
+        }
+    }
 }

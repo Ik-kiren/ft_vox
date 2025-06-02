@@ -6,14 +6,18 @@
 #include "./Camera.hpp"
 #include "./Chunk.hpp"
 #include "./SkyBox.hpp"
+#include "./Sun.hpp"
 #include <string>
 #include <unordered_map>
+
+class ShadowMap;
 
 class Renderer
 {
 private:
+    bool celShading;
+    bool polyMode;
     Shader *shader;
-    Camera *camera;
     Matrix4 model;
 
 	const int static	TEXTURE_COUNT = 9;
@@ -21,8 +25,13 @@ private:
     GLint			textureLocation[TEXTURE_COUNT] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
     std::string		textureName[TEXTURE_COUNT] = {"dirtTexture", "stoneTexture", "sandTexture", "redSandTexture",
 		"snowTexture", "iceTexture", "gravelTexture", "oldGrassTexture", "waterTexture"};
+    double keyCooldown;
 public:
+    ShadowMap *shadowMap;
     SkyBox *skyBox;
+    Sun     *sun;
+    Camera *camera;
+
     const std::string textureArray[TEXTURE_COUNT] = {"./textures/dirt.png", "./textures/stone.png", "./textures/sand.png", "./textures/red_sand.png", "./textures/snow.png",
         "./textures/ice.png", "./textures/gravel.png", "./textures/grass_carried.png", "./textures/water.png"};
     
@@ -32,7 +41,7 @@ public:
     Renderer();
     ~Renderer();
 
-    void InitRenderer(Shader *shader, Camera *camera);
+    void InitRenderer(Camera *camera);
     void CreateMesh(unsigned int &meshID);
     unsigned int AddVertex(unsigned int &meshID, Vector3 &vecs, int type);
     unsigned int AddVertex(unsigned int &meshID, float x, float y, float z, int type, Vector2 size, int faceType);
@@ -43,10 +52,12 @@ public:
     void UpdateMesh(unsigned int &meshID);
     void EraseMesh(unsigned int &meshID);
     void CleanMesh(unsigned int &meshID);
-    void Render(unsigned int &meshID);
-    void Render(std::vector<Chunk *> &chunks);
+    void Render(std::vector<Chunk *> &chunks, std::unordered_map<Vector3, Chunk *> &visibility);
     void InitTexture();
-    void InitSkyBox();
+    void InitSun(Player *player);
+    void SetCelShading();
+    void RendererInput(GLFWwindow *window);
+    void EnablePolyMode();
 
     Renderer &operator=(const Renderer &rhs);
 };

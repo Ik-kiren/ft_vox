@@ -299,29 +299,46 @@ void	biome::doGP() {
 }
 
 int	biome::whatTexture(int x, int y) {
-	if (this->_tab[x][y].heightI < 120 + ((int)(this->_tab[x][y].waterF * 100) % 3)) {
+	// if (this->_tab[x][y].heightI < 120 + ((int)(this->_tab[x][y].waterF * 100) % 3)) {
+	if (this->_tab[x][y].heightI < 120) {
 		if (this->_tab[x][y].tempF < -0.15)
 			return 6;
 		else if (this->_tab[x][y].tempF > 0.15)
 			return 3;
-	} else if (this->_tab[x][y].heightI > 200 - ((int)(this->_tab[x][y].waterF * 100) % 4)) {
-		if (this->_tab[x][y].tempF < -0.15)
-			return 5;
-		else if (this->_tab[x][y].tempF > 0.15)
-			return 4;
+		else
+			return 1;
+	// } else if (this->_tab[x][y].heightI > 200 - ((int)(this->_tab[x][y].waterF * 100) % 4)) {
+	// } else if (this->_tab[x][y].heightI > 220) {
+	// 	if (this->_tab[x][y].tempF < -0.15)
+	// 		return 5;
+	// 	else if (this->_tab[x][y].tempF > 0.15)
+	// 		return 4;
+	// 	else
+	// 		return 7;
 	}
 
-	if (this->_tab[x][y].tempF < -0.6)
-		return 5;
-	else if (this->_tab[x][y].tempF > 0.6) {
-		return 4;
-	} else {
-		if (this->_tab[x][y].waterF > 0.5)
+	if (this->_tab[x][y].waterF < 0.1) {
+		if (this->_tab[x][y].tempF < -0.2)
+			return 5;
+		else if (this->_tab[x][y].tempF > 0.2)
+			return 4;
+		else
 			return 7;
-		else if (this->_tab[x][y].waterF < -0.5)
-			return 1;
+	} else {
 		return 8;
 	}
+
+	// if (this->_tab[x][y].tempF < -0.6)
+	// 	return 5;
+	// else if (this->_tab[x][y].tempF > 0.6) {
+	// 	return 4;
+	// } else {
+	// 	if (this->_tab[x][y].waterF > 0.5)
+	// 		return 7;
+	// 	else if (this->_tab[x][y].waterF < -0.5)
+	// 		return 1;
+	// 	return 8;
+	// }
 }
 
 std::array<unsigned char, sizeH>	biome::fillArray(int h, int texture) {
@@ -346,7 +363,7 @@ std::array<unsigned char, sizeH>	biome::fillArray(int h, int texture) {
 }
 
 int		biome::heightFtoI(float heightF, float denivele) {
-	return ((heightF * std::abs(heightF)) + 1) / 2 * this->_heightDiff * (1 + denivele / 5) + this->_heightMin;
+	return ((heightF * std::abs(heightF)) + 1) / 2 * this->_heightDiff * (1 + denivele / 10) + this->_heightMin;
 }
 
 void	biome::afterGP() {
