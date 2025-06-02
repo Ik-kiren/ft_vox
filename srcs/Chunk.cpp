@@ -468,6 +468,34 @@ bool Chunk::CubeRayCast(Camera *camera) {
     return false;
 }
 
+bool Chunk::CubeRayCast(Camera *camera, Vector3i &cubePos) {
+    if (cubePos.x < 0)
+        cubePos.x = 16 + cubePos.x;
+    if (cubePos.y < 0)
+        cubePos.y = 16 + cubePos.y;
+    if (cubePos.z < 0)
+        cubePos.z = 16 + cubePos.z;
+    Block *blockTmp = &this->GetBlocksArray()[cubePos.x][cubePos.y][cubePos.z];
+    if (!blockTmp->IsActive())
+        return false;
+    AABB blockAABB;
+    blockAABB.center[0] = this->GetPosition().x + cubePos.x;
+    blockAABB.extents[0] = this->GetPosition().x + cubePos.x + 1;
+    blockAABB.center[1] = this->GetPosition().y + cubePos.y;
+    blockAABB.extents[1] = this->GetPosition().y + cubePos.y + 1;
+    blockAABB.center[2] = this->GetPosition().z + cubePos.z;
+    blockAABB.extents[2] = this->GetPosition().z + cubePos.z + 1;
+    if (camera->AABBInterstect(blockAABB)) {
+        Vector3 str = Vector3(cubePos.x, cubePos.y, cubePos.z);
+        std::cout << str << std::endl;
+        blockTmp->type = BlockType::DEFAULT;
+        blockTmp->SetActive(false);
+        this->update = true;
+        return true;
+    }
+    return false;
+}
+
 void Chunk::UpdateMesh() {
     renderer->CleanMesh(meshID);
 

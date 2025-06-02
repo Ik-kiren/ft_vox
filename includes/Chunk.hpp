@@ -41,6 +41,7 @@ public:
     Vector3 GetPosition();
     bool CheckIce(Block &nextBlock, Block *block);
     bool CubeRayCast(Camera *camera);
+    bool CubeRayCast(Camera *camera, Vector3i &cubePos);
 
     void PrintBlocksArray();
 };

@@ -67,7 +67,6 @@ ShadowMap::~ShadowMap() {
 void ShadowMap::SetDebug() {
     if (debugCooldown + 1 < glfwGetTime()) {
         this->debug = this->debug ? false : true;
-        this->debug = debug;
         debugCooldown = glfwGetTime();
     }
 }

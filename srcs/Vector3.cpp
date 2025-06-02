@@ -58,6 +58,41 @@ float   Vector3::Distance(Vector3 vec) {
     return (sqrt(pow(this->x - vec.x, 2) + pow(this->y - vec.y, 2) + pow(this->z - vec.z, 2)));
 }
 
+Vector3 Vector3::ChunkNormalize() {
+    Vector3 tmp = this;
+    if(tmp.x < 0)
+        tmp.x = tmp.x -1;
+    if(tmp.y < 0)
+        tmp.y = tmp.y -1;
+    if(tmp.z < 0)
+        tmp.z = tmp.z -1;
+    return tmp;
+}
+
+Vector3 Vector3::Left() {
+    return (Vector3(this->x - 1, this->y, this->z));
+}
+
+Vector3 Vector3::Right() {
+    return (Vector3(this->x + 1, this->y, this->z));
+}
+
+Vector3 Vector3::Front() {
+    return (Vector3(this->x, this->y, this->z + 1));
+}
+
+Vector3 Vector3::Back() {
+    return (Vector3(this->x, this->y, this->z - 1));
+}
+
+Vector3 Vector3::Up() {
+    return (Vector3(this->x, this->y + 1, this->z));
+}
+
+Vector3 Vector3::Bottom() {
+    return (Vector3(this->x, this->y - 1, this->z));
+}
+
 float &Vector3::operator[](int index) {
     if (index < 0 || index > 2) {
         std::string str = "Vector3: " + std::to_string(index) + " out of range";
@@ -107,6 +142,10 @@ Vector3 Vector3::operator+(Vector3 rhs) {
 
 Vector3 Vector3::operator+(Vector3i rhs) {
     return Vector3(x + rhs.x, y + rhs.y, z + rhs.z);
+}
+
+Vector3 Vector3::operator%(int rhs) {
+    return Vector3(static_cast<int>(this->x) % rhs, static_cast<int>(this->y) % rhs, static_cast<int>(this->z) % rhs);
 }
 
 Vector3 &Vector3::operator=(Vector3 const &rhs) {

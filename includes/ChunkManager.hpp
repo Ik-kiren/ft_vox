@@ -29,6 +29,8 @@ private:
 	unsigned char	****_chunk;
     bool newChunksAdded;
     double keyCooldown;
+
+    void UpdateChunk(Vector3 chunkPos);
 public:
     const int RENDERSIZE = 4;
     std::unordered_map<Vector3, Chunk *> chunkMap;

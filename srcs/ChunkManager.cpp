@@ -141,23 +141,40 @@ void ChunkManager::ChunkUnload() {
     }
 }
 
+void ChunkManager::UpdateChunk(Vector3 chunkPos) {
+    if (visibilityList.find(chunkPos) != visibilityList.end()) {
+        visibilityList[chunkPos]->update = true;
+        loadList.push_back(visibilityList[chunkPos]);
+    }
+}
+
 void ChunkManager::ChunkVisibility(GLFWwindow *window) {
     bool raycastBool = false;
     if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS && keyCooldown + 1 < glfwGetTime())
         raycastBool = true;
     renderList.clear();
     if (raycastBool) {
-        // for (block distance) utiliser position global / 16 pour chunk et le reste est la position du block
-        if (visibilityList.find(camera->GetChunkPos()) != visibilityList.end()) {
-            if (visibilityList[camera->GetChunkPos()]->CubeRayCast(camera)) {
-                loadList.push_back(visibilityList[camera->GetChunkPos()]);
-            } else {
-                Vector3 nextCheck = camera->GetChunkPos() + camera->GetFront().Round();
-                if (visibilityList.find(nextCheck) != visibilityList.end()) {
-                    if (visibilityList[nextCheck]->CubeRayCast(camera)) {
-                        loadList.push_back(visibilityList[nextCheck]);
-                    }
-                }
+        for (int i = 0; i < 16; i++) {
+            Vector3 tmp = camera->GetPosition() + (camera->GetFront() * i);
+            Vector3i cubeIndex = tmp.ChunkNormalize() % 16;
+            Vector3 tmpChunkPos = camera->PosToChunkPos(tmp);
+            if (visibilityList.find(tmpChunkPos) != visibilityList.end() && visibilityList[tmpChunkPos]->CubeRayCast(camera, cubeIndex)) {
+                loadList.push_back(visibilityList[tmpChunkPos]);
+                if (cubeIndex.x == 0)
+                    UpdateChunk(tmpChunkPos.Left());
+                else if (cubeIndex.x == 15)
+                    UpdateChunk(tmpChunkPos.Right());
+
+                if (cubeIndex.z == 0)
+                    UpdateChunk(tmpChunkPos.Back());
+                else if (cubeIndex.z == 15)
+                    UpdateChunk(tmpChunkPos.Front());
+                    
+                if (cubeIndex.y == 0)
+                    UpdateChunk(tmpChunkPos.Bottom());
+                else if (cubeIndex.y == 15)
+                    UpdateChunk(tmpChunkPos.Up());
+                break;
             }
         }
         keyCooldown = glfwGetTime();
@@ -169,32 +186,6 @@ void ChunkManager::ChunkVisibility(GLFWwindow *window) {
         aabb.center[2] = it->second->GetPosition().z + 8.5f;
         if (camera->InsideFrustum(aabb)) {
             renderList.push_back(it->second);
-            /*if (raycastBool && it->second->GetPosition().Distance(camera->GetPosition()) < 16) {
-                for (int x = 0; x < 16; x++) {
-                    for (int y = 0; y < 16; y++) {
-                        for (int z = 0; z < 16; z++) {
-                            Block *tmp = &it->second->GetBlocksArray()[x][y][z];
-                            if (!tmp->IsActive())
-                                continue;
-                            AABB blockAABB;
-                            blockAABB.center[0] = it->second->GetPosition().x + x;
-                            blockAABB.extents[0] = it->second->GetPosition().x + x + 1;
-                            blockAABB.center[1] = it->second->GetPosition().y + y;
-                            blockAABB.extents[1] = it->second->GetPosition().y + y + 1;
-                            blockAABB.center[2] = it->second->GetPosition().z + z;
-                            blockAABB.extents[2] = it->second->GetPosition().z + z + 1;
-                            if (camera->AABBInterstect(blockAABB)) {
-                                tmp->type = BlockType::DEFAULT;
-                                tmp->SetActive(false);
-                                it->second->update = true;
-                                std::cout << "here " << tmp->type << " " << x << " " << y << " " << z << std::endl;
-                                loadList.push_back(it->second);
-                            }
-                        }
-                    }
-                }
-                keyCooldown = glfwGetTime();
-            }*/
         }
         it++;
     }

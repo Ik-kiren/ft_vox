@@ -65,6 +65,7 @@ class Camera {
     bool AABBInterstect(AABB &aabb);
 
     Vector3 GetChunkPos();
+    Vector3 PosToChunkPos(Vector3 pos);
     
     bool InsideFrustum(BSphere &bsphere);
     bool InsideFrustum(AABB &aabb);
