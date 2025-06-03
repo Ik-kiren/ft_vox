@@ -1,6 +1,5 @@
 #include "../includes/Sun.hpp"
 #include <cmath>
-#include <numbers>
 
 Sun::Sun(Player *player) : player(player){
     model = Matrix4(1);
@@ -41,6 +40,7 @@ Sun::~Sun() {
 
 }
 
+
 void Sun::UpdatePosition() {
     float revolutionTimer = std::fmod(glfwGetTime() / ROTATIONSPEED, 2 * M_PI);
     position = Vector3(SUNDISTANCE * cos(revolutionTimer) + player->getGlobalPos().x, SUNDISTANCE * sin(revolutionTimer) + 110, player->getGlobalPos().z);
@@ -48,7 +48,6 @@ void Sun::UpdatePosition() {
     timer = glfwGetTime() - lastTimer;
     lastTimer = glfwGetTime();
     model = Rotate(model, ((2*M_PI * (60 /((2*M_PI) * ROTATIONSPEED))) / 60) / (1/timer), Vector3(0, 0, 1));
-    // faut prendre en compte la position du jou/camera
 }
 
 void Sun::UpdateRender(Camera *camera) {

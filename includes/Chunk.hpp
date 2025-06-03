@@ -17,7 +17,6 @@ public:
     bool activated;
     bool loaded;
     bool meshed;
-    bool unload;
     bool update;
     Renderer *renderer;
     unsigned int meshID;

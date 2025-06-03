@@ -13,7 +13,6 @@ class ChunkManager
 private:
     std::vector<Chunk *> loadList;
     std::unordered_map<Vector3, Chunk *> setupList;
-    std::unordered_map<Vector3, Chunk *> unloadMap;
     std::unordered_map<Vector3, Chunk *> visibilityList;
     std::vector<Chunk *> renderList;
 
@@ -42,7 +41,6 @@ public:
     void Init();
     void LoadChunk();
     void ChunkSetup();
-    void ChunkUnload();
     void ChunkVisibility(GLFWwindow *window);
     void UnloadChunkX(int x);
     void UnloadChunkZ(int z);

@@ -5,7 +5,7 @@ in vec3 normal;
 in vec3 fragpos;
 in vec2 textureCoords;
 in vec3 color;
-in float textureIndice;
+in flat int textureIndice;
 in vec4 lightSpace;
 
 uniform vec3 cameraPos;

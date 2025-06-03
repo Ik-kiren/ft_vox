@@ -75,7 +75,7 @@ void ShadowMap::Render(Renderer *renderer, std::unordered_map<Vector3, Chunk *> 
     Matrix4 lightProjection, lightView;
     float near_plane = 0.1f, far_plane = 1000.0f;
     lightProjection = Orthographique(-400, 400, -400, 400, 0.1, 700);
-    //lightProjection = Perspective(120.0f, (SHADOW_WIDTH / SHADOW_HEIGHT), 0.1f, 600.0f);
+    //lightProjection = Perspective(90.0f, (SHADOW_WIDTH / SHADOW_HEIGHT), 1.0f, 400.0f);
     Vector3 newCamPos = renderer->camera->GetPosition();
     newCamPos.y = 130;
     lightView = lookAt(renderer->sun->position, newCamPos, normalized(cross(newCamPos - renderer->sun->position, Vector3(0, 0, 1))));
@@ -90,7 +90,7 @@ void ShadowMap::Render(Renderer *renderer, std::unordered_map<Vector3, Chunk *> 
     glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
     glClear(GL_DEPTH_BUFFER_BIT);
     for (std::unordered_map<Vector3, Chunk *>::iterator it = visibility.begin(); it != visibility.end(); it++) {
-        if (it->second->update || it->second->unload || renderer->meshes[it->second->meshID]->GetIndicesArray().size() == 0)
+        if (it->second->update || renderer->meshes[it->second->meshID]->GetIndicesArray().size() == 0)
             continue;
         simpleDepthShader.setVector3("offset", renderer->meshes[it->second->meshID]->GetPosition());
         glBindVertexArray(renderer->meshes[it->second->meshID]->VAO);

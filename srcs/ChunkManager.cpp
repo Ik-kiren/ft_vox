@@ -1,8 +1,6 @@
 #include "../includes/ChunkManager.hpp"
 #include "../includes/BSphere.hpp"
 #include "../includes/Renderer.hpp"
-#include <chrono>
-#include <array>
 
 ChunkManager::ChunkManager(Renderer *renderer, mapGP *tab, Player *player): renderer(renderer) {
     camera = NULL;
@@ -61,7 +59,6 @@ ChunkManager::~ChunkManager() {
         delete it->second;
         it = setupList.erase(it);
     }
-    ChunkUnload();
     for (std::unordered_map<Vector3, Chunk*>::iterator it = chunkMap.begin(); it != chunkMap.end();) {
         delete it->second;
         it = chunkMap.erase(it);
@@ -82,12 +79,6 @@ void ChunkManager::LoadChunk() {
         return;
     }
     for (std::vector<Chunk *>::iterator it = loadList.begin(); it != loadList.end();) {
-        if ((*it)->unload) {
-            if (unloadMap.find((*it)->GetNormalizedPos()) == unloadMap.end())
-                unloadMap.insert({(*it)->GetNormalizedPos(), (*it)});
-            it = loadList.erase(it);
-            continue;
-        }
         if ((*it)->loaded == false) {	
             (*it)->CreateMesh();
             setupList.insert({(*it)->GetNormalizedPos(), (*it)});
@@ -100,7 +91,6 @@ void ChunkManager::LoadChunk() {
             (*it)->loaded = false;
             (*it)->activated = true;
             (*it)->meshed = false;
-            (*it)->unload = false;
             (*it)->CreateMesh();
             renderer->FinishMesh((*it)->meshID);
             (*it)->update = false;
@@ -113,31 +103,12 @@ void ChunkManager::LoadChunk() {
 
 void ChunkManager::ChunkSetup() {
     for (std::unordered_map<Vector3, Chunk *>::iterator it = setupList.begin(); it != setupList.end();) {
-        if (it->second->unload) {
-            if (unloadMap.find(it->second->GetNormalizedPos()) == unloadMap.end())
-                unloadMap.insert({it->second->GetNormalizedPos(), it->second});
-            it = setupList.erase(it);
-            continue;
-        }
         if (!it->second->meshed) {
             renderer->FinishMesh(it->second->meshID);
             it->second->meshed = true;
         }
         visibilityList.insert({it->first, it->second});
         it = setupList.erase(it);
-    }
-}
-
-void ChunkManager::ChunkUnload() {
-    for (std::unordered_map<Vector3, Chunk *>::iterator it = unloadMap.begin(); it != unloadMap.end();) {
-        if (!it->second->unload) {
-            it = unloadMap.erase(it);
-            continue;
-        }
-        if (chunkMap.find(it->first) != chunkMap.end())
-            chunkMap.erase(chunkMap.find(it->first));
-        delete it->second;
-        it = unloadMap.erase(it);
     }
 }
 
@@ -245,7 +216,6 @@ void ChunkManager::GetLimitChunk(int xdiff, int zdiff) {
     for (int i = 0; i < 16; i++) {
         Vector3 vec = Vector3(xdiff, i, zdiff);
         if (chunkMap.find(vec) != chunkMap.end()) {
-            chunkMap[vec]->unload = false;
             if (chunkMap[vec]->loaded) {
                 visibilityList.insert({vec, chunkMap[vec]});
             } else {
@@ -271,7 +241,6 @@ void    ChunkManager::UpdateChunk(int xdiff, int zdiff) {
         Vector3 pos = Vector3(xdiff, k, zdiff);
         if (chunkMap.find(pos) != chunkMap.end()) {
             chunkMap[pos]->update = true;
-            chunkMap[pos]->unload = false;
             loadList.push_back(chunkMap[pos]);
         }
 	}
@@ -282,7 +251,6 @@ void ChunkManager::ChunkManagerLoop(GLFWwindow *window) {
     ChunkVisibility(window);
     LoadChunk();
     ChunkSetup();
-    ChunkUnload();
 }
 
 Vector3 ChunkManager::GetMaxChunkPos() {
@@ -325,7 +293,6 @@ void ChunkManager::deactivateChunkX(int xdiff) {
             Vector3 vecToDeactivate = Vector3(xdiff, j, i);
             visibilityList.erase(vecToDeactivate);
             setupList.erase(vecToDeactivate);
-            unloadMap.erase(vecToDeactivate);
         }
     }
     for (std::vector<Chunk *>::iterator it = loadList.begin(); it != loadList.end();) {
@@ -343,7 +310,6 @@ void ChunkManager::deactivateChunkZ(int zdiff) {
             Vector3 vecToDeactivate = Vector3(i, j, zdiff);
             visibilityList.erase(vecToDeactivate);
             setupList.erase(vecToDeactivate);
-            unloadMap.erase(vecToDeactivate);
         }
     }
     for (std::vector<Chunk *>::iterator it = loadList.begin(); it != loadList.end();) {
@@ -394,7 +360,6 @@ void	ChunkManager::deleteCube(Camera &camera) {
 
 	for (int j = 0; j < 16; j++) {
 		if (chunkMap.find(Vector3(i, j, z)) != chunkMap.end()) {
-			chunkMap[Vector3(i, j, z)]->unload = true;
 			chunkMap.erase(Vector3(i, j, z));
 		}
 	}

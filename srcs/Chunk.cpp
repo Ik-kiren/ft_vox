@@ -8,7 +8,6 @@ Chunk::Chunk(Renderer *renderer, ChunkManager *chunkManager, unsigned char ***te
     this->loaded = false;
     this->activated = true;
     this->meshed = false;
-    this->unload = false;
     this->update = false;
     this->meshID = UINTMAX;
     Block *block;
@@ -51,7 +50,6 @@ void Chunk::NewChunk(unsigned char ***test) {
     this->loaded = false;
     this->activated = true;
     this->meshed = false;
-    this->unload = false;
     this->update = false;
     for (int i = 0; i < CHUNK_SIZE_X; i++) {
         for (int j = 0; j < CHUNK_SIZE_Y; j++) {

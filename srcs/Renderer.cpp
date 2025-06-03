@@ -209,7 +209,7 @@ void Renderer::Render(std::vector<Chunk *> &chunks, std::unordered_map<Vector3, 
     glBindTexture(GL_TEXTURE_2D, shadowMap->depthMap);
 
     for (size_t i = 0; i < chunks.size(); i++) {
-        if (chunks[i]->unload || meshes[chunks[i]->meshID]->GetIndicesArray().size() == 0)
+        if (meshes[chunks[i]->meshID]->GetIndicesArray().size() == 0)
             continue;
         shader->setVector3("offset", meshes[chunks[i]->meshID]->GetPosition());
         glBindVertexArray(meshes[chunks[i]->meshID]->VAO);
@@ -218,7 +218,7 @@ void Renderer::Render(std::vector<Chunk *> &chunks, std::unordered_map<Vector3, 
 
     glDepthMask(GL_FALSE);
     for (size_t i = 0; i < chunks.size(); i++) {
-        if (chunks[i]->unload || meshes[chunks[i]->meshID]->GetIndicesArray2().size() == 0)
+        if (meshes[chunks[i]->meshID]->GetIndicesArray2().size() == 0)
             continue;
         shader->setVector3("offset", meshes[chunks[i]->meshID]->GetPosition());
         glBindVertexArray(meshes[chunks[i]->meshID]->VAO2);
