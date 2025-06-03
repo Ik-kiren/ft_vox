@@ -52,5 +52,5 @@ public:
     ~ShadowMap();
 
     void SetDebug();
-    void Render(Renderer *renderer, std::unordered_map<Vector3, Chunk *> &visibility);
+    void Render(Renderer *renderer, Camera *camera, std::unordered_map<Vector3, Chunk *> &visibility);
 };

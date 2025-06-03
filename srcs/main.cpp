@@ -11,6 +11,14 @@
 
 int seed = 2039412743;
 
+
+void viewport_size_callback(GLFWwindow* window, int width, int height) {
+    (void)window;
+    GameManager::windowWidth = width;
+    GameManager::windowHeight = height;
+    glViewport(0, 0, GameManager::windowWidth, GameManager::windowHeight);
+}
+
 GLFWwindow *InitGLFW() {
     if (!glfwInit()) {
         std::cerr << "Failed to initialize GLFW" << std::endl;
@@ -39,6 +47,7 @@ GLFWwindow *InitGLFW() {
         exit(0);
     }
 
+    glfwSetFramebufferSizeCallback(window, viewport_size_callback);
     glEnable(GL_DEPTH_TEST);
     //glEnable(GL_CULL_FACE);
     glfwSwapInterval(1);

@@ -2,6 +2,7 @@
 #include "../includes/ScopMaths.hpp"
 #include "../includes/Renderer.hpp"
 #include "../includes/Constants.hpp"
+#include "../includes/GameManager.hpp"
 #include <GL/glew.h>
 
 ShadowMap::ShadowMap() {
@@ -71,7 +72,7 @@ void ShadowMap::SetDebug() {
     }
 }
 
-void ShadowMap::Render(Renderer *renderer, std::unordered_map<Vector3, Chunk *> &visibility) {
+void ShadowMap::Render(Renderer *renderer, Camera *camera, std::unordered_map<Vector3, Chunk *> &visibility) {
     Matrix4 lightProjection, lightView;
     float near_plane = 0.1f, far_plane = 1000.0f;
     lightProjection = Orthographique(-400, 400, -400, 400, 0.1, 700);
@@ -102,13 +103,16 @@ void ShadowMap::Render(Renderer *renderer, std::unordered_map<Vector3, Chunk *> 
 
     for (int i = 0; i < 2; i++) {
         planeShadowMapShader.setMatrix4("model", Matrix4(1.0));
-        planeShadowMapShader.setVector3("offset", planDirection[i] * 20 * 16);
+        Vector3 offsetVec = camera->GetPosition();
+        offsetVec.x = offsetVec.x + planDirection[i].x * 20 * 16;
+        offsetVec.y = 0;
+        planeShadowMapShader.setVector3("offset", offsetVec);
         glBindVertexArray(planeVAO);
         glDrawArrays(GL_TRIANGLES, 0, 6);
     }
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
    if (debug) {
-        glViewport(0, 0, constants::WINDOW_WIDTH / 2, constants::WINDOW_HEIGHT);
+        glViewport(0, 0, GameManager::windowWidth / 2, GameManager::windowHeight);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         debugDepthQuad.use();
         debugDepthQuad.setFloat("near_plane", near_plane);
@@ -118,8 +122,8 @@ void ShadowMap::Render(Renderer *renderer, std::unordered_map<Vector3, Chunk *> 
         glBindVertexArray(quadVAO);
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
         glBindVertexArray(0);
-        glViewport(constants::WINDOW_WIDTH / 2, 0, constants::WINDOW_WIDTH, constants::WINDOW_HEIGHT);
+        glViewport(GameManager::windowWidth / 2, 0, GameManager::windowWidth, GameManager::windowHeight);
     } else {
-        glViewport(0, 0, constants::WINDOW_WIDTH, constants::WINDOW_HEIGHT);
+        glViewport(0, 0, GameManager::windowWidth, GameManager::windowHeight);
     }
 }

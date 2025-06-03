@@ -56,7 +56,6 @@ void Sun::UpdateRender(Camera *camera) {
     UpdatePosition();
 
     shader.use();
-
     shader.setMatrix4("model", model);
     shader.setMatrix4("view", camera->GetViewMatrix());
     shader.setMatrix4("projection", camera->GetProjectionMat());

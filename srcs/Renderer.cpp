@@ -5,6 +5,7 @@
 Renderer::Renderer() {
     this->celShading = false;
     this->polyMode = false;
+    this->cursorFocus = true;
 }
 
 Renderer::~Renderer() {
@@ -173,7 +174,7 @@ void Renderer::CleanMesh(unsigned int &meshID) {
 }
 
 void Renderer::Render(std::vector<Chunk *> &chunks, std::unordered_map<Vector3, Chunk *> &visibility) {
-    shadowMap->Render(this, visibility);
+    shadowMap->Render(this, this->camera, visibility);
     if (polyMode)
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     else
@@ -277,6 +278,17 @@ Renderer &Renderer::operator=(const Renderer &rhs) {
     return *this;
 }
 
+void Renderer::ChangeCursorFocus(GLFWwindow *window) {
+    if (keyCooldown + 1 < glfwGetTime()) {
+        this->cursorFocus = this->cursorFocus ? false : true;
+        if (!this->cursorFocus)
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+        else
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+        keyCooldown = glfwGetTime();
+    }
+}
+
 void Renderer::RendererInput(GLFWwindow *window) {
     if (glfwGetKey(window, GLFW_KEY_R ) == GLFW_PRESS)
         this->shadowMap->SetDebug();
@@ -284,4 +296,6 @@ void Renderer::RendererInput(GLFWwindow *window) {
         this->SetCelShading();
     if (glfwGetKey(window, GLFW_KEY_Y ) == GLFW_PRESS)
         this->EnablePolyMode();
+    if (glfwGetKey(window, GLFW_KEY_V) == GLFW_PRESS)
+        this->ChangeCursorFocus(window);
 }

@@ -218,6 +218,19 @@
   <ItemGroup>
     <None Include="glew32.dll" />
     <None Include="freetype.dll" />
+    <None Include="shaders\debug_quad.vs" />
+    <None Include="shaders\debug_quad_depth.fs" />
+    <None Include="shaders\fontFS.shader" />
+    <None Include="shaders\fontVS.shader" />
+    <None Include="shaders\FragmentShader2.shader" />
+    <None Include="shaders\lightFS.shader" />
+    <None Include="shaders\lightVS.shader" />
+    <None Include="shaders\shadow_map_plane.vs" />
+    <None Include="shaders\shadow_mapping_depth.fs" />
+    <None Include="shaders\shadow_mapping_depth.vs" />
+    <None Include="shaders\SkyBoxFragment.shader" />
+    <None Include="shaders\SkyBoxVertex.shader" />
+    <None Include="shaders\VertexShader.shader" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="textures\SkyBox\SkyBoxBackwardFace.png">
@@ -236,9 +249,6 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="textures\SkyBox\SkyBoxUpFace.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="textures\awesomeface.png">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="textures\dirt.png">
@@ -275,6 +285,9 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="textures\water-placeholder.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="textures\sun.png">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

@@ -32,7 +32,7 @@ private:
 
     void UpdateChunk(Vector3 chunkPos);
 public:
-    const int RENDERSIZE = 12;
+    const int RENDERSIZE = 18;
     std::unordered_map<Vector3, Chunk *> chunkMap;
     Vector3 maxPos;
     Vector3 minPos;

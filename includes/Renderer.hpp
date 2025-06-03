@@ -17,6 +17,7 @@ class Renderer
 private:
     bool celShading;
     bool polyMode;
+    bool cursorFocus;
     Shader *shader;
     Matrix4 model;
 
@@ -58,6 +59,7 @@ public:
     void SetCelShading();
     void RendererInput(GLFWwindow *window);
     void EnablePolyMode();
+    void ChangeCursorFocus(GLFWwindow* window);
 
     Renderer &operator=(const Renderer &rhs);
 };

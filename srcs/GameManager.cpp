@@ -3,6 +3,9 @@
 #include <cstdlib>
 #include <iostream>
 
+float GameManager::windowWidth = constants::WINDOW_WIDTH;
+float GameManager::windowHeight = constants::WINDOW_HEIGHT;
+
 GameManager::GameManager(Renderer *renderer, mapGP *tab, Player *player, ChunkManager *chunkManager, GLFWwindow *window) :
     camera(Camera(player->getGlobalPos(), Vector3(0, 1, 0))) {
 
@@ -65,8 +68,8 @@ void GameManager::Update() {
         fps = 0;
     }
     camera.UpdateFrustum();
-    font.RenderText(lastFps, 0.5, 1100, 2, Vector3(1, 0.2, 0.2));
-    font.RenderText(lastSpeed, 0.5, 1000, 2, Vector3(1, 0.2, 0.2));
+    font.RenderText(lastFps, 0.5, 950, 2, Vector3(1, 0.2, 0.2));
+    //font.RenderText(lastSpeed, 0.5, 850, 2, Vector3(1, 0.2, 0.2));
 
     camera.RegisterKeyboardInput(window, lastFpsInt);
     camera.RegisterMouseInput(window);
@@ -82,10 +85,10 @@ void GameManager::Update() {
         cameraCz = camera.GetPosition().z / 16 - signeN(camera.GetPosition().z);
     }
 
-    if ((glfwGetKey(window, GLFW_KEY_F ) == GLFW_PRESS)) {
+    /*if ((glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS)) {
         std::cout << cameraCx << " " << cameraCz << " " << camera.GetPosition().x << " " << camera.GetPosition().z << " " << camera.GetPosition().y << '\n';
         std::cout << player->getChunkPos().x << " " << player->getChunkPos().z << '\n';
-    }
+    }*/
     if ((glfwGetKey(window, GLFW_KEY_UP ) == GLFW_PRESS))
         camera.SetSpeedFps(1);
     if ((glfwGetKey(window, GLFW_KEY_DOWN ) == GLFW_PRESS))

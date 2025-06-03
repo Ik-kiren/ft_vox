@@ -1,9 +1,11 @@
+#pragma once
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include "./Renderer.hpp"
 #include "./mapGP.hpp"
 #include "./Player.hpp"
 #include "./ChunkManager.hpp"
+#include "./Constants.hpp"
 
 
 class GameManager
@@ -19,6 +21,8 @@ private:
     void GetTimer(double &lastTime, double &deltaTime);
 public:
     GLFWwindow *window;
+    static float windowWidth;
+    static float windowHeight;
 
     Camera camera;
     Font font;
