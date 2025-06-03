@@ -13,7 +13,7 @@ Download the latest windows release and launch ft_vox.exe.
   * R to activate/deactivate shadowmap
   * T to activate/deactivate CelShading
   * Y to activate/deactivate Polygon Lines
-  * V to unfocus the mouse
+  * V to unfocus/focus the mouse
 
 # :book: Libraries
 
