@@ -6,12 +6,14 @@ Download the latest windows release and launch ft_vox.exe.
 
 * Movements:
   * WASD, SpaceBar and Shift to move the camera
+  * Up arrow to augment movement speed, Down arrow to decrease it
   * Left click on close blocks to destroy them
 
 * Modes:
   * R to activate/deactivate shadowmap
   * T to activate/deactivate CelShading
   * Y to activate/deactivate Polygon Lines
+  * V to unfocus the mouse
 
 # :book: Libraries
 
