@@ -14,6 +14,7 @@ Download the latest windows release and launch ft_vox.exe.
   * T to activate/deactivate CelShading
   * Y to activate/deactivate Polygon Lines
   * V to unfocus/focus the mouse
+  * Hold G to activate/deactivate fly mode
 
 # :book: Libraries
 
